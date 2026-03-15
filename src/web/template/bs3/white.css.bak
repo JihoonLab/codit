@@ -1,0 +1,352 @@
+/* =====================================================
+   CODIT - CodeUp Style Global Theme
+   적용범위: 문제목록, 채점현황, 순위, 대회 등 전체 페이지
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+/* ── 기본 ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif !important;
+  background: #f5f6f8 !important;
+  color: #333;
+  font-size: 14px;
+}
+
+a { color: #1a6fc4; }
+a:hover { color: #0d5aad; text-decoration: none; }
+
+/* ── 컨테이너 ── */
+.container {
+  max-width: 1200px !important;
+  padding-top: 16px;
+}
+
+/* ── 기존 jumbotron → 깔끔한 카드로 ── */
+.container .jumbotron {
+  background: #fff !important;
+  background-image: none !important;
+  border: 1px solid #e5e9f0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+  padding: 24px !important;
+  margin-top: 16px !important;
+}
+
+.panel-default {
+  background: #fff !important;
+  background-image: none !important;
+  border: 1px solid #e5e9f0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+  padding: 0 !important;
+  margin-top: 16px !important;
+}
+
+.panel-heading {
+  background: #1a6fc4 !important;
+  color: #fff !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 14px 20px !important;
+  font-weight: 700;
+  font-size: 15px;
+  border: none !important;
+}
+
+.panel-body { padding: 20px !important; }
+
+/* ── 테이블 (문제목록, 채점현황, 순위 등) ── */
+.table {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: none !important;
+  margin-bottom: 0 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.table > thead > tr > th {
+  background: #1a6fc4 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  padding: 13px 14px !important;
+  border: none !important;
+  white-space: nowrap;
+}
+
+.table > tbody > tr > td {
+  padding: 11px 14px !important;
+  border-top: 1px solid #f0f2f5 !important;
+  vertical-align: middle !important;
+  font-size: 14px;
+}
+
+.table > tbody > tr:hover > td {
+  background: #f5f8ff !important;
+}
+
+.table > tbody > tr:first-child > td {
+  border-top: none !important;
+}
+
+/* 상단 헤더 행 (toprow) */
+.toprow {
+  background: #1a6fc4 !important;
+  color: #fff !important;
+  white-space: nowrap;
+}
+.toprow th, .toprow td {
+  color: #fff !important;
+  background: #1a6fc4 !important;
+  font-weight: 700 !important;
+  padding: 13px 14px !important;
+  border: none !important;
+}
+
+/* ── 배지/라벨 ── */
+.label, .badge {
+  border-radius: 5px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 3px 9px !important;
+}
+
+.label-default, .badge-default {
+  background: #e8f0fe !important;
+  color: #1a6fc4 !important;
+}
+
+.label-success, .badge-success {
+  background: #e6f9f0 !important;
+  color: #1a9a5c !important;
+}
+
+.label-danger, .badge-danger {
+  background: #fde8e8 !important;
+  color: #d63031 !important;
+}
+
+.label-warning, .badge-warning {
+  background: #fff4e0 !important;
+  color: #e67e00 !important;
+}
+
+.label-info, .badge-info {
+  background: #e0f4ff !important;
+  color: #0984c9 !important;
+}
+
+.label-primary, .badge-primary {
+  background: #1a6fc4 !important;
+  color: #fff !important;
+}
+
+/* ── 버튼 ── */
+.btn {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  transition: all 0.15s !important;
+}
+
+.btn-primary {
+  background: #1a6fc4 !important;
+  border-color: #1a6fc4 !important;
+  color: #fff !important;
+}
+.btn-primary:hover { background: #0d5aad !important; border-color: #0d5aad !important; }
+
+.btn-default {
+  background: #fff !important;
+  border-color: #d0d7e2 !important;
+  color: #444 !important;
+}
+.btn-default:hover { background: #f0f5ff !important; border-color: #1a6fc4 !important; color: #1a6fc4 !important; }
+
+.btn-success {
+  background: #27ae60 !important;
+  border-color: #27ae60 !important;
+}
+.btn-success:hover { background: #1e9450 !important; }
+
+.btn-danger {
+  background: #e74c3c !important;
+  border-color: #e74c3c !important;
+}
+
+.btn-sm { padding: 5px 12px !important; font-size: 12px !important; }
+.btn-xs { padding: 3px 8px !important; font-size: 11px !important; }
+
+/* ── 페이지네이션 ── */
+.pagination { margin: 16px 0 !important; }
+
+.pagination > li > a,
+.pagination > li > span {
+  border: 1px solid #e0e4ea !important;
+  color: #444 !important;
+  margin: 0 2px !important;
+  border-radius: 6px !important;
+  padding: 6px 13px !important;
+  font-size: 14px !important;
+  transition: all 0.15s !important;
+}
+
+.pagination > li > a:hover {
+  background: #f0f5ff !important;
+  border-color: #1a6fc4 !important;
+  color: #1a6fc4 !important;
+}
+
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover {
+  background: #1a6fc4 !important;
+  border-color: #1a6fc4 !important;
+  color: #fff !important;
+}
+
+.pagination > .disabled > a {
+  color: #bbb !important;
+  border-color: #eee !important;
+}
+
+/* ── 입력 폼 ── */
+.form-control {
+  border: 1px solid #d0d7e2 !important;
+  border-radius: 7px !important;
+  font-size: 14px !important;
+  height: 36px !important;
+  padding: 6px 12px !important;
+  transition: border-color 0.15s !important;
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+.form-control:focus {
+  border-color: #1a6fc4 !important;
+  box-shadow: 0 0 0 3px rgba(26,111,196,0.12) !important;
+  outline: none !important;
+}
+
+textarea.form-control { height: auto !important; }
+
+/* ── 알림/alert ── */
+.alert {
+  border-radius: 8px !important;
+  border: none !important;
+  font-size: 14px !important;
+  padding: 12px 18px !important;
+}
+
+.alert-success { background: #e6f9f0 !important; color: #1a7a4a !important; }
+.alert-danger, .alert-error { background: #fde8e8 !important; color: #c0392b !important; }
+.alert-warning { background: #fff4e0 !important; color: #b7600a !important; }
+.alert-info { background: #e0f4ff !important; color: #0a6fa8 !important; }
+
+/* ── 채점 결과 색상 ── */
+.Accepted, .green { color: #27ae60 !important; font-weight: 600 !important; }
+.Wrong_Answer, .red { color: #e74c3c !important; font-weight: 600 !important; }
+.Time_Limit_Exceeded { color: #e67e00 !important; font-weight: 600 !important; }
+.Memory_Limit_Exceeded { color: #8e44ad !important; font-weight: 600 !important; }
+.Compile_Error { color: #2980b9 !important; font-weight: 600 !important; }
+.Runtime_Error { color: #c0392b !important; font-weight: 600 !important; }
+.Pending, .blue { color: #1a6fc4 !important; }
+
+/* ── 드롭다운 ── */
+.dropdown-menu {
+  border-radius: 10px !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+  border: 1px solid #e0e4ea !important;
+  background: #fff !important;
+  padding: 6px 0 !important;
+  background-image: none !important;
+}
+
+.dropdown-menu > li > a {
+  padding: 10px 18px !important;
+  font-size: 14px !important;
+  color: #333 !important;
+}
+
+.dropdown-menu > li > a:hover {
+  background: #f0f5ff !important;
+  color: #1a6fc4 !important;
+}
+
+/* ── 탭 ── */
+.nav-tabs { border-bottom: 2px solid #e0e4ea !important; }
+.nav-tabs > li > a {
+  color: #666 !important;
+  border: none !important;
+  padding: 10px 18px !important;
+  font-weight: 500 !important;
+  border-radius: 0 !important;
+}
+.nav-tabs > li > a:hover { background: none !important; color: #1a6fc4 !important; }
+.nav-tabs > li.active > a {
+  color: #1a6fc4 !important;
+  border-bottom: 3px solid #1a6fc4 !important;
+  font-weight: 700 !important;
+  background: none !important;
+}
+
+/* ── 페이지네이션 (pagenav h3 기존 스타일 교체) ── */
+h3.pagenav { margin-top: 8px; margin-bottom: 16px; }
+h3.pagenav div.item {
+  padding: 5px 10px;
+  margin: 2px;
+  font-size: 14px;
+  border: 1px solid #e0e4ea;
+  border-radius: 6px;
+  display: inline-block;
+  min-width: 34px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+  color: #444;
+}
+h3.pagenav div.item:hover {
+  background: #f0f5ff !important;
+  border-color: #1a6fc4 !important;
+  color: #1a6fc4 !important;
+}
+h3.pagenav div.active {
+  background: #1a6fc4 !important;
+  border-color: #1a6fc4 !important;
+  color: #fff !important;
+  font-weight: 700;
+}
+
+/* ── 문제 내용 영역 ── */
+.content {
+  font-size: 15px !important;
+  line-height: 1.8 !important;
+}
+
+/* ── 코드 블록 ── */
+pre, code {
+  background: #f8fafc !important;
+  border: 1px solid #e5e9f0 !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+}
+pre { padding: 14px !important; }
+
+/* ── 기타 유틸 ── */
+.center { text-align: center; }
+.red { color: #e74c3c !important; }
+.green { color: #27ae60 !important; }
+.blue { color: #1a6fc4 !important; }
+.hint pre { display: none; }
+.http_judge_form { white-space: nowrap; }
+#problemset { margin-top: 12px; }
+#broadcast { height: auto; min-height: 60px; }
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  .table-responsive { border: none !important; }
+  .container { padding: 8px !important; }
+}

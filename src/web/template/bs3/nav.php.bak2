@@ -1,0 +1,379 @@
+<?php
+require_once(dirname(__FILE__)."/../../include/memcache.php");
+function get_menu_news()
+{
+  $result = "";
+  $sql_news_menu = "SELECT `news_id`,`title` FROM `news` WHERE `menu`=1 AND `title`!='faqs.cn' ORDER BY `importance` ASC,`time` DESC LIMIT 10";
+  $sql_news_menu_result = mysql_query_cache($sql_news_menu);
+  if($sql_news_menu_result)
+  {
+    foreach($sql_news_menu_result as $row)
+    {
+      $result .= '<li><a href="/viewnews.php?id='.$row['news_id'].'">'.$row['title'].'</a></li>';
+    }
+  }
+  return $result;
+}
+
+if(stripos($_SERVER['REQUEST_URI'],"template")!==false) exit();
+
+$url = basename($_SERVER['REQUEST_URI']);
+$dir = basename(getcwd());
+if($dir=="discuss3") $path_fix = "../";
+else $path_fix = "";
+
+if(isset($OJ_NEED_LOGIN) && $OJ_NEED_LOGIN && ($url!='loginpage.php' && $url!='lostpassword.php' && $url!='lostpassword2.php' && $url!='registerpage.php') && !isset($_SESSION[$OJ_NAME.'_'.'user_id']))
+{
+  header("location:".$path_fix."loginpage.php");
+  exit();
+}
+
+$_SESSION[$OJ_NAME.'_'.'profile_csrf'] = rand();
+
+if($OJ_ONLINE) {
+  require_once($path_fix.'include/online.php');
+  $on = new online();
+}
+
+$sql_news_menu_result_html = "";
+if($OJ_MENU_NEWS) {
+  if($OJ_REDIS) {
+    $redis = new Redis();
+    $redis->connect($OJ_REDISSERVER, $OJ_REDISPORT);
+    if(isset($OJ_REDISAUTH)) $redis->auth($OJ_REDISAUTH);
+    $redisDataKey = $OJ_REDISQNAME.'_MENU_NEWS_CACHE';
+    if($redis->exists($redisDataKey)) {
+      $sql_news_menu_result_html = $redis->get($redisDataKey);
+    } else {
+      $sql_news_menu_result_html = get_menu_news();
+      $redis->set($redisDataKey, $sql_news_menu_result_html);
+      $redis->expire($redisDataKey, 300);
+    }
+    $redis->close();
+  } else {
+    $sessionDataKey = $OJ_NAME.'_'."_MENU_NEWS_CACHE";
+    if(isset($_SESSION[$sessionDataKey])) {
+      $sql_news_menu_result_html = $_SESSION[$sessionDataKey];
+    } else {
+      $sql_news_menu_result_html = get_menu_news();
+      $_SESSION[$sessionDataKey] = $sql_news_menu_result_html;
+    }
+  }
+}
+
+/* 로그인 여부 확인 */
+$is_logged_in = isset($_SESSION[$OJ_NAME.'_'.'user_id']);
+$logged_user  = $is_logged_in ? $_SESSION[$OJ_NAME.'_'.'user_id'] : '';
+
+if(!isset($_GET['spa'])) { ?>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #f5f6f8;
+  margin: 0;
+  padding-top: 56px;
+}
+
+.cn {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e0e4ea;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+}
+
+.cn-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+}
+
+/* 로고 */
+.cn-brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a6fc4 !important;
+  text-decoration: none !important;
+  letter-spacing: -0.5px;
+  margin-right: 28px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.cn-brand:hover { color: #0d5aad !important; }
+
+/* 메뉴 래퍼 */
+.cn-menu-wrap {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+/* 메뉴 */
+.cn-menu {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0; padding: 0;
+  flex: 1;
+}
+
+.cn-menu > li > a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 56px;
+  padding: 0 13px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #444 !important;
+  text-decoration: none !important;
+  border-bottom: 3px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.cn-menu > li > a:hover { color: #1a6fc4 !important; border-bottom-color: #1a6fc4; }
+.cn-menu > li.active > a { color: #1a6fc4 !important; font-weight: 700; border-bottom-color: #1a6fc4; }
+
+/* 메뉴 아이콘 */
+.cn-icon {
+  width: 18px; height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cn-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 오른쪽 버튼 */
+.cn-right {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 로그인 단일 버튼 */
+.cn-login-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff !important;
+  background: #1a6fc4;
+  text-decoration: none !important;
+  transition: background 0.15s;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+}
+.cn-login-btn:hover { background: #0d5aad; color: #fff !important; }
+
+/* 로그인 후 유저 드롭다운 */
+.cn-user { position: relative; }
+.cn-user-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a6fc4 !important;
+  background: #f0f5ff;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: 1px solid #cce0ff;
+  white-space: nowrap;
+}
+.cn-user-toggle:hover { background: #deeaff; color: #1a6fc4 !important; }
+
+.cn-dropdown {
+  display: none;
+  position: absolute;
+  right: 0; top: calc(100% + 8px);
+  background: #fff;
+  border: 1px solid #e0e4ea;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  min-width: 160px;
+  overflow: hidden;
+  z-index: 9999;
+}
+.cn-user.open .cn-dropdown { display: block; }
+.cn-dropdown a {
+  display: block;
+  padding: 11px 18px;
+  font-size: 14px;
+  color: #333 !important;
+  text-decoration: none !important;
+  transition: background 0.1s;
+}
+.cn-dropdown a:hover { background: #f0f5ff; color: #1a6fc4 !important; }
+.cn-dropdown .sep { height: 1px; background: #eee; margin: 4px 0; }
+
+/* 햄버거 */
+.cn-ham {
+  display: none;
+  background: none; border: none;
+  cursor: pointer; padding: 8px;
+  margin-left: auto;
+}
+.cn-ham span {
+  display: block; width: 22px; height: 2px;
+  background: #333; margin: 4px 0; border-radius: 2px;
+}
+
+@media (max-width: 800px) {
+  .cn-ham { display: block; }
+  .cn-menu-wrap {
+    display: none;
+    position: fixed;
+    top: 56px; left: 0; right: 0;
+    background: #fff;
+    border-top: 1px solid #e0e4ea;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    padding: 8px 0 16px;
+    z-index: 999;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cn-menu-wrap.open { display: flex; }
+  .cn-menu { flex-direction: column; }
+  .cn-menu > li > a { height: auto; padding: 12px 24px; border-bottom: none; border-left: 3px solid transparent; }
+  .cn-menu > li.active > a { border-left-color: #1a6fc4; border-bottom: none; }
+  .cn-right { padding: 8px 24px; }
+  .cn-login-btn { width: 100%; justify-content: center; }
+}
+</style>
+
+<nav class="cn">
+  <div class="cn-inner">
+
+    <a class="cn-brand" href="<?php echo $OJ_HOME?>"><?php echo $OJ_NAME?></a>
+
+    <button class="cn-ham" onclick="document.querySelector('.cn-menu-wrap').classList.toggle('open')">
+      <span></span><span></span><span></span>
+    </button>
+
+    <div class="cn-menu-wrap">
+      <ul class="cn-menu">
+        <?php if(!isset($OJ_ON_SITE_CONTEST_ID)): ?>
+
+        <li <?php if($url=="problemset.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>problemset.php">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+            문제
+          </a>
+        </li>
+
+        <li <?php if($url=="category.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>category.php">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></span>
+            분류
+          </a>
+        </li>
+
+        <li <?php if($url=="status.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>status.php">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span>
+            채점현황
+          </a>
+        </li>
+
+        <li <?php if($url=="ranklist.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>ranklist.php">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><path d="M8 6l4-4 4 4"/><path d="M12 2v10.3"/><path d="M20 21H4"/><path d="M6 21v-5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v5"/></svg></span>
+            순위
+          </a>
+        </li>
+
+        <li <?php if($url=="contest.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>contest.php<?php if(isset($_SESSION[$OJ_NAME."_user_id"])) echo "?my" ?>">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+            대회
+          </a>
+        </li>
+
+        <?php if(isset($OJ_BBS)&&$OJ_BBS): ?>
+        <li <?php if($url=="discuss.php"||$url=="bbs.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>bbs.php">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+            게시판
+          </a>
+        </li>
+        <?php endif; ?>
+
+        <li <?php if($url=="faqs.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>faqs.php">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+            FAQ
+          </a>
+        </li>
+
+        <?php else: ?>
+        <li <?php if($url=="contest.php") echo 'class="active"'; ?>>
+          <a href="<?php echo $path_fix?>contest.php">
+            <span class="cn-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
+            대회
+          </a>
+        </li>
+        <?php endif; ?>
+
+        <?php echo $sql_news_menu_result_html; ?>
+      </ul>
+
+      <!-- 오른쪽: 로그인 상태에 따라 분기 -->
+      <div class="cn-right">
+        <?php if($is_logged_in): ?>
+        <!-- 로그인 후: 유저명 + 드롭다운 (클릭 토글) -->
+        <div class="cn-user" id="cn-user-menu">
+          <a href="#" class="cn-user-toggle" id="cn-user-toggle" onclick="toggleUserMenu(event)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <?php echo htmlspecialchars($logged_user); ?> ▾
+          </a>
+          <div class="cn-dropdown" id="cn-dropdown">
+            <script src="<?php echo $path_fix."template/$OJ_TEMPLATE/profile.php?profile_csrf=".$_SESSION[$OJ_NAME.'_'.'profile_csrf'];?>"></script>
+          </div>
+        </div>
+        <?php else: ?>
+        <!-- 비로그인: 단일 로그인 버튼 -->
+        <a href="<?php echo $path_fix?>loginpage.php" class="cn-login-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          로그인
+        </a>
+        <?php endif; ?>
+      </div>
+    </div>
+
+  </div>
+</nav>
+<script>
+function toggleUserMenu(e) {
+  e.preventDefault();
+  document.getElementById('cn-user-menu').classList.toggle('open');
+}
+// 다른 곳 클릭 시 닫기
+document.addEventListener('click', function(e) {
+  var menu = document.getElementById('cn-user-menu');
+  if (menu && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+</script>
+<?php } ?>
