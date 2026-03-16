@@ -155,6 +155,7 @@ if (isset($_GET['search']) && trim($_GET['search']) != "") {
 //echo "$cnt $count_sql";
 
 $view_total_page = ceil($cnt * 1.0);
+$view_total = $total[0][0];
 
 /**
  * 问题列表数据处理

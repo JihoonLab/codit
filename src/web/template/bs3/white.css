@@ -20,7 +20,7 @@ a:hover { color: #6d28d9; text-decoration: none; }
 
 /* ── 컨테이너 ── */
 .container {
-  max-width: 1200px !important;
+  max-width: 1300px !important;
   padding-top: 16px;
 }
 
@@ -84,8 +84,15 @@ a:hover { color: #6d28d9; text-decoration: none; }
   font-size: 14px;
 }
 
+.table > tbody > tr {
+  transition: all 0.15s ease;
+}
 .table > tbody > tr:hover > td {
-  background: #f5f8ff !important;
+  background: #f5f3ff !important;
+}
+.table > tbody > tr:hover {
+  transform: scale(1.002);
+  box-shadow: 0 2px 8px rgba(124,58,237,0.06);
 }
 
 .table > tbody > tr:first-child > td {
@@ -349,6 +356,95 @@ pre { padding: 14px !important; }
 @media (max-width: 768px) {
   .table-responsive { border: none !important; }
   .container { padding: 8px !important; }
+}
+
+
+/* ══════ Global Hover Effects ══════ */
+
+/* 모든 카드형 요소 */
+.panel, .well, .thumbnail,
+.codit-card, .ct-table-card, .st-filter-card {
+  transition: all 0.2s ease;
+}
+.panel:hover, .well:hover, .thumbnail:hover,
+.codit-card:hover, .ct-table-card:hover {
+  box-shadow: 0 4px 20px rgba(124,58,237,0.08);
+  transform: translateY(-2px);
+}
+
+/* 모든 리스트 아이템 */
+.list-group-item {
+  transition: all 0.15s ease;
+}
+.list-group-item:hover {
+  background: #f5f3ff;
+  transform: translateX(3px);
+  border-left-color: #7c3aed;
+}
+
+/* 네비게이션 링크 부드러운 전환 */
+.navbar-nav > li > a {
+  transition: all 0.2s ease !important;
+}
+.navbar-nav > li > a:hover {
+  transform: translateY(-1px);
+}
+
+/* 모든 버튼 공통 */
+.btn {
+  transition: all 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+.btn:active {
+  transform: translateY(0);
+}
+
+/* 페이지네이션 */
+.pagination > li > a {
+  transition: all 0.15s ease;
+}
+.pagination > li > a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(124,58,237,0.15);
+}
+
+/* 뱃지/라벨 hover */
+.label, .badge {
+  transition: all 0.15s ease;
+}
+a .label:hover, a .badge:hover,
+a.label:hover, a.badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* 입력 필드 포커스 효과 강화 */
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus,
+.form-control:focus {
+  border-color: #7c3aed !important;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1) !important;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+/* 이미지 hover */
+img.img-responsive:hover,
+.thumbnail img:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s ease;
+}
+
+/* 링크 부드러운 전환 */
+a {
+  transition: color 0.15s ease;
 }
 
 /* ── Global Footer ── */

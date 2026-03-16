@@ -22,9 +22,16 @@ require_once("./include/const.inc.php");
 // + by CSL from CodeUp
 if(isset($_GET['sid']) && isset($_SESSION[$OJ_NAME.'_'.'administrator']) && $_GET['command']=="del")
 {
-  $sql = "DELETE FROM `solution` WHERE `solution_id`=?";
   $sid = intval($_GET['sid']);
-  pdo_query($sql, $sid);
+  // 연관 데이터 모두 삭제
+  pdo_query("DELETE FROM `source_code` WHERE `solution_id`=?", $sid);
+  pdo_query("DELETE FROM `source_code_user` WHERE `solution_id`=?", $sid);
+  pdo_query("DELETE FROM `runtimeinfo` WHERE `solution_id`=?", $sid);
+  pdo_query("DELETE FROM `compileinfo` WHERE `solution_id`=?", $sid);
+  pdo_query("DELETE FROM `sim` WHERE `s_id`=? OR `s_id_2`=?", $sid, $sid);
+  pdo_query("DELETE FROM `solution_ai_answer` WHERE `solution_id`=?", $sid);
+  pdo_query("DELETE FROM `custominput` WHERE `solution_id`=?", $sid);
+  pdo_query("DELETE FROM `solution` WHERE `solution_id`=?", $sid);
   header("location:".$_SERVER['HTTP_REFERER']);
   exit(0);
 }

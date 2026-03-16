@@ -1,3 +1,4 @@
+<?php $class_param = isset($_GET["class_id"]) ? "&class_id=".intval($_GET["class_id"]) : ""; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,8 +114,6 @@
 .prob-btn-list    { background: #555; color: #fff !important; }
 .prob-btn-list:hover    { background: #333; color: #fff !important; }
 
-.prob-btn-bbs     { background: #e67e00; color: #fff !important; }
-.prob-btn-bbs:hover     { background: #cc6d00; color: #fff !important; }
 
 /* 섹션 패널 */
 .prob-section {
@@ -175,12 +174,205 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+
+/* 스크롤바 커스텀 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #aab0bc; }
+
+/* ── 내 풀이 섹션 ── */
+.my-solutions-wrap {
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed #e5e9f0;
+}
+.my-solutions-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+}
+.my-sol-btns {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.my-sol-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: 2px solid #10b981;
+  background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+  color: #059669 !important;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.my-sol-btn:hover {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(16,185,129,0.3);
+}
+.my-sol-btn.active {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff !important;
+  box-shadow: 0 3px 12px rgba(16,185,129,0.3);
+}
+.my-sol-btn .sol-lang {
+  font-size: 11px;
+  opacity: 0.8;
+}
+.my-sol-btn .sol-date {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+/* 코드 뷰어 */
+.sol-code-viewer {
+  margin-top: 14px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e9f0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  animation: solCodeSlide 0.3s ease;
+  display: none;
+}
+@keyframes solCodeSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sol-code-header {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+}
+.sol-code-header .sol-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sol-code-header .sol-tag {
+  background: rgba(255,255,255,0.2);
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.sol-code-close {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.sol-code-close:hover {
+  background: rgba(255,255,255,0.35);
+}
+.sol-code-body {
+  background: #f8f9fc;
+  padding: 20px;
+  max-height: 400px;
+  overflow: auto;
+  border-top: 1px solid #e5e9f0;
+  text-align: left;
+}
+.sol-code-body pre {
+  margin: 0;
+  color: #333;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  white-space: pre;
+  word-break: normal;
+  overflow-x: auto;
+  tab-size: 4;
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e9f0;
+  text-align: left;
+}
+.sol-code-body::-webkit-scrollbar { width: 6px; height: 6px; }
+.sol-code-body::-webkit-scrollbar-track { background: #f8f9fc; }
+.sol-code-body::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 3px; }
+.sol-code-copy {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.sol-code-copy:hover { background: rgba(255,255,255,0.35); }
+
 </style>
 </head>
 
 <body>
 <div id="main" class="container">
   <?php include("template/$OJ_TEMPLATE/nav.php");?>
+
+  <!-- ── 문제 상태 배너 ── -->
+  <?php
+  if(isset($_SESSION[$OJ_NAME.'_'.'user_id'])) {
+    $cur_user = $_SESSION[$OJ_NAME.'_'.'user_id'];
+    $pid_check = $row['problem_id'];
+    $banner_class_id = isset($_GET['class_id']) ? intval($_GET['class_id']) : 0;
+    if($banner_class_id > 0) {
+      // 수업에서 접속: 해당 수업 내 제출만 확인
+      $ac_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=? AND result=4 AND class_id=?", $cur_user, $pid_check, $banner_class_id);
+      $has_ac = ($ac_check && $ac_check[0]['cnt'] > 0);
+      $sub_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=? AND class_id=?", $cur_user, $pid_check, $banner_class_id);
+      $has_sub = ($sub_check && $sub_check[0]['cnt'] > 0);
+    } else {
+      // 문제 탭에서 접속: 전체 제출 확인
+      $ac_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=? AND result=4", $cur_user, $pid_check);
+      $has_ac = ($ac_check && $ac_check[0]['cnt'] > 0);
+      $sub_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=?", $cur_user, $pid_check);
+      $has_sub = ($sub_check && $sub_check[0]['cnt'] > 0);
+    }
+    
+    if($has_ac) {
+      echo '<div id="solve-banner" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1px solid #6ee7b7;border-radius:10px;padding:12px 20px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">';
+      echo '<span style="font-size:24px;">🎉</span><span style="font-size:15px;font-weight:800;color:#059669;">해결한 문제</span><span style="font-size:13px;color:#047857;">이 문제를 정답 처리했습니다.</span></div>';
+    } else if($has_sub) {
+      echo '<div id="solve-banner" style="background:linear-gradient(135deg,#fee2e2,#fecaca);border:1px solid #fca5a5;border-radius:10px;padding:12px 20px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">';
+      echo '<span style="font-size:24px;">❌</span><span style="font-size:15px;font-weight:800;color:#dc2626;">틀린 문제</span><span style="font-size:13px;color:#b91c1c;">다시 도전해 보세요!</span></div>';
+    } else {
+      echo '<div id="solve-banner" style="background:linear-gradient(135deg,#f3f4f6,#e5e7eb);border:1px solid #d1d5db;border-radius:10px;padding:12px 20px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">';
+      echo '<span style="font-size:24px;">📝</span><span style="font-size:15px;font-weight:800;color:#6b7280;">미해결 문제</span><span style="font-size:13px;color:#9ca3af;">아직 제출하지 않은 문제입니다.</span></div>';
+    }
+  }
+  ?>
 
   <!-- ── 문제 헤더 ── -->
   <div class="prob-header">
@@ -204,12 +396,12 @@
       <?php
       /* 코드 제출 */
       if($pr_flag) {
-        echo "<a id='submit' class='prob-btn prob-btn-submit' href='submitpage.php?id=$id'>✏️ 코드 제출</a>";
+        echo "<a id='submit' class='prob-btn prob-btn-submit' href='submitpage.php?id=$id$class_param' onclick='transform(); return false;'>✏️ 코드 제출</a>";
       } else {
         if($contest_is_over)
-          echo "<a id='submit' class='prob-btn prob-btn-submit' href='submitpage.php?id=$id'>✏️ 코드 제출</a>";
+          echo "<a id='submit' class='prob-btn prob-btn-submit' href='submitpage.php?id=$id$class_param' onclick='transform(); return false;'>✏️ 코드 제출</a>";
         else
-          echo "<a id='submit' class='prob-btn prob-btn-submit' href='submitpage.php?cid=$cid&pid=$pid&langmask=$langmask'>✏️ 코드 제출</a>";
+          echo "<a id='submit' class='prob-btn prob-btn-submit' href='submitpage.php?cid=$cid&pid=$pid&langmask=$langmask' onclick='transform(); return false;'>✏️ 코드 제출</a>";
         echo "<a class='prob-btn prob-btn-list' href='contest.php?cid=$cid'>📋 문제 목록</a>";
       }
 
@@ -233,6 +425,33 @@
       }
       ?>
     </div>
+
+    <!-- 내 풀이 (최대 3개) -->
+    <?php
+    if(isset($_SESSION[$OJ_NAME.'_'.'user_id']) && $pr_flag && !isset($_GET['class_id'])) {
+      $my_uid_sol = $_SESSION[$OJ_NAME.'_'.'user_id'];
+      $my_pid_sol = $row['problem_id'];
+      $my_solutions = pdo_query("SELECT s.solution_id, s.language, s.in_date, s.time, s.memory, LENGTH(sc.source) as code_len FROM solution s LEFT JOIN source_code_user sc ON s.solution_id=sc.solution_id WHERE s.user_id=? AND s.problem_id=? AND s.result=4 ORDER BY s.in_date DESC LIMIT 3", $my_uid_sol, $my_pid_sol);
+      if($my_solutions && count($my_solutions) > 0) {
+        $lang_names = array("C","C++","Pascal","Java","Ruby","Bash","Python","PHP","Perl","C#","Obj-C","FreeBasic","Scheme","Clang","Clang++","Lua","JavaScript","Go","SQL","Fortran","Matlab","Cobol","R","Scratch3","Cangjie");
+    ?>
+    <div class="my-solutions-wrap">
+      <div class="my-solutions-label">✅ 내 정답 풀이</div>
+      <div class="my-sol-btns">
+        <?php foreach($my_solutions as $si => $sol): ?>
+        <button class="my-sol-btn" onclick="toggleSolution(<?php echo $sol['solution_id']?>, this)" title="<?php echo $sol['in_date']?>">
+          <span>풀이<?php echo $si+1?></span>
+          <span class="sol-lang"><?php echo $lang_names[intval($sol['language'])] ?? 'Unknown'?></span>
+          <span class="sol-date"><?php echo substr($sol['in_date'], 5, 11)?></span>
+        </button>
+        <?php endforeach; ?>
+      </div>
+      <div id="sol-code-viewer" class="sol-code-viewer"></div>
+    </div>
+    <?php
+      }
+    }
+    ?>
   </div>
 
   <?php echo "<!--StartMarkForVirtualJudge-->"; ?>
@@ -317,11 +536,9 @@
   <div class="prob-footer">
     <?php
     if($pr_flag)
-      echo "<a class='prob-btn prob-btn-submit' href='submitpage.php?id=$id'>✏️ 코드 제출</a>";
+      echo "<a class='prob-btn prob-btn-submit' href='submitpage.php?id=$id$class_param' onclick='transform(); return false;'>✏️ 코드 제출</a>";
     else
-      echo "<a class='prob-btn prob-btn-submit' href='submitpage.php?cid=$cid&pid=$pid&langmask=$langmask'>✏️ 코드 제출</a>";
-    if($OJ_BBS)
-      echo "<a class='prob-btn prob-btn-bbs' href='bbs.php?pid=".$row['problem_id']."$ucid'>💬 $MSG_BBS</a>";
+      echo "<a class='prob-btn prob-btn-submit' href='submitpage.php?cid=$cid&pid=$pid&langmask=$langmask' onclick='transform(); return false;'>✏️ 코드 제출</a>";
     ?>
   </div>
 
@@ -344,6 +561,94 @@ function selectMulti(num,answer){
   let rep=editor.text().replace(new RegExp(num+".*"),num+" "+answer);
   editor.text(rep);
 }
+var currentSolId = null;
+function toggleSolution(solId, btn) {
+  var viewer = document.getElementById('sol-code-viewer');
+  // If clicking same button, close
+  if(currentSolId === solId && viewer.style.display !== 'none') {
+    viewer.style.display = 'none';
+    btn.classList.remove('active');
+    currentSolId = null;
+    return;
+  }
+  // Remove active from all buttons
+  document.querySelectorAll('.my-sol-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentSolId = solId;
+  
+  viewer.style.display = 'block';
+  viewer.innerHTML = '<div class="sol-code-header"><div class="sol-info"><span>⏳ 코드 불러오는 중...</span></div></div><div class="sol-code-body"><pre style="color:#888;">로딩 중...</pre></div>';
+  viewer.style.animation = 'none';
+  viewer.offsetHeight; // trigger reflow
+  viewer.style.animation = 'solCodeSlide 0.3s ease';
+  
+  // AJAX fetch source code
+  $.ajax({
+    url: 'ajax_solution.php?id=' + solId,
+    dataType: 'json',
+    success: function(res) {
+      if(res.error) {
+        viewer.innerHTML = '<div class="sol-code-header"><div class="sol-info"><span>⚠️ ' + res.error + '</span></div><button class="sol-code-close" onclick="closeSolViewer()">✕</button></div>';
+        return;
+      }
+      var lang = res.language || '';
+      var time = res.time || 0;
+      var mem = res.memory || 0;
+      var code = res.source || '';
+      code = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      
+      viewer.innerHTML = '<div class="sol-code-header">'
+        + '<div class="sol-info">'
+        + '<span>📝 풀이 #' + solId + '</span>'
+        + '<span class="sol-tag">' + lang + '</span>'
+        + '<span class="sol-tag">⏱ ' + time + 'ms</span>'
+        + '<span class="sol-tag">💾 ' + mem + 'KB</span>'
+        + '</div>'
+        + '<div style="display:flex;gap:6px;align-items:center;">'
+        + '<button class="sol-code-copy" onclick="copySolCode()">📋 복사</button>'
+        + '<button class="sol-code-close" onclick="closeSolViewer()">✕</button>'
+        + '</div>'
+        + '</div>'
+        + '<div class="sol-code-body"><pre id="sol-code-text">' + code + '</pre></div>';
+    },
+    error: function(xhr, status, err) {
+      viewer.innerHTML = '<div class="sol-code-header"><div class="sol-info"><span>⚠️ 서버 오류: ' + (err||status) + '</span></div><button class="sol-code-close" onclick="closeSolViewer()">✕</button></div>';
+    }
+  });
+}
+
+function closeSolViewer() {
+  var viewer = document.getElementById('sol-code-viewer');
+  viewer.style.display = 'none';
+  document.querySelectorAll('.my-sol-btn').forEach(function(b){ b.classList.remove('active'); });
+  currentSolId = null;
+}
+
+function copySolCode() {
+  var codeEl = document.getElementById('sol-code-text');
+  if(codeEl) {
+    var text = codeEl.textContent;
+    if(navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function(){
+        var btn = document.querySelector('.sol-code-copy');
+        btn.textContent = '✅ 복사됨!';
+        setTimeout(function(){ btn.textContent = '📋 복사'; }, 1500);
+      });
+    } else {
+      // fallback
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      var btn = document.querySelector('.sol-code-copy');
+      btn.textContent = '✅ 복사됨!';
+      setTimeout(function(){ btn.textContent = '📋 복사'; }, 1500);
+    }
+  }
+}
+
 $(document).ready(function(){
   $("#creator").load("problem-ajax.php?pid=<?php echo $id?>");
   <?php if(isset($OJ_MARKDOWN)&&$OJ_MARKDOWN){ ?>
@@ -378,9 +683,7 @@ $(document).ready(function(){
     });
     selectMulti(num,answer);
   });
-  <?php if($row['spj']>1 || isset($_GET['sid']) || (isset($OJ_AUTO_SHOW_OFF)&&$OJ_AUTO_SHOW_OFF)){ ?>
-  transform();
-  <?php }?>
+  // transform()은 코드제출 버튼 클릭 시 호출
 });
 function CopyToClipboard(input){
   if(window.clipboardData){ window.clipboardData.setData("Text",input); }
@@ -397,24 +700,98 @@ function CopyToClipboard(input){
   }
 }
 function transform(){
-  let width=parseInt(document.body.clientWidth*0.6);
-  let width2=parseInt(document.body.clientWidth*0.4);
-  let submitURL=$("#submit")[0].href;
+  if(document.getElementById('submitPage')) return; // 이미 열려있으면 무시
+  var submitBtn = document.getElementById('submit');
+  if(!submitBtn) return;
+  var submitURL = submitBtn.href;
   <?php if(isset($_GET['sid'])) echo "submitURL+='&sid=".intval($_GET['sid'])."';"; ?>
-  let main=$("#main");
-  if(window.screen.width<500){
-    main.parent().append("<div id='submitPage' class='container' style='opacity:0.8;z-index:88;top:49px;'></div>");
-    $("#submitPage").html("<iframe id='ansFrame' src='"+submitURL+"&spa' width='100%' height='"+window.innerHeight+"px'></iframe>");
-    window.setTimeout('$("#ansFrame")[0].scrollIntoView()',1000);
+  var main = document.getElementById('main');
+
+  if(window.innerWidth < 768){
+    // 모바일: 문제 아래에 에디터 추가
+    var wrap = document.createElement('div');
+    wrap.id = 'submitPage';
+    wrap.style.cssText = 'margin-top:16px;animation:slideUp 0.3s ease;';
+    wrap.innerHTML = '<div style="text-align:right;margin-bottom:8px;"><button onclick="closeEditor()" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;">✕ 닫기</button></div>'
+      + '<iframe id="ansFrame" src="'+submitURL+'&spa" style="width:100%;height:'+Math.max(window.innerHeight*0.7,500)+'px;border:none;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08);"></iframe>';
+    main.appendChild(wrap);
+    setTimeout(function(){ wrap.scrollIntoView({behavior:'smooth'}); }, 300);
   } else {
-    main.css({"width":width2,"margin-left":"0px"});
-    main.parent().append("<div id='submitPage' class='container' style='opacity:0.8;position:fixed;z-index:1000;top:49px;right:-"+width2+"px'></div>");
-    $("#submitPage").html("<iframe src='"+submitURL+"&spa' width='"+width*0.96+"px' height='"+window.innerHeight*0.9+"px'></iframe>");
+    // 데스크탑: 좌우 분할 (애니메이션)
+    main.className = ''; main.style.cssText = 'display:flex;gap:0;width:100%;max-width:100%;padding:8px 12px;margin:0;transition:all 0.3s ease;';
+    
+    // 문제 영역 래퍼
+    var probWrap = document.createElement('div');
+    probWrap.id = 'probWrap';
+    probWrap.style.cssText = 'flex:0 0 45%;max-width:45%;overflow-y:auto;max-height:calc(100vh - 60px);padding-right:8px;transition:all 0.3s ease;';
+    while(main.firstChild){
+      probWrap.appendChild(main.firstChild);
+    }
+    main.appendChild(probWrap);
+
+    // 에디터 영역 (오른쪽에서 슬라이드)
+    var editorWrap = document.createElement('div');
+    editorWrap.id = 'submitPage';
+    editorWrap.style.cssText = 'flex:0 0 55%;max-width:55%;position:sticky;top:60px;height:calc(100vh - 60px);min-width:0;transform:translateX(100%);opacity:0;transition:all 0.35s ease;';
+    
+    // 닫기 버튼
+    var closeBtn = '<div style="text-align:right;padding:6px 6px 8px 0;"><button onclick="closeEditor()" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;box-shadow:0 2px 8px rgba(239,68,68,0.3);" onmouseover="this.style.background=\'#dc2626\';this.style.boxShadow=\'0 2px 12px rgba(239,68,68,0.5)\'" onmouseout="this.style.background=\'#ef4444\';this.style.boxShadow=\'0 2px 8px rgba(239,68,68,0.3)\'">✕ 에디터 닫기</button></div>';
+    
+    editorWrap.innerHTML = closeBtn + '<iframe src="'+submitURL+'&spa" style="width:100%;height:calc(100% - 36px);border:none;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.1);background:#fff;"></iframe>';
+    main.appendChild(editorWrap);
+
+    // 애니메이션 트리거
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        editorWrap.style.transform = 'translateX(0)';
+        editorWrap.style.opacity = '1';
+      });
+    });
   }
-  $("#submit").remove();
+
+  // 코드 제출 버튼 숨기기
+  submitBtn.style.display = 'none';
+  var footers = document.querySelectorAll('.prob-footer');
+  footers.forEach(function(f){ f.style.display = 'none'; });
   <?php if($row['spj']>1){ ?>
-  window.setTimeout('$("iframe")[0].contentWindow.$("#TestRun").remove();',1000);
+  window.setTimeout(function(){
+    try{ $("iframe")[0].contentWindow.$("#TestRun").remove(); }catch(e){}
+  },1000);
   <?php }?>
+}
+
+function closeEditor(){
+  var submitPage = document.getElementById('submitPage');
+  var probWrap = document.getElementById('probWrap');
+  var main = document.getElementById('main');
+  var submitBtn = document.getElementById('submit');
+
+  if(window.innerWidth < 768){
+    // 모바일: 에디터 제거
+    if(submitPage) submitPage.remove();
+  } else {
+    // 데스크탑: 애니메이션 후 원복
+    if(submitPage){
+      submitPage.style.transform = 'translateX(100%)';
+      submitPage.style.opacity = '0';
+    }
+    setTimeout(function(){
+      if(submitPage) submitPage.remove();
+      if(probWrap){
+        // probWrap의 자식들을 main으로 복원
+        while(probWrap.firstChild){
+          main.appendChild(probWrap.firstChild);
+        }
+        probWrap.remove();
+      }
+      main.className = 'container'; main.style.cssText = '';
+    }, 350);
+  }
+
+  // 버튼 다시 보이기
+  if(submitBtn) submitBtn.style.display = '';
+  var footers = document.querySelectorAll('.prob-footer');
+  footers.forEach(function(f){ f.style.display = ''; });
 }
 </script>
 </body>

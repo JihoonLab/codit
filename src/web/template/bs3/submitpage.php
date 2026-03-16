@@ -270,12 +270,85 @@
   .btn-submit-main:hover { background: #6d28d9; }
   .btn-submit-main:disabled { background: #9bb8db; cursor: not-allowed; }
 
-  /* 결과 배지 */
-  #result {
+  /* 결과 패널 */
+  .result-card {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    animation: resultSlideIn 0.4s ease;
+  }
+  @keyframes resultSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .result-card-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .result-card-header .result-icon {
+    font-size: 28px;
+  }
+  .result-card-header .result-text {
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .result-card-body {
+    background: #fff;
+    border: 1px solid #e5e9f0;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    font-size: 13px;
+    color: #666;
+  }
+  .result-card-body .result-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .result-card-body .result-stat strong {
+    color: #333;
+    font-weight: 700;
+  }
+  .result-loading {
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e5e9f0;
+  }
+  .result-loading .loader-dots {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .result-loading .loader-dots span {
+    width: 8px; height: 8px;
+    background: #7c3aed;
+    border-radius: 50%;
+    animation: dotPulse 1.2s ease infinite;
+  }
+  .result-loading .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .result-loading .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dotPulse {
+    0%,80%,100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.2); }
+  }
+  .result-loading-text {
+    margin-top: 8px;
     font-size: 14px;
     font-weight: 600;
-    padding: 6px 14px;
-    border-radius: 6px;
+    color: #7c3aed;
   }
 
   /* 테스트 런 영역 */
@@ -326,6 +399,7 @@
           <!-- 숨김 필드 -->
           <?php if(isset($id)): ?>
             <input id="problem_id" type="hidden" value="<?php echo $id?>" name="id">
+            <?php if(isset($_GET["class_id"])): ?><input type="hidden" value="<?php echo intval($_GET["class_id"])?>" name="class_id"><?php endif; ?>
           <?php else: ?>
             <input id="cid" type="hidden" value="<?php echo $cid?>" name="cid">
             <input id="pid" type="hidden" value="<?php echo $pid?>" name="pid">
@@ -420,13 +494,15 @@
           </div>
           </div><!-- /editor-container -->
 
-          <!-- 제출 버튼 & 결과 -->
+          <!-- 제출 버튼 -->
           <div class="submit-btn-wrap">
             <button id="Submit" class="btn-submit-main" type="button" onclick="do_submit()">
               🚀 제출하기
             </button>
-            <span class="btn" id="result"></span>
           </div>
+
+          <!-- 결과 패널 -->
+          <div id="result-panel" style="display:none;width:100%;margin-top:12px;"></div>
 
           <!-- 테스트런 -->
           <?php if(isset($OJ_TEST_RUN)&&$OJ_TEST_RUN): ?>
@@ -456,23 +532,102 @@ var judge_result=[<?php foreach($judge_result as $result){ echo "'$result',"; } 
 
 function fresh_result(solution_id){
   sid=solution_id;
-  var tb=document.getElementById('result');
+  var panel=document.getElementById('result-panel');
+  panel.style.display='block';
   var xmlhttp=new XMLHttpRequest();
   xmlhttp.onreadystatechange=function(){
     if(xmlhttp.readyState==4&&xmlhttp.status==200){
       var ra=xmlhttp.responseText.split(",");
-      var loader="<img width=18 src=image/loader.gif>";
-      if(ra[0]<4){
-        tb.innerHTML=loader;
+      var code=parseInt(ra[0]);
+      // 0~3: 채점 진행 중, 14: 대기중(초기상태), 16: 원격채점 대기
+      var isPending = (code<4 || code==14 || code==16);
+      
+      if(isPending){
+        var statusText = '채점 중...';
+        if(code==14) statusText = '대기 중...';
+        else if(code==2) statusText = '컴파일 중...';
+        else if(code==3) statusText = '실행 중...';
+        panel.innerHTML='<div class="result-loading"><div class="loader-dots"><span></span><span></span><span></span></div><div class="result-loading-text">'+statusText+'</div></div>';
+        window.setTimeout("fresh_result("+solution_id+")",1500);
       } else {
-        if(ra[0]==11)
-          tb.innerHTML="<a href='ceinfo.php?sid="+solution_id+"' class='badge badge-info' target=_blank>"+judge_result[ra[0]]+"</a>";
-        else
-          tb.innerHTML="<a href='reinfo.php?sid="+solution_id+"' class='badge badge-info' target=_blank>"+judge_result[ra[0]]+" AC:"+ra[4]+"</a>";
+        // 최종 결과
+        var isAC = (code==4);
+        var isPE = (code==5);
+        var isCE = (code==11);
+        var isRE = (code==10);
+        var resultName = judge_result[code] || '알 수 없음';
+        
+        // 결과별 색상/아이콘
+        var bgColor, icon, subMsg;
+        if(isAC)       { bgColor='#10b981'; icon='🎉'; subMsg='축하합니다!'; }
+        else if(isPE)  { bgColor='#f59e0b'; icon='⚠️'; subMsg='출력 형식을 확인하세요'; }
+        else if(isCE)  { bgColor='#dc2626'; icon='⚠️'; subMsg='클릭하여 에러 내용 확인 →'; }
+        else if(code==6){ bgColor='#ef4444'; icon='❌'; subMsg='클릭하여 입출력 비교 확인 →'; }
+        else if(code==7){ bgColor='#3b82f6'; icon='⏰'; subMsg='클릭하여 상세 정보 확인 →'; }
+        else if(code==8){ bgColor='#6366f1'; icon='💾'; subMsg='클릭하여 상세 정보 확인 →'; }
+        else if(code==9){ bgColor='#f97316'; icon='📤'; subMsg='출력 크기가 초과되었습니다'; }
+        else if(isRE)  { bgColor='#dc2626'; icon='💥'; subMsg='클릭하여 에러 내용 확인 →'; }
+        else           { bgColor='#ef4444'; icon='❌'; subMsg=''; }
+        
+        // 모든 결과에 상세 페이지 링크 (OJ_SHOW_DIFF=true)
+        var hasDetailLink = true;
+        var detailURL = isCE ? 'ceinfo.php?sid='+solution_id : 'reinfo.php?sid='+solution_id;
+        
+        var html = '<div class="result-card">';
+        if(hasDetailLink){
+          html += '<a href="'+detailURL+'" target="_blank" style="text-decoration:none;display:block;">';
+        }
+        html += '<div class="result-card-header" style="background:'+bgColor+';">';
+        html += '<span class="result-icon">'+icon+'</span>';
+        html += '<span class="result-text">'+resultName+'</span>';
+        html += '</div>';
+        if(hasDetailLink){
+          html += '</a>';
+        }
+        html += '<div class="result-card-body">';
+        if(isCE){
+          html += '<span class="result-stat" style="color:#dc2626;font-weight:600;">'+subMsg+'</span>';
+        } else {
+          html += '<span class="result-stat">💾 메모리: <strong>'+ra[1]+'</strong></span>';
+          html += '<span class="result-stat">⏱ 시간: <strong>'+ra[2]+'</strong></span>';
+          if(subMsg) html += '<span class="result-stat" style="color:#999;">'+subMsg+'</span>';
+        }
+        html += '</div></div>';
+        panel.innerHTML = html;
+        
+        // 부모 페이지 문제 헤더 위에 결과 배너 표시
+        try {
+          var parentDoc = window.parent.document;
+          var headerEl = parentDoc.querySelector('.prob-header');
+          if(headerEl) {
+            // 기존 배너 제거
+            var oldBanner = parentDoc.getElementById('solve-banner');
+            if(oldBanner) oldBanner.remove();
+            
+            var banner = parentDoc.createElement('div');
+            banner.id = 'solve-banner';
+            if(isAC) {
+              banner.style.cssText = 'background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1px solid #6ee7b7;border-radius:10px;padding:12px 20px;margin-bottom:12px;display:flex;align-items:center;gap:10px;animation:bannerSlide 0.4s ease;';
+              banner.innerHTML = '<span style="font-size:24px;">🎉</span><span style="font-size:15px;font-weight:800;color:#059669;">해결한 문제</span><span style="font-size:13px;color:#047857;">축하합니다! 정답입니다.</span>';
+            } else {
+              banner.style.cssText = 'background:linear-gradient(135deg,#fee2e2,#fecaca);border:1px solid #fca5a5;border-radius:10px;padding:12px 20px;margin-bottom:12px;display:flex;align-items:center;gap:10px;animation:bannerSlide 0.4s ease;';
+              banner.innerHTML = '<span style="font-size:24px;">❌</span><span style="font-size:15px;font-weight:800;color:#dc2626;">틀린 문제</span><span style="font-size:13px;color:#b91c1c;">다시 도전해 보세요!</span>';
+            }
+            headerEl.parentNode.insertBefore(banner, headerEl);
+            
+            // 애니메이션 스타일 추가
+            if(!parentDoc.getElementById('badge-anim-style')) {
+              var st = parentDoc.createElement('style');
+              st.id = 'badge-anim-style';
+              st.textContent = '@keyframes bannerSlide { 0%{opacity:0;transform:translateY(-10px)} 100%{opacity:1;transform:translateY(0)} }';
+              parentDoc.head.appendChild(st);
+            }
+          }
+        } catch(e) {}
+        
+        window.setTimeout("print_result("+solution_id+")",2000);
+        count=1;
       }
-      tb.innerHTML+=" Memory:"+ra[1]+" Time:"+ra[2];
-      if(ra[0]<4) window.setTimeout("fresh_result("+solution_id+")",2000);
-      else { window.setTimeout("print_result("+solution_id+")",2000); count=1; }
     }
   };
   xmlhttp.open("GET","status-ajax.php?solution_id="+solution_id,true);
@@ -485,6 +640,7 @@ function print_result(solution_id){
 }
 
 function do_submit(){
+  if(handler_interval) clearTimeout(handler_interval);
   $("#Submit").attr("disabled","true");
   if(typeof(editor)!="undefined") $("#hide_source").val(editor.getValue());
   var mark="<?php echo isset($id)?'problem_id':'cid';?>";
@@ -493,9 +649,21 @@ function do_submit(){
   else problem_id.value='<?php if(isset($cid)) echo $cid?>';
   document.getElementById("frmSolution").target="_self";
   <?php if(isset($_GET['spa'])): ?>
-  $.post("submit.php?ajax",$("#frmSolution").serialize(),function(data){fresh_result(data);});
+  $.post("submit.php?ajax",$("#frmSolution").serialize(),function(data){
+    var sid = parseInt(data);
+    if(sid > 0) {
+      fresh_result(sid);
+    } else {
+      // 쿨다운 중 - 제출 실패
+      var panel = document.getElementById('result-panel');
+      if(panel) {
+        panel.style.display = 'block';
+        panel.innerHTML = '<div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:14px 20px;text-align:center;"><span style="font-size:20px;">⏳</span> <span style="font-size:14px;font-weight:700;color:#92400e;">너무 빨리 제출했습니다. 잠시 후 다시 시도하세요.</span></div>';
+      }
+    }
+  });
   $("#Submit").prop('disabled',true);
-  count=<?php echo $OJ_SUBMIT_COOLDOWN_TIME?>*2;
+  count=<?php echo $OJ_SUBMIT_COOLDOWN_TIME?>;
   handler_interval=window.setTimeout("resume();",1000);
   <?php else: ?>
   document.getElementById("frmSolution").submit();
@@ -516,7 +684,7 @@ function do_test_run(){
   $.post("submit.php?ajax",$("#frmSolution").serialize(),function(data){fresh_result(data);});
   $("#Submit").prop('disabled',true);
   problem_id.value=-problem_id.value;
-  count=<?php echo $OJ_SUBMIT_COOLDOWN_TIME?>*2;
+  count=<?php echo $OJ_SUBMIT_COOLDOWN_TIME?>;
   handler_interval=window.setTimeout("resume();",1000);
 }
 

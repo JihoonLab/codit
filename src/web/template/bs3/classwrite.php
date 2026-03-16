@@ -40,6 +40,11 @@
         <input type="text" name="description" value="<?php echo htmlspecialchars($class['description'])?>" placeholder="수업 목록에 표시되는 짧은 설명">
       </div>
       <div class="form-group">
+        <label>🏷️ 대상 반 태그</label>
+        <input type="text" name="tag" value="<?php echo htmlspecialchars($class['tag'] ?? '')?>" placeholder="예) 2-6  또는  1-3  (학생 프로필의 '학교' 필드와 매칭됩니다)">
+        <div style="margin-top:6px;font-size:12px;color:#999">💡 학생의 프로필 '학교' 필드에 입력된 값과 일치하면 해당 학생에게만 표시됩니다. 비워두면 전체 공개.</div>
+      </div>
+      <div class="form-group">
         <label>수업 내용 (이미지/설명 자유롭게 작성)</label>
         <textarea name="content" id="ke-content"><?php echo htmlspecialchars($class['content'])?></textarea>
       </div>

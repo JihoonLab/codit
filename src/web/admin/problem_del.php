@@ -35,12 +35,29 @@ function recursiveDelete($dir) {
 			//system("rm -rf $basedir");
 			recursiveDelete($basedir);
 	}
-        $sql="delete FROM `problem` WHERE `problem_id`=?";
-        pdo_query($sql,$id) ;
-	$sql = "delete from `privilege` where `rightstr`=? ";
-	pdo_query($sql, "p$id");
-	$sql = "update solution set problem_id=0 where `problem_id`=? ";
-	pdo_query($sql, $id);
+        // 1. 해당 문제의 모든 solution_id 수집
+        $sol_rows = pdo_query("SELECT solution_id FROM solution WHERE problem_id=?", $id);
+        if(!empty($sol_rows)) {
+          $sol_ids = array_column($sol_rows, 'solution_id');
+          $sol_ids_str = implode(',', array_map('intval', $sol_ids));
+          // 2. solution 연관 데이터 일괄 삭제
+          pdo_query("DELETE FROM source_code WHERE solution_id IN ($sol_ids_str)");
+          pdo_query("DELETE FROM source_code_user WHERE solution_id IN ($sol_ids_str)");
+          pdo_query("DELETE FROM runtimeinfo WHERE solution_id IN ($sol_ids_str)");
+          pdo_query("DELETE FROM compileinfo WHERE solution_id IN ($sol_ids_str)");
+          pdo_query("DELETE FROM sim WHERE s_id IN ($sol_ids_str) OR s_id_2 IN ($sol_ids_str)");
+          pdo_query("DELETE FROM solution_ai_answer WHERE solution_id IN ($sol_ids_str)");
+          pdo_query("DELETE FROM custominput WHERE solution_id IN ($sol_ids_str)");
+          // 3. solutions 삭제
+          pdo_query("DELETE FROM solution WHERE problem_id=?", $id);
+        }
+        // 4. 문제 자체 삭제
+        pdo_query("DELETE FROM problem WHERE problem_id=?", $id);
+        // 5. 권한 삭제
+        pdo_query("DELETE FROM privilege WHERE rightstr=?", "p$id");
+        // 6. 수업/대회에서 문제 제거
+        pdo_query("DELETE FROM class_problem WHERE problem_id=?", $id);
+        pdo_query("DELETE FROM contest_problem WHERE problem_id=?", $id);
 	  
         $sql="select max(problem_id) FROM `problem`" ;
         $result=pdo_query($sql);

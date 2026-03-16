@@ -89,7 +89,7 @@
     
 
     /* ===== MAIN ===== */
-    .codit-main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 48px; }
+    .codit-main { max-width: 1300px; margin: 0 auto; padding: 24px 20px 48px; }
 
     /* ===== CARD ===== */
     .codit-card {
@@ -118,7 +118,7 @@
       font-size: 14px; transition: background 0.1s;
     }
     .home-list li:last-child { border-bottom: none; }
-    .home-list li:hover { background: #fafafc; }
+    .home-list li:hover { background: #f5f3ff; transform: translateX(4px); border-left: 3px solid #7c3aed; padding-left: 9px; }
     .home-list li a {
       color: #3d3d4e; text-decoration: none; flex: 1;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500;
@@ -149,11 +149,11 @@
 
     /* ===== RANK ===== */
     .rk {
-      display: flex; align-items: center; gap: 12px;
+      display: flex; transition: all 0.15s ease; align-items: center; gap: 12px;
       padding: 11px 20px; border-bottom: 1px solid #f5f6f8; transition: background 0.1s;
     }
     .rk:last-child { border-bottom: none; }
-    .rk:hover { background: #fafafc; }
+    .rk:hover { background: #f5f3ff; transform: translateX(3px); }
     .rk.rk-gold { background: linear-gradient(135deg,#fffbeb,#fef3c7); }
     .rk-pos { font-size: 17px; min-width: 26px; text-align: center; flex-shrink: 0; }
     .rk-num { font-size: 12px; font-weight: 800; color: #ccc; min-width: 26px; text-align: center; flex-shrink: 0; }

@@ -37,17 +37,9 @@ if (isset($_SESSION[$OJ_NAME . '_' . 'OJ_LANG'])) {
 	$OJ_LANG=$_COOKIE['lang'];
 } else if (isset($_GET['lang']) && in_array($_GET['lang'], array("cn", "ug", "en", 'fa', 'ko', 'th'))) {
 	$OJ_LANG=$_GET['lang'];
-} else if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) &&   $OJ_LANG != "cn") {
-    $userLanguages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-    foreach ($userLanguages as $userLang) {
-        $langParts = explode(';', $userLang);
-        $lang = strtolower(substr($langParts[0], 0, 2));
-	if (in_array($lang, array("zh", "ug", "en", 'fa', 'ko', 'th'))) {
-            $OJ_LANG = $lang;
-	    if($lang=="zh") $OJ_LANG="cn";
-            break;
-        }
-    }
+} else {
+    // 브라우저 언어 감지 비활성화 - 항상 한국어 사용
+    $OJ_LANG = "ko";
 }
 require(dirname(__FILE__)."/../lang/$OJ_LANG.php");
 
@@ -136,7 +128,7 @@ switch($OJ_FRIENDLY_LEVEL) {
 	case 6:
 	   $OJ_LONG_LOGIN=true; 
 	case 5:
-	   $OJ_TEST_RUN=true; 
+	   //$OJ_TEST_RUN=true; // disabled 
 	case 4:
 	   $OJ_MAIL=true;
 	   $OJ_AUTO_SHARE=true;
@@ -144,7 +136,7 @@ switch($OJ_FRIENDLY_LEVEL) {
 	   $OJ_SHOW_DIFF=true; 
 	   $OJ_VCODE=false;
 	case 2:
-	   $OJ_LANG="cn";
+	   //$OJ_LANG="cn"; // disabled - keep ko
 	case 1:
 	   date_default_timezone_set("Asia/Seoul");
 	   pdo_query("SET time_zone ='+9:00'");

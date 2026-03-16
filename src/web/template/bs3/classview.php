@@ -89,7 +89,7 @@
       if(isset($_SESSION[$OJ_NAME.'_user_id']) && !empty($problems)) {
         $pids_str = implode(',', array_map(fn($p)=>intval($p['problem_id']), $problems));
         $class_time = $class['time'] ?? '2000-01-01 00:00:00';
-        $my_ac = pdo_query("SELECT DISTINCT problem_id FROM solution WHERE user_id=? AND result=4 AND problem_id IN ($pids_str) AND contest_id=0 AND in_date >= ?", $_SESSION[$OJ_NAME.'_user_id'], $class_time);
+        $my_ac = pdo_query("SELECT DISTINCT problem_id FROM solution WHERE user_id=? AND result=4 AND problem_id IN ($pids_str) AND class_id=?", $_SESSION[$OJ_NAME.'_user_id'], $class['class_id']);
         if($my_ac) foreach($my_ac as $r) $my_solved[$r['problem_id']] = true;
       }
     ?>
@@ -100,7 +100,7 @@
       <li class="prob-item <?php echo $is_logged ? ($is_solved?'solved':'unsolved') : ''?>">
         <div class="prob-num"><?php echo $i+1?></div>
         <div class="prob-info">
-          <a href="problem.php?id=<?php echo $p['problem_id']?>" class="prob-title"><?php echo htmlspecialchars($p['title'] ?? '제목 없음')?></a>
+          <a href="problem.php?id=<?php echo $p['problem_id']?>&class_id=<?php echo $class['class_id']?>" class="prob-title"><?php echo htmlspecialchars($p['title'] ?? '제목 없음')?></a>
           <div class="prob-id">#<?php echo $p['problem_id']?></div>
         </div>
         <?php if($is_logged): ?>
@@ -136,7 +136,7 @@
           <tr>
             <th class="th-user">학생</th>
             <?php foreach($problems as $i2 => $p): ?>
-            <th><a href="problem.php?id=<?php echo $p['problem_id']?>" style="color:#fff;text-decoration:none" title="<?php echo htmlspecialchars($p['title']??'')?>">
+            <th><a href="problem.php?id=<?php echo $p['problem_id']?>&class_id=<?php echo $class['class_id']?>" style="color:#fff;text-decoration:none" title="<?php echo htmlspecialchars($p['title']??'')?>">
               <?php echo $p['problem_id']?>
             </a></th>
             <?php endforeach; ?>

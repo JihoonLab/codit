@@ -194,7 +194,6 @@ for line in sys.stdin:
 <br>
 <hr>
 <center>
-  <font color=green size="+2">其他问题请访问<a href="bbs.php"><?php echo $OJ_NAME?>论坛系统</a></font>
 </center>
 <hr>
 <center>

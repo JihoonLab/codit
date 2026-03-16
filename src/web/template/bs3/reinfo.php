@@ -362,7 +362,7 @@ pre.ri-errbox.err-ce::-webkit-scrollbar-thumb { background: #e5a0a0; }
   </div>
 
   <div class="ri-actions">
-    <a href="javascript:history.back()" class="ri-btn ri-btn-back">← 뒤로 가기</a>
+    <?php if($problemId > 0): ?><a href="problem.php?id=<?php echo $problemId?>" class="ri-btn ri-btn-back">← 문제로 돌아가기</a><?php else: ?><a href="javascript:history.back()" class="ri-btn ri-btn-back">← 뒤로 가기</a><?php endif; ?>
     <?php if($problemId > 0): ?>
     <a href="submitpage.php?id=<?php echo $problemId?>&sid=<?php echo $solutionId?>" class="ri-btn ri-btn-edit">✏️ 코드 수정 후 재제출</a>
     <?php endif; ?>

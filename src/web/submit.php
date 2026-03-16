@@ -358,8 +358,9 @@ if (~$OJ_LANGMASK & (1 << $language)) {
 
 
     if (!isset($pid)) {
-        $sql = "INSERT INTO solution(problem_id,user_id,nick,in_date,language,ip,code_length,result) VALUES(?,?,?,NOW(),?,?,?,14)";
-        $insert_id = pdo_query($sql, $id, $user_id, $nick, $language, $ip, $len);
+        $submit_class_id = isset($_POST['class_id']) ? intval($_POST['class_id']) : 0;
+        $sql = "INSERT INTO solution(problem_id,user_id,nick,in_date,language,ip,code_length,class_id,result) VALUES(?,?,?,NOW(),?,?,?,?,14)";
+        $insert_id = pdo_query($sql, $id, $user_id, $nick, $language, $ip, $len, $submit_class_id);
     } else {
         $sql = "INSERT INTO solution(problem_id,user_id,nick,in_date,language,ip,code_length,contest_id,num,result) VALUES(?,?,?,NOW(),?,?,?,?,?,14)";
         // 仅保留最后一次的提交，之前的提交记作测试运行，记分清零
