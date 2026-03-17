@@ -75,7 +75,7 @@ body {
   font-family: 'Inter', 'Noto Sans KR', sans-serif;
   background: #f5f6f8;
   margin: 0;
-  padding-top: 56px;
+  padding-top: 64px;
 }
 
 .cn {

@@ -133,6 +133,14 @@ if (isset($_SESSION[$OJ_NAME . '_' . 'administrator'])) {  //all problems
 }
 // End Page Setting
 
+// Category filter
+if(isset($_GET["cat"]) && $_GET["cat"] != "all") {
+    $cat = $_GET["cat"];
+    if($cat == "c") $filter_sql .= " AND problem_id BETWEEN 1 AND 114";
+    else if($cat == "cadv") $filter_sql .= " AND problem_id BETWEEN 201 AND 299";
+    else if($cat == "py") $filter_sql .= " AND problem_id BETWEEN 1001 AND 1098";
+}
+
 /**
  * 数据库查询执行
  *

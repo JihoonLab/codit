@@ -46,6 +46,13 @@
 .ps-filter-btn.active{background:#7c3aed;color:#fff;border-color:#7c3aed}
 .ps-filter-btn .cnt{font-size:11px;opacity:.7;margin-left:2px}
 
+
+/* 정답률 */
+.ps-rate{display:flex;align-items:center;gap:6px;min-width:120px;flex-shrink:0}
+.ps-rate-bar{width:50px;height:5px;border-radius:3px;background:#f3f4f6;overflow:hidden;flex-shrink:0}
+.ps-rate-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c4b5fd,#7c3aed)}
+.ps-rate-text{font-size:12px;font-weight:800;color:#7c3aed;white-space:nowrap}
+
 /* 열 헤더 */
 .ps-col-header{
   display:flex;align-items:center;gap:14px;
@@ -165,6 +172,49 @@
   .ps-stat-col{width:100%;justify-content:flex-end;gap:12px}
   .ps-stats{display:none}
 }
+
+/* 사이드바 */
+.ps-layout{display:flex;gap:24px;align-items:flex-start}
+.ps-sidebar{
+  width:220px;flex-shrink:0;position:sticky;top:20px;
+}
+.ps-sidebar-card{
+  background:#fff;border:1px solid #e5e9f0;border-radius:12px;
+  padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.ps-sidebar-card h3{
+  font-size:13px;font-weight:700;color:#999;margin:0 0 10px;
+  letter-spacing:1px;text-transform:uppercase;
+}
+.ps-cat-list{list-style:none;padding:0;margin:0}
+.ps-cat-list li{margin-bottom:2px}
+.ps-cat-btn{
+  display:flex;justify-content:space-between;align-items:center;
+  width:100%;padding:8px 12px;border:none;background:none;
+  border-radius:8px;font-size:14px;font-weight:500;color:#555;
+  cursor:pointer;transition:all .15s;text-align:left;
+}
+.ps-cat-btn:hover{background:#f5f3ff;color:#7c3aed;text-decoration:none}
+a.ps-cat-btn{text-decoration:none;display:flex}
+.ps-cat-btn.active{background:#7c3aed;color:#fff;font-weight:700}
+.ps-cat-btn .cnt{
+  font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;
+  background:#f3f4f6;color:#888;
+}
+.ps-cat-btn.active .cnt{background:rgba(255,255,255,.2);color:#fff}
+.ps-cat-sub{list-style:none;padding:0 0 0 8px;margin:4px 0 8px}
+.ps-cat-sub .ps-cat-btn{font-size:13px;padding:6px 10px}
+.ps-cat-divider{height:1px;background:#e5e9f0;margin:10px 0}
+.ps-main{flex:1;min-width:0}
+
+@media(max-width:900px){
+  .ps-layout{flex-direction:column}
+  .ps-sidebar{width:100%;position:static}
+  .ps-cat-list{display:flex;flex-wrap:wrap;gap:4px}
+  .ps-cat-list li{margin:0}
+  .ps-cat-sub{display:flex;flex-wrap:wrap;gap:4px;padding:0}
+}
+
   </style>
 </head>
 <body>
@@ -194,11 +244,45 @@
     <button class="ps-filter-btn" onclick="filterStatus('none',this)" style="border-color:#e5e9f0;color:#888">미풀이</button>
   </div>
 
+  
+  <div class="ps-layout">
+  <!-- 사이드바 -->
+  <div class="ps-sidebar">
+    <div class="ps-sidebar-card">
+      <h3>📂 분류</h3>
+      <?php
+        $cur_cat = isset($_GET["cat"]) ? $_GET["cat"] : "all";
+        // Count per category
+        $cat_counts = [];
+        $cat_sql = "SELECT 
+          SUM(problem_id BETWEEN 1 AND 114) as c_basic,
+          SUM(problem_id BETWEEN 201 AND 299) as c_adv,
+          SUM(problem_id BETWEEN 1001 AND 1098) as python,
+          COUNT(*) as total
+          FROM problem WHERE defunct='N'";
+        $cat_r = pdo_query($cat_sql);
+        $c_basic = $cat_r[0][0] ?? 0;
+        $c_adv = $cat_r[0][1] ?? 0;
+        $c_py = $cat_r[0][2] ?? 0;
+        $c_total = $cat_r[0][3] ?? 0;
+      ?>
+      <ul class="ps-cat-list">
+        <li><a class="ps-cat-btn <?php echo $cur_cat=="all"?"active":""?>" href="problemset.php?page=1">전체<span class="cnt"><?php echo $c_total?></span></a></li>
+        <li><a class="ps-cat-btn <?php echo $cur_cat=="c"?"active":""?>" href="problemset.php?cat=c&page=1">🔵 C 기초<span class="cnt"><?php echo $c_basic?></span></a></li>
+        <li><a class="ps-cat-btn <?php echo $cur_cat=="cadv"?"active":""?>" href="problemset.php?cat=cadv&page=1">🟣 C 심화<span class="cnt"><?php echo $c_adv?></span></a></li>
+        <li><a class="ps-cat-btn <?php echo $cur_cat=="py"?"active":""?>" href="problemset.php?cat=py&page=1">🟡 Python<span class="cnt"><?php echo $c_py?></span></a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- 메인 컨텐츠 -->
+  <div class="ps-main">
+
   <div class="ps-col-header">
     <span class="ph-status">상태</span>
     <span class="ph-pid">번호</span>
     <span class="ph-title">제목</span>
     <span class="ph-stats"><span>통과</span><span>제출</span></span>
+    <span class="ph-rate" style="min-width:120px;text-align:center">정답률</span>
   </div>
   <div class="ps-list" id="problemset">
 <?php endif; ?>
@@ -244,7 +328,17 @@
       preg_match('/href=["\']([^"\']+)/', $cells[5], $sub_href_match);
       $sub_href = $sub_href_match[1] ?? '#';
     ?>
-    <div class="ps-item <?php echo $status_class?>" data-status="<?php echo $data_status?>" onclick="location.href='<?php echo $href?>'">
+    <?php
+      // 언어 감지
+      $pid_num = intval($pid);
+      if($pid_num >= 1000) $data_lang = 'Python';
+      else if($pid_num >= 201) $data_lang = 'C심화';
+      else $data_lang = 'C';
+      // 소분류 감지
+      $data_cat = '';
+      if(preg_match('/\[기초-([^\]]+)\]/', $title_text, $cat_m)) $data_cat = $cat_m[1];
+    ?>
+    <div class="ps-item <?php echo $status_class?>" data-status="<?php echo $data_status?>" data-lang="<?php echo $data_lang?>" data-cat="<?php echo htmlspecialchars($data_cat)?>" onclick="location.href='<?php echo $href?>'">
       <div class="ps-status <?php echo $icon_class?>"><?php echo $icon?></div>
       <div class="ps-pid"><?php echo $pid?></div>
       <div class="ps-title-area">
@@ -257,6 +351,7 @@
         </div>
         <?php endif; ?>
       </div>
+      <?php $p_rate = ($submitted > 0) ? round(($accepted / $submitted) * 100, 1) : 0; ?>
       <div class="ps-stat-col">
         <div class="ps-stat-box">
           <span class="num"><a href="<?php echo $acc_href?>" onclick="event.stopPropagation()"><?php echo $accepted?></a></span>
@@ -267,13 +362,21 @@
           <span class="lbl">제출</span>
         </div>
       </div>
+      <div class="ps-rate">
+        <div class="ps-rate-bar"><div class="ps-rate-fill" style="width:<?php echo $p_rate?>%"></div></div>
+        <span class="ps-rate-text"><?php echo $p_rate?>%</span>
+      </div>
     </div>
     <?php } ?>
 <?php if(!isset($_GET['ajax'])): ?>
   </div>
 
+    </div><!-- /ps-main -->
+  </div><!-- /ps-layout -->
+
   <div class="ps-page">
-    <a href="problemset.php?page=1">&laquo;</a>
+    <?php $cat_suffix = isset($_GET["cat"]) ? "&cat=".$_GET["cat"] : ""; ?>
+    <a href="problemset.php?page=1<?php echo $cat_suffix?>">&laquo;</a>
     <?php
     if(!isset($page)) $page = 1;
     $page = intval($page);
@@ -285,10 +388,10 @@
     <?php if($page == $i): ?>
       <span class="active"><?php echo $i?></span>
     <?php else: ?>
-      <a href="problemset.php?page=<?php echo $i . htmlentities($postfix, ENT_QUOTES, 'UTF-8')?>"><?php echo $i?></a>
+      <a href="problemset.php?page=<?php echo $i . htmlentities($postfix, ENT_QUOTES, 'UTF-8') . $cat_suffix?>"><?php echo $i?></a>
     <?php endif; ?>
     <?php endfor; ?>
-    <a href="problemset.php?page=<?php echo $view_total_page?>">&raquo;</a>
+    <a href="problemset.php?page=<?php echo $view_total_page . $cat_suffix?>">&raquo;</a>
   </div>
 </div>
 <?php include("template/$OJ_TEMPLATE/js.php");?>
@@ -310,6 +413,8 @@ $(document).ready(function() {
     });
   });
 });
+
+
 </script>
 </body>
 </html>

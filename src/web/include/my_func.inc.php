@@ -505,23 +505,42 @@ function getToken($length=32){
     return $token;
 }
 
-function pwGen($password,$md5ed=False) 
+function pwGen($password,$md5ed=False)
+{
+  // bcrypt 해싱 (2024 보안 업그레이드)
+  return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+}
+
+// 레거시 pwGen - 기존 해시 검증용 (신규 생성에는 사용하지 않음)
+function pwGenLegacy($password,$md5ed=False)
 {
   if (!$md5ed) $password=md5($password);
   $salt = sha1(rand());
   $salt = substr($salt, 0, 4);
-  $hash = base64_encode( sha1($password . $salt, true) . $salt ); 
-  return $hash; 
+  $hash = base64_encode( sha1($password . $salt, true) . $salt );
+  return $hash;
+}
+
+function isBcryptHash($hash) {
+  return (substr($hash, 0, 4) === '$2y$' || substr($hash, 0, 4) === '$2a$' || substr($hash, 0, 4) === '$2b$');
 }
 
 function pwCheck($password,$saved)
 {
+  // 1) bcrypt 해시인 경우 (신규 방식)
+  if (isBcryptHash($saved)) {
+    return password_verify($password, $saved);
+  }
+
+  // 2) 레거시: 순수 md5 해시 (32자 hex)
   if (isOldPW($saved)){
     if(!isOldPW($password)) $mpw = md5($password);
     else $mpw=$password;
     if (hash_equals($mpw,$saved)) return True;
     else return False;
   }
+
+  // 3) 레거시: md5+sha1+salt 방식
   $svd=base64_decode($saved);
   $salt=substr($svd,20);
   if(!isOldPW($password)) $password=md5($password);

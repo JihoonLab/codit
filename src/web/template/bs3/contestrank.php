@@ -53,11 +53,25 @@
     .solved-count { font-size: 16px; font-weight: 900; color: #7c3aed; }
     .penalty-time { color: #888; font-size: 12px; }
 
-    /* 문제별 셀 */
-    .p-ac { background: #d1fae5; border-radius: 6px; padding: 4px 6px; color: #065f46; font-size: 12px; font-weight: 700; }
-    .p-wa { background: #fee2e2; border-radius: 6px; padding: 4px 6px; color: #991b1b; font-size: 12px; font-weight: 700; }
-    .p-first { background: #dbeafe; border-radius: 6px; padding: 4px 6px; color: #1e40af; font-size: 12px; font-weight: 700; }
-    .p-empty { color: #ddd; font-size: 11px; }
+    /* 문제별 셀 — 퍼스트블러드/맞음/틀림 + 제출횟수별 채도 */
+    .p-cell { border-radius: 8px; padding: 6px 8px; font-size: 12px; font-weight: 700; text-align: center; line-height: 1.4; }
+
+    /* 퍼스트 블러드: 금색 */
+    .p-first { background: linear-gradient(135deg, #fef3c7, #fcd34d); color: #78350f; border: 1.5px solid #f59e0b; box-shadow: 0 0 8px rgba(245,158,11,.3); font-weight: 900; }
+
+    /* 맞은 문제: 진한 초록 — 채도 4단계 */
+    .p-ac        { background: #86efac; color: #052e16; }
+    .p-ac.tries-2 { background: #4ade80; color: #052e16; }
+    .p-ac.tries-3 { background: #22c55e; color: #fff; }
+    .p-ac.tries-4 { background: #16a34a; color: #fff; }
+
+    /* 틀린 문제: 진한 빨강 — 채도 4단계 */
+    .p-wa        { background: #fca5a5; color: #7f1d1d; }
+    .p-wa.tries-2 { background: #f87171; color: #450a0a; }
+    .p-wa.tries-3 { background: #ef4444; color: #fff; }
+    .p-wa.tries-4 { background: #dc2626; color: #fff; }
+
+    .p-empty { color: #d1d5db; font-size: 12px; }
 
     .user-nick { font-weight: 700; color: #222; }
     .user-id { font-size: 11px; color: #aaa; }
@@ -142,12 +156,26 @@
               $is_first = isset($first_blood[$j]) && $uuid == $first_blood[$j];
             ?>
             <td>
-              <?php if($is_ac && $is_first): ?>
-                <div class="p-first"><?php echo sec2str($U[$i]->p_ac_sec[$j])?><?php if($is_wa) echo "<br>(-".$U[$i]->p_wa_num[$j].")"; ?></div>
-              <?php elseif($is_ac): ?>
-                <div class="p-ac"><?php echo sec2str($U[$i]->p_ac_sec[$j])?><?php if($is_wa) echo "<br>(-".$U[$i]->p_wa_num[$j].")"; ?></div>
-              <?php elseif($is_wa): ?>
-                <div class="p-wa">(-<?php echo $U[$i]->p_wa_num[$j]?>)</div>
+              <?php if($is_ac && $is_first):
+                $wa_n = $is_wa ? $U[$i]->p_wa_num[$j] : 0;
+              ?>
+                <div class="p-cell p-first">⚡ <?php echo sec2str($U[$i]->p_ac_sec[$j])?><?php if($wa_n > 0) echo "<br>(-".$wa_n.")"; ?></div>
+              <?php elseif($is_ac):
+                $wa_n = $is_wa ? $U[$i]->p_wa_num[$j] : 0;
+                $tries_cls = '';
+                if($wa_n >= 4) $tries_cls = ' tries-4';
+                elseif($wa_n >= 3) $tries_cls = ' tries-3';
+                elseif($wa_n >= 2) $tries_cls = ' tries-2';
+              ?>
+                <div class="p-cell p-ac<?php echo $tries_cls?>"><?php echo sec2str($U[$i]->p_ac_sec[$j])?><?php if($wa_n > 0) echo "<br>(-".$wa_n.")"; ?></div>
+              <?php elseif($is_wa):
+                $wa_n = $U[$i]->p_wa_num[$j];
+                $tries_cls = '';
+                if($wa_n >= 4) $tries_cls = ' tries-4';
+                elseif($wa_n >= 3) $tries_cls = ' tries-3';
+                elseif($wa_n >= 2) $tries_cls = ' tries-2';
+              ?>
+                <div class="p-cell p-wa<?php echo $tries_cls?>">(-<?php echo $wa_n?>)</div>
               <?php else: ?>
                 <span class="p-empty">—</span>
               <?php endif; ?>

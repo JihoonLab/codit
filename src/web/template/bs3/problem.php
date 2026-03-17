@@ -145,15 +145,85 @@
 }
 
 .prob-section-body pre {
-  background: #f8fafc;
-  border: 1px solid #e5e9f0;
-  border-radius: 8px;
-  padding: 16px 18px;
+  background: #1e1e2e !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #333 !important;
+  border-radius: 12px;
+  padding: 20px 24px;
   font-size: 15px;
-  line-height: 1.8;
+  line-height: 1.9;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  overflow-x: auto;
+  margin: 12px 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  tab-size: 4;
+}
+
+.prob-section-body pre code {
+  background: none !important;
+  color: #e0e0e0 !important;
+  padding: 0;
+  font-size: inherit;
+  border: none !important;
+  border-radius: 0;
+  font-weight: 400;
+}
+
+.prob-section-body code {
+  background: #f0edff;
+  color: #7c3aed;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.prob-section-body .img-right {
+  text-align: left;
+  margin: 10px 0;
 }
 
 /* IO 예시 2단 레이아웃 */
+.io-grid .io-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #666;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+.io-grid pre {
+  font-size: 16px !important;
+  padding: 18px 22px !important;
+  line-height: 1.8 !important;
+}
+.io-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid #e0d5ff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.io-copy-btn:hover {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #6d28d9;
+  text-decoration: none;
+}
+.io-copy-btn.copied {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #059669;
+}
 .io-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -174,6 +244,96 @@
   justify-content: center;
   flex-wrap: wrap;
 }
+
+
+/* 정답률 바 */
+.prob-rate-wrap {
+  display: flex; align-items: center; justify-content: center;
+  gap: 14px; margin: 16px 0 6px; padding: 0 20px;
+}
+.prob-rate-bar {
+  width: 200px; height: 8px; border-radius: 4px;
+  background: #f3f4f6; overflow: hidden; flex-shrink: 0;
+}
+.prob-rate-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, #c4b5fd, #7c3aed);
+  transition: width 0.6s ease;
+}
+.prob-rate-text {
+  font-size: 14px; font-weight: 800; color: #7c3aed; white-space: nowrap;
+}
+.prob-rate-label {
+  font-size: 12px; color: #9ca3af; font-weight: 600;
+}
+
+/* 이전/다음 문제 네비게이션 */
+.prob-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.prob-nav-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 700;
+  text-decoration: none !important;
+  background: #fff; color: #6b7280 !important;
+  border: 1.5px solid #e5e7eb;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.prob-nav-btn:hover {
+  border-color: #7c3aed; color: #7c3aed !important;
+  background: #faf5ff;
+  transform: translateX(2px);
+  box-shadow: 0 2px 8px rgba(124,58,237,0.1);
+}
+.prob-nav-btn.prev:hover { transform: translateX(-2px); }
+.prob-nav-btn .nav-arrow { font-size: 16px; }
+.prob-nav-btn .nav-pid { font-size: 11px; color: #b0b5bf; font-weight: 600; }
+.prob-nav-center {
+  font-size: 13px; font-weight: 700; color: #9ca3af;
+  display: flex; align-items: center; gap: 6px;
+}
+.prob-nav-center a {
+  color: #7c3aed; text-decoration: none; font-weight: 700;
+}
+.prob-nav-center a:hover { text-decoration: underline; }
+
+
+/* 관리자: 전체 풀이 */
+.admin-solutions {
+  margin-top: 16px; padding-top: 16px;
+  border-top: 2px dashed #ede9fe;
+}
+.admin-solutions-label {
+  font-size: 14px; font-weight: 800; color: #7c3aed;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.admin-solutions-label small { font-size: 11px; color: #9ca3af; font-weight: 600; }
+.admin-sol-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.admin-sol-table thead tr { background: #f9fafb; }
+.admin-sol-table th {
+  padding: 8px 12px; font-size: 11px; font-weight: 700;
+  color: #9ca3af; text-align: center; text-transform: uppercase;
+  letter-spacing: 0.3px; border-bottom: 2px solid #f3f4f6;
+}
+.admin-sol-table td {
+  padding: 8px 12px; text-align: center; border-bottom: 1px solid #f5f6f8;
+  color: #374151;
+}
+.admin-sol-table tbody tr { transition: background 0.1s; cursor: pointer; }
+.admin-sol-table tbody tr:hover { background: #faf5ff; }
+.admin-sol-table td a { color: #7c3aed; text-decoration: none; font-weight: 600; }
+.admin-sol-table td a:hover { text-decoration: underline; }
+.admin-sol-table .sol-uid { font-weight: 700; color: #1f2937; }
+.admin-sol-table .sol-lang-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 700; background: #f3f0ff; color: #7c3aed;
+}
+.admin-sol-scroll { max-height: 400px; overflow-y: auto; border-radius: 8px; border: 1px solid #e5e7eb; }
 
 /* 스크롤바 커스텀 */
 ::-webkit-scrollbar { width: 6px; }
@@ -238,6 +398,40 @@
 .my-sol-btn .sol-date {
   font-size: 11px;
   opacity: 0.7;
+}
+
+/* 모범 풀이 (관리자) 버튼 */
+.answer-sol-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none !important;
+  cursor: pointer;
+  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #2563eb !important;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.answer-sol-btn:hover {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(59,130,246,0.3);
+}
+.answer-sol-btn.active {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff !important;
+  box-shadow: 0 3px 12px rgba(59,130,246,0.3);
+}
+.answer-sol-btn .sol-lang {
+  font-size: 11px;
+  opacity: 0.8;
 }
 
 /* 코드 뷰어 */
@@ -406,7 +600,6 @@
       }
 
       if(!(isset($OJ_OI_MODE)&&$OJ_OI_MODE)) {
-        echo "<a class='prob-btn prob-btn-rank' href='status.php?problem_id=".$row['problem_id']."&jresult=4'>🏆 순위 (".$row['accepted'].")</a>";
         echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."'>▶ 채점상황 (".$row['submit'].")</a>";
 
       }
@@ -415,7 +608,7 @@
         require_once("include/set_get_key.php");
         echo "<a class='prob-btn prob-btn-edit' href='admin/problem_edit.php?id=$id&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey']."'>✏️ EDIT</a>";
         echo "<a class='prob-btn prob-btn-edit' href='javascript:phpfm(".$row['problem_id'].")'>📁 TESTDATA</a>";
-        if(isset($used_in_contests) && count($used_in_contests)>0 && cid==0) {
+        if(isset($used_in_contests) && count($used_in_contests)>0 && (!isset($cid) || $cid==0)) {
           echo "<br><small style='color:#aaa;margin-top:8px;display:block'>$MSG_PROBLEM_USED_IN: ";
           foreach($used_in_contests as $contests) {
             echo "<a class='label label-warning' href='contest.php?cid=".$contests[0]."'>".$contests[1]."</a> ";
@@ -426,32 +619,83 @@
       ?>
     </div>
 
-    <!-- 내 풀이 (최대 3개) -->
+    <!-- 정답률 -->
     <?php
-    if(isset($_SESSION[$OJ_NAME.'_'.'user_id']) && $pr_flag && !isset($_GET['class_id'])) {
-      $my_uid_sol = $_SESSION[$OJ_NAME.'_'.'user_id'];
-      $my_pid_sol = $row['problem_id'];
-      $my_solutions = pdo_query("SELECT s.solution_id, s.language, s.in_date, s.time, s.memory, LENGTH(sc.source) as code_len FROM solution s LEFT JOIN source_code_user sc ON s.solution_id=sc.solution_id WHERE s.user_id=? AND s.problem_id=? AND s.result=4 ORDER BY s.in_date DESC LIMIT 3", $my_uid_sol, $my_pid_sol);
-      if($my_solutions && count($my_solutions) > 0) {
-        $lang_names = array("C","C++","Pascal","Java","Ruby","Bash","Python","PHP","Perl","C#","Obj-C","FreeBasic","Scheme","Clang","Clang++","Lua","JavaScript","Go","SQL","Fortran","Matlab","Cobol","R","Scratch3","Cangjie");
+      $rate = ($row['submit'] > 0) ? round(($row['accepted'] / $row['submit']) * 100, 1) : 0;
+    ?>
+    <div class="prob-rate-wrap">
+      <span class="prob-rate-label">정답률</span>
+      <div class="prob-rate-bar"><div class="prob-rate-fill" style="width:<?php echo $rate?>%"></div></div>
+      <span class="prob-rate-text"><?php echo $rate?>%</span>
+      <span class="prob-rate-label">(<?php echo $row['accepted']?>/<?php echo $row['submit']?>)</span>
+    </div>
+
+    <!-- 내 풀이 + 모범 풀이 -->
+    <?php
+      $is_admin = isset($_SESSION[$OJ_NAME.'_'.'administrator']);
+      $has_my_solutions = false;
+      $my_solutions = [];
+      $lang_names = array("C","C++","Pascal","Java","Ruby","Bash","Python","PHP","Perl","C#","Obj-C","FreeBasic","Scheme","Clang","Clang++","Lua","JavaScript","Go","SQL","Fortran","Matlab","Cobol","R","Scratch3","Cangjie");
+
+      if(isset($_SESSION[$OJ_NAME.'_'.'user_id']) && $pr_flag && !isset($_GET['class_id'])) {
+        $my_uid_sol = $_SESSION[$OJ_NAME.'_'.'user_id'];
+        $my_pid_sol = $row['problem_id'];
+        $my_solutions = pdo_query("SELECT s.solution_id, s.language, s.in_date, s.time, s.memory, LENGTH(sc.source) as code_len FROM solution s LEFT JOIN source_code_user sc ON s.solution_id=sc.solution_id WHERE s.user_id=? AND s.problem_id=? AND s.result=4 ORDER BY s.in_date DESC LIMIT 3", $my_uid_sol, $my_pid_sol);
+        if($my_solutions && count($my_solutions) > 0) $has_my_solutions = true;
+      }
+
+      // 관리자: 답안 코드 준비
+      $answer_files = [];
+      if($is_admin) {
+        $prob_id = $row['problem_id'];
+        $answer_dir = "$OJ_DATA/$prob_id";
+        $exts = ['c','cc','cpp','py','java'];
+        foreach($exts as $ext) {
+          $f = "$answer_dir/answer.$ext";
+          if(file_exists($f)) $answer_files[$ext] = file_get_contents($f);
+        }
+      }
+
+      // 내 풀이가 있거나 관리자면 섹션 표시
+      if($has_my_solutions || ($is_admin && !empty($answer_files))):
     ?>
     <div class="my-solutions-wrap">
       <div class="my-solutions-label">✅ 내 정답 풀이</div>
       <div class="my-sol-btns">
-        <?php foreach($my_solutions as $si => $sol): ?>
-        <button class="my-sol-btn" onclick="toggleSolution(<?php echo $sol['solution_id']?>, this)" title="<?php echo $sol['in_date']?>">
-          <span>풀이<?php echo $si+1?></span>
-          <span class="sol-lang"><?php echo $lang_names[intval($sol['language'])] ?? 'Unknown'?></span>
-          <span class="sol-date"><?php echo substr($sol['in_date'], 5, 11)?></span>
-        </button>
-        <?php endforeach; ?>
+        <?php if($is_admin && !empty($answer_files)): ?>
+          <?php foreach($answer_files as $ext => $code):
+            $lang_label = ['c'=>'C','cc'=>'C++','cpp'=>'C++','py'=>'Python','java'=>'Java'][$ext] ?? $ext;
+          ?>
+          <button class="answer-sol-btn" onclick="toggleAnswerCode('<?php echo $ext?>', this)" title="모범 답안 (<?php echo $lang_label?>)">
+            <span>모범 풀이</span>
+          </button>
+          <?php endforeach; ?>
+        <?php endif; ?>
+
+        <?php if($has_my_solutions): ?>
+          <?php foreach($my_solutions as $si => $sol): ?>
+          <button class="my-sol-btn" onclick="toggleSolution(<?php echo $sol['solution_id']?>, this)" title="<?php echo $sol['in_date']?>">
+            <span>풀이<?php echo $si+1?></span>
+            <span class="sol-date"><?php echo substr($sol['in_date'], 5, 11)?></span>
+          </button>
+          <?php endforeach; ?>
+        <?php endif; ?>
       </div>
       <div id="sol-code-viewer" class="sol-code-viewer"></div>
     </div>
-    <?php
-      }
-    }
-    ?>
+
+    <?php /* 답안 코드 데이터를 JS에 전달 */ ?>
+    <?php if($is_admin && !empty($answer_files)): ?>
+    <script>
+    var answerCodes = {};
+    <?php foreach($answer_files as $ext => $code): ?>
+    answerCodes['<?php echo $ext?>'] = <?php echo json_encode($code)?>;
+    <?php endforeach; ?>
+    </script>
+    <?php endif; ?>
+
+    <?php endif; ?>
+
   </div>
 
   <?php echo "<!--StartMarkForVirtualJudge-->"; ?>
@@ -487,18 +731,20 @@
     <div class="prob-section-head">🔁 예제</div>
     <div class="prob-section-body">
       <div class="io-grid">
-        <?php if(strlen($sinput)): ?>
         <div>
-          <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:8px;">입력</div>
+          <div class="io-label">입력 예시</div>
+          <?php if(strlen(trim($sinput))): ?>
           <pre><span id="sampleinput" class="sampledata"><?php echo $sinput?></span></pre>
-          <a href="javascript:CopyToClipboard($('#sampleinput').text())" style="font-size:12px;color:#7c3aed;">복사</a>
+          <a class="io-copy-btn" href="javascript:void(0)" onclick="copyIO(this, 'sampleinput')">📋 복사</a>
+          <?php else: ?>
+          <div style="color:#aaa;font-size:14px;padding:14px 0;font-style:italic;">입력 없음</div>
+          <?php endif; ?>
         </div>
-        <?php endif; ?>
         <?php if(strlen($soutput)): ?>
         <div>
-          <div style="font-size:13px;font-weight:700;color:#888;margin-bottom:8px;">출력</div>
+          <div class="io-label">출력 예시</div>
           <pre><span id="sampleoutput" class="sampledata"><?php echo $soutput?></span></pre>
-          <a href="javascript:CopyToClipboard($('#sampleoutput').text())" style="font-size:12px;color:#7c3aed;">복사</a>
+          <a class="io-copy-btn" href="javascript:void(0)" onclick="copyIO(this, 'sampleoutput')">📋 복사</a>
         </div>
         <?php endif; ?>
       </div>
@@ -546,6 +792,20 @@
 
 <?php include("template/$OJ_TEMPLATE/js.php");?>
 <script>
+function copyIO(btn, id) {
+  var text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.innerHTML = "✅ 복사됨";
+    btn.classList.add("copied");
+    setTimeout(function() {
+      btn.innerHTML = "📋 복사";
+      btn.classList.remove("copied");
+    }, 1500);
+  }).catch(function() {
+    CopyToClipboard($("#" + id).text());
+  });
+}
+
 function phpfm(pid){
   $.post("admin/phpfm.php",{'frame':3,'pid':pid,'pass':''},function(data,status){
     if(status=="success") document.location.href="admin/phpfm.php?frame=3&pid="+pid;
@@ -572,7 +832,8 @@ function toggleSolution(solId, btn) {
     return;
   }
   // Remove active from all buttons
-  document.querySelectorAll('.my-sol-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.my-sol-btn, .answer-sol-btn').forEach(function(b){ b.classList.remove('active'); });
+  currentAnswerExt = null;
   btn.classList.add('active');
   currentSolId = solId;
   
@@ -620,8 +881,48 @@ function toggleSolution(solId, btn) {
 function closeSolViewer() {
   var viewer = document.getElementById('sol-code-viewer');
   viewer.style.display = 'none';
-  document.querySelectorAll('.my-sol-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.my-sol-btn, .answer-sol-btn').forEach(function(b){ b.classList.remove('active'); });
   currentSolId = null;
+  currentAnswerExt = null;
+}
+
+var currentAnswerExt = null;
+function toggleAnswerCode(ext, btn) {
+  var viewer = document.getElementById('sol-code-viewer');
+  // 같은 버튼 클릭 시 닫기
+  if(currentAnswerExt === ext && viewer.style.display !== 'none') {
+    viewer.style.display = 'none';
+    btn.classList.remove('active');
+    currentAnswerExt = null;
+    return;
+  }
+  // 모든 버튼 비활성화
+  document.querySelectorAll('.my-sol-btn, .answer-sol-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentAnswerExt = ext;
+  currentSolId = null;
+
+  var code = (typeof answerCodes !== 'undefined' && answerCodes[ext]) ? answerCodes[ext] : '';
+  code = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var langMap = {'c':'C','cc':'C++','cpp':'C++','py':'Python','java':'Java'};
+  var lang = langMap[ext] || ext;
+
+  viewer.style.display = 'block';
+  viewer.style.animation = 'none';
+  viewer.offsetHeight;
+  viewer.style.animation = 'solCodeSlide 0.3s ease';
+
+  viewer.innerHTML = '<div class="sol-code-header" style="background:linear-gradient(135deg,#2563eb,#3b82f6)">'
+    + '<div class="sol-info">'
+    + '<span>📘 모범 풀이</span>'
+    + '<span class="sol-tag">' + lang + '</span>'
+    + '</div>'
+    + '<div style="display:flex;gap:6px;align-items:center;">'
+    + '<button class="sol-code-copy" onclick="copySolCode()">📋 복사</button>'
+    + '<button class="sol-code-close" onclick="closeSolViewer()">✕</button>'
+    + '</div>'
+    + '</div>'
+    + '<div class="sol-code-body"><pre id="sol-code-text">' + code + '</pre></div>';
 }
 
 function copySolCode() {
@@ -704,7 +1005,7 @@ function transform(){
   var submitBtn = document.getElementById('submit');
   if(!submitBtn) return;
   var submitURL = submitBtn.href;
-  <?php if(isset($_GET['sid'])) echo "submitURL+='&sid=".intval($_GET['sid'])."';"; ?>
+  // sid 전달 제거 - 항상 기본 템플릿으로 시작
   var main = document.getElementById('main');
 
   if(window.innerWidth < 768){

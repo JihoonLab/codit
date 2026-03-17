@@ -25,6 +25,7 @@ static 	$OJ_DATA="/home/judge/data";  //测试数据目录
 static 	$OJ_BBS=false; //设为"discuss3" 启用， "bbs" for phpBB3 bridge or "discuss" for mini-forum or false for close any 
 static  $OJ_ONLINE=false;  //是否记录在线情况
 $OJ_LANG="ko";  //默认语言, 中文修改为"cn"
+static  $OJ_CSRF=true;  //CSRF 보호 활성화
 static  $OJ_SIM=false;  //显示相似度，注意只是显示，启动检测的开关在judge.conf，且自己抄自己不计为抄袭
 static  $OJ_DICT=false; //显示在线翻译
 static  $OJ_LANGMASK=33554364; //掩码计算器:https://pigeon-developer.github.io/hustoj-langmask/

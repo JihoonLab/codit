@@ -39,7 +39,7 @@
 /* 태그 필터 */
 .cl-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
 .cl-tag-btn{
-  padding:7px 18px;border-radius:20px;font-size:13px;font-weight:600;
+  padding:8px 20px;border-radius:20px;font-size:14px;font-weight:700;
   cursor:pointer;border:2px solid #e5e9f0;background:#fff;color:#666;transition:all .2s;
 }
 .cl-tag-btn:hover{border-color:#c4b5fd;color:#7c3aed}
@@ -68,44 +68,44 @@
 
 /* 카드 본문 */
 .cl-card-body{padding:20px 22px 16px;flex:1;cursor:pointer}
-.cl-card-title{font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:4px;
+.cl-card-title{font-size:22px;font-weight:800;color:#1a1a2e;margin-bottom:6px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cl-card-desc{font-size:13px;color:#999;margin-bottom:12px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:18px}
+.cl-card-desc{font-size:15px;color:#555;margin-bottom:14px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:22px}
 
 /* 메타 태그 줄 */
 .cl-card-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .cl-meta-tag{
-  background:#f3e8ff;color:#7c3aed;padding:3px 10px;border-radius:8px;
-  font-size:11px;font-weight:700;
+  background:#f3e8ff;color:#7c3aed;padding:5px 13px;border-radius:8px;
+  font-size:13px;font-weight:700;
 }
 .cl-meta-count{
-  background:#eff6ff;color:#3b82f6;padding:3px 10px;border-radius:8px;
-  font-size:11px;font-weight:700;
+  background:#eff6ff;color:#3b82f6;padding:5px 13px;border-radius:8px;
+  font-size:13px;font-weight:700;
 }
-.cl-meta-author{font-size:11px;color:#bbb;margin-left:auto}
+.cl-meta-author{font-size:14px;color:#888;margin-left:auto;font-weight:600}
 
 /* 진행률 바 영역 */
 .cl-progress-area{padding:0 22px 16px}
 .cl-progress-row{display:flex;align-items:center;gap:10px}
-.cl-progress-bar{flex:1;height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden}
+.cl-progress-bar{flex:1;height:10px;background:#f0f0f0;border-radius:4px;overflow:hidden}
 .cl-progress-fill{height:100%;border-radius:4px;transition:width .5s ease;
   background:linear-gradient(90deg,#7c3aed,#a78bfa)}
 .cl-progress-fill.done{background:linear-gradient(90deg,#10b981,#34d399)}
-.cl-progress-text{font-size:13px;font-weight:800;color:#7c3aed;min-width:42px;text-align:right}
+.cl-progress-text{font-size:17px;font-weight:800;color:#7c3aed;min-width:50px;text-align:right}
 .cl-progress-text.done{color:#10b981}
-.cl-progress-label{font-size:11px;color:#aaa;margin-top:3px}
+.cl-progress-label{font-size:13px;color:#777;margin-top:4px;font-weight:600}
 
 /* 카드 하단 관리 영역 */
 .cl-card-footer{
   display:flex;justify-content:space-between;align-items:center;
   padding:12px 22px;border-top:1px solid #f0f0f0;background:#fafafe;
 }
-.cl-card-date{font-size:11px;color:#bbb}
+.cl-card-date{font-size:13px;color:#888;font-weight:500}
 .cl-admin-btns{display:flex;gap:4px}
 .cl-abtn{
-  width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  font-size:14px;text-decoration:none;transition:all .2s;cursor:pointer;border:none;
+  width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;text-decoration:none;transition:all .2s;cursor:pointer;border:none;
 }
 .cl-abtn:hover{transform:scale(1.15)}
 .cl-abtn.copy{background:#f3e8ff;color:#7c3aed}

@@ -1,6 +1,7 @@
 <?php
 // 启用 XSS 保护，仅对同源资源启用
 header("X-XSS-Protection: 1; mode=block; sameorigin");
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'");
 header("X-Download-Options: noopen");
 header("Referrer-Policy: same-origin");
 //header("X-Permitted-Cross-Domain-Policies: none");

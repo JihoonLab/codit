@@ -18,6 +18,12 @@
 		if(count($result)==1){
 			$row = $result[0];
 			if( pwCheck($password,$row['password'])){
+				// 레거시 해시 → bcrypt 자동 업그레이드
+				if (!isBcryptHash($row['password'])) {
+					$newHash = pwGen($password);
+					$sqlUpgrade = "UPDATE `users` SET `password`=? WHERE `user_id`=?";
+					pdo_query($sqlUpgrade, $newHash, $row['user_id']);
+				}
 				$user_id=$row['user_id'];
 				if(isset($OJ_EXAM_CONTEST_ID)&&intval($OJ_EXAM_CONTEST_ID)>0){  //考试模式
 					$ccid=$OJ_EXAM_CONTEST_ID;
