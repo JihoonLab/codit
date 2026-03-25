@@ -87,7 +87,7 @@ function upload_one_file($file_name,$tmp_name,$file_size){
 
 
 	//+ by CSL
-   $dir_name = empty($_GET['dir']) ? 'image' : trim($_GET['dir']);
+   $dir_name = !empty($_GET['dir']) ? trim($_GET['dir']) : (!empty($_POST['dir']) ? trim($_POST['dir']) : $dir_name);
 
 
    //- by CSL
@@ -121,9 +121,8 @@ function upload_one_file($file_name,$tmp_name,$file_size){
 	if (!file_exists($save_path)) {
 		mkdir($save_path);
 	}
-	//新文件名
-	//$new_file_name = date("YmdHis") . '_' . rand(10000, 99999) . '.' . $file_ext;
-	$new_file_name = basename($file_name,".$file_ext") . '.' . $file_ext;
+	//새 파일명: 타임스탬프+랜덤 (한글 파일명 URL 인코딩 문제 방지)
+	$new_file_name = date("YmdHis") . '_' . rand(10000, 99999) . '.' . $file_ext;
 	//移动文件
 	$file_path = $save_path . $new_file_name;
 	$file_url = $save_url . $new_file_name;
@@ -179,21 +178,21 @@ if (empty($_FILES) === false) {
 		$result=upload_one_file($file_name,$tmpName,$file_size);
 		$response[] = $result;
 	    }
-		header('Content-type: text/html; charset=UTF-8');
-		echo json_encode($response);
+		header('Content-type: application/json; charset=UTF-8');
+		echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		exit;
    }else{
 	$result=upload_one_file($_FILES['imgFile']['name'], $_FILES['imgFile']['tmp_name'], $_FILES['imgFile']['size']);
-	header('Content-type: text/html; charset=UTF-8');
-	echo json_encode($result);
+	header('Content-type: application/json; charset=UTF-8');
+	echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 	exit;
    
    }
 }
 
 function alert($msg) {
-	header('Content-type: text/html; charset=UTF-8');
-	json_encode(array('error' => 1, 'message' => $msg));
+	header('Content-type: application/json; charset=UTF-8');
+	echo json_encode(array('error' => 1, 'message' => $msg), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 	exit;
 }
 

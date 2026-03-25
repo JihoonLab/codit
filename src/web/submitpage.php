@@ -226,15 +226,14 @@ if (!$view_src) {
             $view_src .= $i . "\n";
         }
     }
-	if(($view_src=="") && isset($_SESSION[$OJ_NAME.'_administrator']) && file_exists("$OJ_DATA/$problem_id/Main.c")){
-			//管理员自动加载可能的c标程
-			$view_src = file_get_contents( "$OJ_DATA/$problem_id/Main.c" );
-		    $lastlang = intval($_COOKIE['lastlang']);
-	}else if(($view_src=="") && isset($_SESSION[$OJ_NAME.'_administrator']) && file_exists("$OJ_DATA/$problem_id/Main.cc")){
-			//管理员自动加载可能的c++标程
-			$view_src = file_get_contents( "$OJ_DATA/$problem_id/Main.cc" );
-		    $lastlang = intval($_COOKIE['lastlang']);
-	}
+	// 관리자 표준답안 자동로드 비활성화 (학생에게 답 노출 방지)
+	// if(($view_src=="") && isset($_SESSION[$OJ_NAME.'_administrator']) && file_exists("$OJ_DATA/$problem_id/Main.c")){
+	// 		$view_src = file_get_contents( "$OJ_DATA/$problem_id/Main.c" );
+	// 	    $lastlang = intval($_COOKIE['lastlang']);
+	// }else if(($view_src=="") && isset($_SESSION[$OJ_NAME.'_administrator']) && file_exists("$OJ_DATA/$problem_id/Main.cc")){
+	// 		$view_src = file_get_contents( "$OJ_DATA/$problem_id/Main.cc" );
+	// 	    $lastlang = intval($_COOKIE['lastlang']);
+	// }
 
 }
 

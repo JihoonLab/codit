@@ -44,6 +44,7 @@ if ($is_admin && $action === 'copy') {
 if ($is_admin && $action === 'delete') {
     $cid = intval($_GET['id'] ?? 0);
     if ($cid > 0) {
+        // 하드 삭제: 수업 및 연결된 문제 데이터 완전 삭제
         pdo_query("DELETE FROM class_problem WHERE class_id=?", $cid);
         pdo_query("DELETE FROM class WHERE class_id=?", $cid);
     }

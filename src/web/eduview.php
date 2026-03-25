@@ -28,7 +28,7 @@ if ($is_admin && isset($_GET['action']) && $_GET['action'] === 'delete') {
             }
         }
     }
-    // 2) DB에서 완전 삭제 (소프트 삭제 X)
+    // 하드 삭제: 교안 완전 삭제
     pdo_query("DELETE FROM edu WHERE edu_id=?", $edu_id);
     echo "<script>alert('삭제되었습니다.'); location.replace('edulist.php')</script>"; exit(0);
 }

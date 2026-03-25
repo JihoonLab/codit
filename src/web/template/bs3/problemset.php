@@ -255,7 +255,7 @@ a.ps-cat-btn{text-decoration:none;display:flex}
         // Count per category
         $cat_counts = [];
         $cat_sql = "SELECT 
-          SUM(problem_id BETWEEN 1 AND 114) as c_basic,
+          SUM(problem_id BETWEEN 1 AND 199) as c_basic,
           SUM(problem_id BETWEEN 201 AND 299) as c_adv,
           SUM(problem_id BETWEEN 1001 AND 1098) as python,
           COUNT(*) as total
@@ -331,7 +331,7 @@ a.ps-cat-btn{text-decoration:none;display:flex}
     <?php
       // 언어 감지
       $pid_num = intval($pid);
-      if($pid_num >= 1000) $data_lang = 'Python';
+      if($pid_num >= 1001) $data_lang = 'Python';
       else if($pid_num >= 201) $data_lang = 'C심화';
       else $data_lang = 'C';
       // 소분류 감지
