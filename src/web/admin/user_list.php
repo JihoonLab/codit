@@ -95,7 +95,7 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
       }else{
       	   echo "<td>&nbsp;</td>";
       }
-        echo "<td><a class='label label-warning' href=changepass.php?uid=".$row['user_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey'].">".$MSG_RESET."</a></td>";
+        echo "<td><a class='label label-warning' href='#' onclick=\"if(confirm('".$row['user_id']." 비밀번호를 123456으로 초기화합니다.')){resetPw('".$row['user_id']."');}return false;\">".$MSG_RESET."</a></td>";
         echo "<td><a class='label label-success' href=privilege_add.php?uid=".$row['user_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey'].">".$MSG_ADD."</a></td>";
       echo "</tr>";
     } ?>
@@ -167,6 +167,17 @@ function admin_mod(){
 
         });
 
+}
+function resetPw(uid){
+        $.post("ajax.php", {m:'reset_password', user_id:uid}).done(function(resp){
+                if(resp==='OK'){
+                        alert(uid+' 비밀번호가 123456으로 초기화되었습니다.');
+                }else{
+                        alert('초기화 실패: '+resp);
+                }
+        }).fail(function(){
+                alert('서버 오류가 발생했습니다.');
+        });
 }
 $(document).ready(function(){
         admin_mod();

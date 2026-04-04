@@ -165,6 +165,23 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
 .ce-btn-back:hover { background: #e5e8ee; color: #222; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 .ce-btn-edit { background: #7c3aed; color: #fff !important; border-color: #7c3aed; box-shadow: 0 3px 12px rgba(124,58,237,0.3); }
 .ce-btn-edit:hover { background: #6d28d9; color: #fff !important; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,58,237,0.4); }
+
+@media(max-width:600px){
+  .ce-wrap{margin:16px auto;padding:0 12px 40px}
+  .ce-card-header{padding:14px 16px;gap:8px}
+  .ce-card-header h2{font-size:17px}
+  .ce-card-header .sid-badge{font-size:11px;padding:3px 8px}
+  .ce-summary{padding:16px}
+  .ce-error-item{padding:12px 14px}
+  .ce-error-korean{font-size:14px}
+  .ce-error-tip{font-size:12px}
+  .ce-error-tip code{font-size:11px}
+  .ce-line-badge{font-size:12px;padding:2px 8px}
+  .ce-src-header{padding:10px 14px;font-size:12px}
+  #source-ace{font-size:12px !important}
+  .ce-actions{flex-direction:column;gap:10px}
+  .ce-btn{min-width:auto;width:100%;padding:14px 20px;font-size:14px}
+}
 </style>
 </head>
 <body>

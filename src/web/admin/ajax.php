@@ -96,6 +96,19 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 	try_ajax("problem","time_limit","administrator");
         try_ajax("problem","memory_limit","administrator");
 
+	if($m=="reset_password" && isset($_SESSION[$OJ_NAME.'_administrator'])){
+		require_once("../include/my_func.inc.php");
+		$user_id = $_POST['user_id'];
+		$newpw = pwGen('123456');
+		$sql = "UPDATE `users` SET `password`=? WHERE `user_id`=? AND user_id NOT IN (SELECT user_id FROM privilege WHERE rightstr='administrator')";
+		$result = pdo_query($sql, $newpw, $user_id);
+		if($result == 1){
+			echo "OK";
+		}else{
+			echo "실패: 관리자 계정이거나 존재하지 않는 사용자";
+		}
+		exit;
+	}
 	if($m=="get_user_list_of_contest"  && ( isset($_SESSION[$OJ_NAME.'_administrator'])||isset($_SESSION[$OJ_NAME.'_contest_creator']) )){
 			$contest_id=$_POST['contest_id'];
 			$sql= "select distinct user_id from privilege where rightstr=? ";

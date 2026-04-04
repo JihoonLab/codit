@@ -8,7 +8,8 @@ require_once('./include/memcache.php');
 require_once('./include/setlang.php');
 require_once('./include/bbcode.php');
 
-if (isset($OJ_REGISTER) && !$OJ_REGISTER) exit(0);
+// 관리자 승인 방식 회원가입 허용 (OJ_REGISTER 무시)
+// if (isset($OJ_REGISTER) && !$OJ_REGISTER) exit(0);
 require_once('./include/setlang.php');
 $view_title = "Registe a new account";
 

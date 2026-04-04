@@ -1,9 +1,11 @@
 <?php
 include("./include/db_info.inc.php");
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 unset($_SESSION[$OJ_NAME . '_' . 'user_id']);
-setcookie($OJ_NAME . "_user", "");
-setcookie($OJ_NAME . "_check", "");
+setcookie($OJ_NAME . "_user", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
+setcookie($OJ_NAME . "_check", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
 session_destroy();
-header("Location:index.php");
+header("Location:loginpage.php");
 ?>

@@ -17,7 +17,8 @@
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
     }
-    .rl-header h2 { font-size: 24px; font-weight: 900; color: #111827; margin: 0; letter-spacing: -0.5px; }
+    .rl-header h2 { font-size: 26px; font-weight: 800; color: #1a1a2e; margin: 0; }
+    .rl-header h2 em { color: #7c3aed; font-style: normal; }
     .rl-scope { display: flex; gap: 6px; }
     .rl-scope a {
       padding: 7px 16px; border-radius: 8px; font-size: 13px; font-weight: 700;
@@ -34,6 +35,11 @@
       position: relative; overflow: hidden;
       border: 1px solid rgba(124,58,237,0.08);
       box-shadow: 0 4px 24px rgba(124,58,237,0.06);
+    }
+    .podium-title {
+      text-align: center; font-size: 13px; font-weight: 800;
+      color: #7c3aed; letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 20px; position: relative; z-index: 1;
     }
     .podium-section::after {
       content: '';
@@ -133,6 +139,7 @@
       background: #fff; border-radius: 16px; overflow: hidden;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
       border: 1px solid #e5e7eb;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
     }
     .rl-table { width: 100%; border-collapse: collapse; }
     .rl-table thead tr { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
@@ -359,15 +366,36 @@
     @keyframes crSlideIn { to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 600px) {
-      .podium { gap: 10px; }
-      .p-1 .podium-pedestal { min-width: 120px; }
-      .p-2 .podium-pedestal, .p-3 .podium-pedestal { min-width: 100px; }
-      .cr-podium { gap: 8px; }
-      .cr-p1 .cr-podium-box { min-width: 130px; }
-      .cr-p2 .cr-podium-box, .cr-p3 .cr-podium-box { min-width: 110px; }
-      .cr-item-inner { flex-wrap: wrap; gap: 10px; padding: 16px; }
+      .rl-wrap { padding: 0 12px; margin: 20px auto; }
+      .rl-header h2 { font-size: 20px; }
+      .podium { gap: 8px; }
+      .p-1 .podium-pedestal { min-width: 100px; }
+      .p-2 .podium-pedestal, .p-3 .podium-pedestal { min-width: 85px; }
+      .podium-label { font-size: 14px; }
+      .podium-score { font-size: 20px; }
+      .podium-unit { font-size: 9px; }
+      .cr-podium { gap: 6px; }
+      .cr-p1 .cr-podium-box { min-width: 110px; min-height: 120px; }
+      .cr-p2 .cr-podium-box, .cr-p3 .cr-podium-box { min-width: 90px; min-height: 90px; }
+      .cr-podium-label { font-size: 16px; }
+      .cr-p1 .cr-podium-score { font-size: 28px; }
+      .cr-p2 .cr-podium-score, .cr-p3 .cr-podium-score { font-size: 22px; }
+      .cr-item-inner { flex-wrap: wrap; gap: 10px; padding: 14px 16px; }
       .cr-item-stats { gap: 12px; flex: none; width: 100%; justify-content: space-around; }
       .cr-rate-block { min-width: auto; }
+      .rk-item { padding: 12px 14px; gap: 10px; }
+      .rk-nick { font-size: 14px; }
+      .rk-stats { gap: 14px; }
+      .rk-stat-num { font-size: 15px; }
+      .tab-bar { gap: 4px; }
+      .tab-btn { padding: 8px 14px; font-size: 13px; }
+      .rl-table { min-width: 580px; }
+      .rl-table th { padding: 10px 8px; font-size: 11px; }
+      .rl-table td { padding: 10px 8px; font-size: 12px; }
+      .rank-medal { font-size: 18px; }
+      .td-solved { font-size: 14px; }
+      .td-submit { font-size: 12px; }
+      .mini-bar { width: 50px; }
     }
   </style>
 </head>
@@ -375,7 +403,7 @@
 <?php include("template/$OJ_TEMPLATE/nav.php");?>
 <div class="rl-wrap">
   <div class="rl-header">
-    <h2>🏆 랭킹</h2>
+    <h2>🏆 <em>랭킹</em></h2>
     <div class="rl-scope">
       <a href="ranklist.php" <?php if(!isset($scope)) echo 'class="active"'?>>전체</a>
       <a href="ranklist.php?scope=d" <?php if(isset($scope)&&$scope=='d') echo 'class="active"'?>>오늘</a>
@@ -430,6 +458,7 @@
     $order = [1,0,2]; // 2등, 1등, 3등 순서
   ?>
   <div class="podium-section">
+    <div class="podium-title">INDIVIDUAL RANKING</div>
     <div class="sparkles">
       <?php for($sp=0;$sp<10;$sp++): $sz=rand(2,4); ?>
       <div class="sparkle" style="width:<?php echo $sz?>px;height:<?php echo $sz?>px;left:<?php echo rand(5,95)?>%;top:<?php echo rand(10,80)?>%;animation-duration:<?php echo rand(2,5)?>s;animation-delay:<?php echo rand(0,4)?>s;"></div>

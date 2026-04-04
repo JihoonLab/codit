@@ -15,14 +15,15 @@
   font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .st-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #7c3aed;
+  font-size: 26px;
+  font-weight: 800;
+  color: #1a1a2e;
   margin: 0 0 24px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
+.st-title em { color: #7c3aed; font-style: normal; }
 
 /* Filter */
 .st-filter-card {
@@ -202,11 +203,21 @@
 @media (max-width: 768px) {
   .st-wrap { padding: 0 12px; margin: 16px auto; }
   .st-title { font-size: 20px; }
-  .st-filter { gap: 8px; }
+  .st-filter { gap: 8px; flex-wrap: wrap; }
   .st-filter input[type="text"] { width: 70px; }
-  .st-table-wrap { border-radius: 10px; overflow-x: auto; }
+  .st-table-wrap { border-radius: 10px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .st-table th, .st-table td { padding: 10px 8px; font-size: 12px; }
   .st-edit-btn { padding: 4px 10px; font-size: 11px; }
+}
+@media (max-width: 480px) {
+  .st-wrap { padding: 0 8px; margin: 12px auto; }
+  .st-title { font-size: 18px; }
+  .st-filter { gap: 6px; }
+  .st-filter input[type="text"] { width: 60px; font-size: 12px; }
+  .st-filter select { font-size: 12px; padding: 6px 8px; }
+  .st-filter button { padding: 6px 12px; font-size: 12px; }
+  .st-table th, .st-table td { padding: 8px 6px; font-size: 11px; white-space: nowrap; }
+  .st-table { min-width: 600px; }
 }
 
 .http_judge_form { display: inline; }
@@ -216,7 +227,7 @@
 <body>
 <?php include("template/$OJ_TEMPLATE/nav.php");?>
 <div class="st-wrap">
-  <h2 class="st-title"><span>📋</span> 제출현황</h2>
+  <h2 class="st-title"><span>📋</span> <em>제출</em>현황</h2>
 
   <div class="st-filter-card">
     <form id="simform" class="st-filter" action="status.php" method="get">

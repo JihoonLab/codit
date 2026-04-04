@@ -87,3 +87,45 @@ APCu 캐시 때문에 PHP 파일 수정 후 반드시 실행해야 반영됨
 - 도전/해결 폰트 색상 구분 (해결=#16a34a, 도전=#64748b)
 - 회원가입 번호 정수 제한 (1~40)
 - admin 로그인 → 메인 리다이렉트
+
+## 완료된 작업 (2026-04-04 야간)
+
+### 보안 패치 (10항목)
+- 쿠키 보안 플래그 (Secure, HttpOnly, SameSite=Strict): login.php, logout.php, init.php
+- 세션 쿠키 secure 플래그 활성화 (init.php)
+- SQL 인젝션 방지: submit.php prepared statement 3건
+- IP 스푸핑 방지: register.php filter_var 검증
+- status.php IP 노출 제거, 리다이렉트 HOST 검증
+- 파일 권한 수정: admin/phpfm.php 666→644
+- 비밀번호 해싱 체계 정리: pwGen() md5ed 파라미터, register.php/modify.php 수정
+
+### 비밀번호 초기화 기능
+- admin/ajax.php: reset_password 핸들러 (123456 초기화, admin 보호)
+- admin/user_list.php: 초기화 버튼 UI
+
+### 정보 수정 페이지 (modify) 전면 리디자인
+- 프로필 수정과 비밀번호 변경 분리 (AJAX JSON)
+- 프로필: 비밀번호 없이 이름/학년/반/번호 변경
+- 비밀번호: 현재 비밀번호 확인 후 변경 (강도 바, 일치 체크)
+- 다른 메뉴 페이지와 동일한 레이아웃 (.modify-wrap + .modify-header 스타일)
+
+### UI 통일
+- 로그인/회원가입 "Online Judge" 텍스트 대소문자+폰트 메인과 통일
+- 페이지 타이틀 전체 통일: 26px / 800 / #1a1a2e + em #7c3aed
+  - 문제 목록, 랭킹, 제출현황, 교안, 수업 목록 모두 동일 스타일
+- 랭킹 개인별 시상대에 "INDIVIDUAL RANKING" 타이틀 추가
+
+### 모바일 반응형 패치 (전체)
+- ceinfo.php: @media 600px 신규 (버튼 풀폭, 패딩/폰트 축소)
+- index.php: @media 600px 신규 (히어로/카드/리스트/명예의전당)
+- problemset.php: @media 768px 강화 + 480px 신규 (검색바 세로, 카드 축소)
+- problem.php: @media 600px 확장 (제목/버튼/섹션)
+- ranklist.php: @media 600px 강화 (시상대/테이블 가로스크롤)
+- userinfo.php: @media 480px 신규 (프로필 세로배치, 아바타 축소)
+- submitpage.php: @media 600px 강화 (에디터/버튼/메타정보)
+- status.php: @media 480px 신규 (필터/테이블 가로스크롤)
+- reinfo.php: @media 600px 확장 (버튼 풀폭, 체크리스트 축소)
+
+### 문제 페이지
+- 관리자 전용 "전체 제출" 버튼 추가 (problem.php)
+- 런타임 에러 힌트 1번에 scanf & 주소연산자 추가, 빨간 강조

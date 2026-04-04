@@ -107,11 +107,15 @@ html, body { margin: 0 !important; padding: 0 !important; background: #0a0e1a !i
   letter-spacing: 0.5px;
 }
 .login-logo .sub .oj {
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
+  background: linear-gradient(135deg, #a78bfa, #7c3aed, #6d28d9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
   font-weight: 700;
+  font-size: 16px;
+  animation: glowPulse 3s ease-in-out infinite;
 }
+@keyframes glowPulse { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.2) drop-shadow(0 0 8px rgba(124,58,237,0.4)); } }
 
 .login-field {
   margin-bottom: 20px;

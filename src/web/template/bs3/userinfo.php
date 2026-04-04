@@ -90,6 +90,19 @@
       .bottom-grid { grid-template-columns: 1fr; }
       .profile-card { padding: 24px 20px; gap: 20px; }
     }
+    @media(max-width:480px) {
+      .ui-wrap { margin: 16px auto; padding: 0 12px 40px; }
+      .profile-card { padding: 20px 16px; gap: 16px; flex-direction: column; text-align: center; }
+      .profile-avatar { width: 64px; height: 64px; font-size: 26px; }
+      .profile-nick { font-size: 20px; justify-content: center; }
+      .profile-uid { font-size: 13px; }
+      .btn-edit-profile { width: 100%; justify-content: center; }
+      .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-box { padding: 16px 12px; }
+      .stat-value { font-size: 22px; }
+      .stat-label { font-size: 11px; }
+      .info-card-header { padding: 12px 16px; font-size: 14px; }
+    }
 
     /* 공통 카드 */
     .info-card {

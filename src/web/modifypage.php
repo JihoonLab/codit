@@ -13,7 +13,7 @@ if (!isset($_SESSION[$OJ_NAME . '_' . 'user_id'])) {
 
 // * by CSL
 //$sql = "SELECT `school`,`nick`,`email` FROM `users` WHERE `user_id`=?";
-$sql = "SELECT `nick`, `school` FROM `users` WHERE `user_id`=?";
+$sql = "SELECT `nick`, `school`, `student_no` FROM `users` WHERE `user_id`=?";
 
 $result = pdo_query($sql, $_SESSION[$OJ_NAME . '_' . 'user_id']);
 $row = $result[0];

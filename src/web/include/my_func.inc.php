@@ -507,7 +507,9 @@ function getToken($length=32){
 
 function pwGen($password,$md5ed=False)
 {
-  // bcrypt 해싱 (2024 보안 업그레이드)
+  // 클라이언트에서 MD5로 변환해서 전송하므로, 평문인 경우 MD5 먼저 적용
+  if (!$md5ed) $password = md5($password);
+  // bcrypt 해싱
   return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
 }
 

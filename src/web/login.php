@@ -12,8 +12,8 @@ if ($OJ_LONG_LOGIN && isset($_COOKIE[$OJ_NAME . "_user"]) && isset($_COOKIE[$OJ_
     $C_num = strlen($C_check) - 1;
     $C_num = ($C_num * $C_num) % 7;
     if ($C_check[strlen($C_check) - 1] != $C_num) {
-        setcookie($OJ_NAME . "_check", "", 0);
-        setcookie($OJ_NAME . "_user", "", 0);
+        setcookie($OJ_NAME . "_check", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
+        setcookie($OJ_NAME . "_user", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
         echo "<script>\n alert('Cookie失效或错误!(-1)'); \n history.go(-1); \n </script>";
         exit(0);
     }
@@ -26,8 +26,8 @@ if ($OJ_LONG_LOGIN && isset($_COOKIE[$OJ_NAME . "_user"]) && isset($_COOKIE[$OJ_
     if (substr($C_check, 0, -1) == sha1($C_res))
         $login = $C_user;
     else {
-        setcookie($OJ_NAME . "_check", "", 0);
-        setcookie($OJ_NAME . "_user", "", 0);
+        setcookie($OJ_NAME . "_check", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
+        setcookie($OJ_NAME . "_user", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
         echo "<script>\n alert('Cookie失效或错误!(-2)'); \n history.go(-1); \n </script>";
         exit(0);
     }
@@ -105,8 +105,8 @@ if ($login) {
         }
         $C_res = sha1($C_res);
         $C_time = time() + 86400 * $OJ_KEEP_TIME;
-        setcookie($OJ_NAME . "_user", $login, $C_time);
-        setcookie($OJ_NAME . "_check", $C_res . (strlen($C_res) * strlen($C_res)) % 7, $C_time);
+        setcookie($OJ_NAME . "_user", $login, ['expires' => $C_time, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
+        setcookie($OJ_NAME . "_check", $C_res . (strlen($C_res) * strlen($C_res)) % 7, ['expires' => $C_time, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
     }
     if (isset($_SESSION[$OJ_NAME . "_administrator"]))
         header("Location: /");

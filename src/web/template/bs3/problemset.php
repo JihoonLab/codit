@@ -13,7 +13,7 @@
 .ps-header{
   display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;
 }
-.ps-header h2{font-size:24px;font-weight:800;color:#1a1a2e;margin:0}
+.ps-header h2{font-size:26px;font-weight:800;color:#1a1a2e;margin:0}
 .ps-header h2 em{color:#7c3aed;font-style:normal}
 .ps-stats{display:flex;gap:12px;font-size:13px;color:#888}
 .ps-stats .stat-item{background:#f8f9fc;padding:5px 14px;border-radius:16px;font-weight:600}
@@ -176,6 +176,22 @@
   .ps-item{flex-wrap:wrap;gap:8px;padding:12px 14px}
   .ps-stat-col{width:100%;justify-content:flex-end;gap:12px}
   .ps-stats{display:none}
+  .ps-search{flex-direction:column;gap:8px;padding:12px 14px}
+  .ps-search button{width:100%}
+  .ps-header h2{font-size:20px}
+}
+@media(max-width:480px){
+  .ps-wrap{padding:0 12px;margin:20px auto}
+  .ps-item{padding:10px 12px;gap:6px}
+  .ps-pid{font-size:12px;min-width:40px;padding:4px 8px}
+  .ps-title-area a{font-size:13px}
+  .ps-status{width:26px;height:26px;font-size:12px}
+  .ps-rate{min-width:60px}
+  .ps-rate-text{font-size:13px}
+  .ps-col-header{padding:8px 12px;font-size:13px;gap:8px}
+  .ps-col-header .ph-stats{gap:8px}
+  .ps-col-header .ph-stats span{min-width:40px;font-size:12px}
+  .ps-filter-btn{padding:6px 12px;font-size:12px}
 }
 
 /* 사이드바 */

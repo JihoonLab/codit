@@ -384,7 +384,14 @@
 
   @media(max-width:600px){
     .testrun-grid { grid-template-columns: 1fr; }
-    .submit-meta { gap: 12px; }
+    .submit-meta { gap: 8px; flex-wrap: wrap; }
+    .submit-wrap { padding: 0 10px 32px; }
+    .submit-card-header { padding: 12px 16px; font-size: 15px; }
+    .submit-meta-item { font-size: 12px; white-space: normal; }
+    #source-ace { font-size: 13px !important; }
+    .submit-bottom { padding: 12px 14px; gap: 8px; flex-wrap: wrap; }
+    .submit-bottom select { font-size: 13px; }
+    .submit-bottom .btn-submit { flex: 1; min-width: 120px; }
   }
   </style>
 </head>

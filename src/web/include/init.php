@@ -10,7 +10,7 @@ session_set_cookie_params([
           'lifetime' => 0,
             'path' => '/',
 //              'domain' => $domain ,
-//                'secure' => true,      // 仅HTTPS
+                  'secure' => true,      // HTTPS 적용됨
                   'httponly' => true,    // 防止JavaScript访问
                     'samesite' => 'Strict'
 ]);
@@ -90,8 +90,8 @@ if(isset($_SESSION[$OJ_NAME.'_user_id'])&&isset($OJ_LIMIT_TO_1_IP)&& $OJ_LIMIT_T
         $lastip=$rows[0][0];
         if($ip!=$lastip){
                 unset($_SESSION[$OJ_NAME.'_'.'user_id']);
-                setcookie($OJ_NAME."_user","");
-                setcookie($OJ_NAME."_check","");
+                setcookie($OJ_NAME."_user", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
+                setcookie($OJ_NAME."_check", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
                 session_destroy();
                 $view_errors="Logged in another ip address:$lastip, auto logout!";
                 require("template/$OJ_TEMPLATE/error.php");

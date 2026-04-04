@@ -1,6 +1,7 @@
 <?php
 require_once("./include/db_info.inc.php");
-if (isset($OJ_REGISTER) && !$OJ_REGISTER) exit(0);
+// 관리자 승인 방식 회원가입 허용 (OJ_REGISTER 무시)
+// if (isset($OJ_REGISTER) && !$OJ_REGISTER) exit(0);
 require_once("./include/my_func.inc.php");
 require_once('./include/setlang.php');
 require_once("./include/email.class.php");     // 新版本的邮件发送信息请填写到db_info.inc.php
@@ -108,7 +109,7 @@ if ($err_cnt > 0) {
 }
 
 // 生成加密密码
-$password = pwGen($_POST['password']);
+$password = pwGen($_POST['password'], True);
 
 // 检查用户名是否已存在
 $sql = "SELECT `user_id` FROM `users` WHERE `users`.`user_id` = ?";
@@ -129,22 +130,30 @@ if ($domain == $DOMAIN && $OJ_NAME == $user_id) {
     exit(0);
 }
 
+// 번호 처리
+$student_no = trim($_POST['student_no'] ?? '');
+$student_no = htmlentities($student_no, ENT_QUOTES, "UTF-8");
+
 // 对用户输入进行HTML实体编码以防止XSS攻击
 $nick = (htmlentities($nick, ENT_QUOTES, "UTF-8"));
 $school = (htmlentities($school, ENT_QUOTES, "UTF-8"));
 $email = (htmlentities($email, ENT_QUOTES, "UTF-8"));
-$ip = ($_SERVER['REMOTE_ADDR']);
+$ip = $_SERVER['REMOTE_ADDR'];
 
 // 获取真实IP地址，处理代理服务器情况
 if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty(trim($_SERVER['HTTP_X_FORWARDED_FOR']))) {
-    $REMOTE_ADDR = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    $tmp_ip = explode(',', $REMOTE_ADDR);
-    $ip = (htmlentities($tmp_ip[0], ENT_QUOTES, "UTF-8"));
+    $tmp_ip = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    $candidate = trim($tmp_ip[0]);
+    if (filter_var($candidate, FILTER_VALIDATE_IP)) {
+        $ip = $candidate;
+    }
 } else if (isset($_SERVER['HTTP_X_REAL_IP']) && !empty(trim($_SERVER['HTTP_X_REAL_IP']))) {
-    $REMOTE_ADDR = $_SERVER['HTTP_X_REAL_IP'];
-    $tmp_ip = explode(',', $REMOTE_ADDR);
-    $ip = (htmlentities($tmp_ip[0], ENT_QUOTES, "UTF-8"));
+    $candidate = trim($_SERVER['HTTP_X_REAL_IP']);
+    if (filter_var($candidate, FILTER_VALIDATE_IP)) {
+        $ip = $candidate;
+    }
 }
+$ip = filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '0.0.0.0';
 
 // 检查IP是否已经注册过
 if (isset($OJ_REG_SPEED) && $OJ_REG_SPEED > 0) {
@@ -171,15 +180,14 @@ if (isset($OJ_EMAIL_CONFIRM) && $OJ_EMAIL_CONFIRM)
 else
     $_SESSION[$OJ_NAME . '_' . 'activecode'] = "";
 
-// 根据是否需要确认设置用户状态
-if (isset($OJ_REG_NEED_CONFIRM) && $OJ_REG_NEED_CONFIRM) $defunct = "Y";
-else $defunct = "N";
+// 관리자 승인 필요 — 신규 가입은 항상 대기 상태
+$defunct = "Y";
 
 // 插入新用户到数据库
 $sql = "INSERT INTO `users`("
-        . "`user_id`,`email`,`ip`,`accesstime`,`password`,`reg_time`,`nick`,`school`,`group_name`,`defunct`,activecode)"
-        . "VALUES(?,?,?,NOW(),?,NOW(),?,?,?,?,?)";
-$rows = pdo_query($sql, $user_id, $email, $ip, $password, $nick, $school, getMappedSpecial($user_id), $defunct, $_SESSION[$OJ_NAME . '_' . 'activecode']);// or die("Insert Error!\n");
+        . "`user_id`,`email`,`ip`,`accesstime`,`password`,`reg_time`,`nick`,`student_no`,`school`,`group_name`,`defunct`,activecode)"
+        . "VALUES(?,?,?,NOW(),?,NOW(),?,?,?,?,?,?)";
+$rows = pdo_query($sql, $user_id, $email, $ip, $password, $nick, $student_no, $school, getMappedSpecial($user_id), $defunct, $_SESSION[$OJ_NAME . '_' . 'activecode']);// or die("Insert Error!\n");
 
 //发送激活邮件
 if (isset($OJ_EMAIL_CONFIRM) && $OJ_EMAIL_CONFIRM) {
@@ -198,34 +206,8 @@ if (isset($OJ_EMAIL_CONFIRM) && $OJ_EMAIL_CONFIRM) {
 $sql = "INSERT INTO `loginlog`(user_id,password,ip,time) VALUES(?,?,?,NOW())";
 pdo_query($sql, $user_id, "no save", $ip);
 
-// 如果不需要确认注册，则自动登录用户
-if (!isset($OJ_REG_NEED_CONFIRM) || !$OJ_REG_NEED_CONFIRM) {
-    $sql = "SELECT `user_id` FROM `users` WHERE `users`.`user_id` = ?";
-    $result = pdo_query($sql, $user_id);
-    $rows_cnt = count($result);
-    if ($rows_cnt == 1) {
-        $_SESSION[$OJ_NAME . '_' . 'user_id'] = $user_id;
-        $_SESSION[$OJ_NAME . '_' . 'nick'] = $nick;
-        $sql = "SELECT `rightstr` FROM `privilege` WHERE `user_id`=?";
-        //echo $sql."<br />";
-        $result = pdo_query($sql, $_SESSION[$OJ_NAME . '_' . 'user_id']);
-        foreach ($result as $row) {
-            $_SESSION[$OJ_NAME . '_' . $row['rightstr']] = true;
-            //echo $_SESSION[$OJ_NAME.'_'.$row['rightstr']]."<br />";
-        }
-        $_SESSION[$OJ_NAME . '_' . 'ac'] = array();
-        $_SESSION[$OJ_NAME . '_' . 'sub'] = array();
-        if ($OJ_SaaS_ENABLE && $domain == $DOMAIN) header("location:modifypage.php#MyOJ");
-         else header("location:index.php");
-    }
-}else{
-    ?>
-<script>
-    alert("<?php echo "$MSG_SYSTEM $MSG_Pending $MSG_ADMIN / $MSG_EMAIL $MSG_ACTIVE_YOUR_ACCOUNT";?>");
-    history.go(-2);
-</script>
-   <?php
-}
+// 관리자 승인 대기 안내
+echo "<script>alert('회원가입이 완료되었습니다!\\n관리자 승인 후 로그인할 수 있습니다.');location.href='loginpage.php';</script>";
 
 
 

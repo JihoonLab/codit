@@ -229,7 +229,19 @@
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
-@media(max-width:600px){ .io-grid { grid-template-columns: 1fr; } }
+@media(max-width:600px){
+  .io-grid { grid-template-columns: 1fr; }
+  .prob-card { margin: 12px 8px; border-radius: 12px; }
+  .prob-title-area { padding: 20px 16px; }
+  .prob-title-area h2 { font-size: 20px; }
+  .prob-meta { gap: 12px; font-size: 12px; }
+  .prob-actions { gap: 6px; }
+  .prob-btn { padding: 8px 14px; font-size: 13px; gap: 4px; }
+  .prob-section { padding: 18px 16px; }
+  .prob-section h3 { font-size: 15px; }
+  .prob-footer { padding: 12px; gap: 6px; }
+  .prob-footer .prob-btn { flex: 1; justify-content: center; }
+}
 
 /* 하단 액션 */
 .prob-footer {
@@ -606,6 +618,10 @@
           $my_cnt = $my_sub_count[0]['cnt'] ?? 0;
           echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."&user_id=".$my_uid_btn."'>📋 내 제출 (".$my_cnt.")</a>";
         }
+      }
+
+      if(isset($_SESSION[$OJ_NAME.'_'.'administrator'])) {
+        echo "<a class='prob-btn prob-btn-rank' href='status.php?problem_id=".$row['problem_id']."'>📊 전체 제출</a>";
       }
 
       if(isset($_SESSION[$OJ_NAME.'_'.'administrator']) || isset($_SESSION[$OJ_NAME.'_'."p".$row['problem_id']])) {

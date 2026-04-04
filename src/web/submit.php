@@ -59,12 +59,12 @@ if (isset($_POST['cid'])) {
     if ($test_run) $cid = -$cid;
     $_GET['cid'] = $cid;
     require_once("contest-check.php");
-    $sql = "select `problem_id`,'N' defunct  FROM `contest_problem` WHERE `num`='$pid' AND contest_id=$cid";
+    $sql = "select `problem_id`,'N' defunct  FROM `contest_problem` WHERE `num`=? AND contest_id=?";
 
 } else {
     $id = intval($_POST['id']);
     $test_run = $id <= 0;
-    $sql = "select `problem_id`,defunct FROM `problem` WHERE `problem_id`='$id' ";
+    $sql = "select `problem_id`,defunct FROM `problem` WHERE `problem_id`=? ";
 
     if (!($test_run || isset($_SESSION[$OJ_NAME . '_' . 'administrator']) || isset($_SESSION[$OJ_NAME . '_' . 'problem_editor']) || isset($_SESSION[$OJ_NAME . '_' . 'problem_verifiter'])))
         $sql .= " and defunct='N'";
@@ -72,7 +72,11 @@ if (isset($_POST['cid'])) {
 
 //echo $sql;
 if (!$test_run) {
-    $res = mysql_query_cache($sql);
+    if (isset($_POST['cid'])) {
+        $res = mysql_query_cache($sql, $pid, $cid);
+    } else {
+        $res = mysql_query_cache($sql, $id);
+    }
     if (isset($res) && count($res) < 1 && !isset($_SESSION[$OJ_NAME . '_' . 'administrator']) && !((isset($cid) && $cid <= 0) || (isset($id) && $id <= 0))) {
         $view_errors = $MSG_LINK_ERROR . "<br>";
         require "template/" . $OJ_TEMPLATE . "/error.php";
@@ -184,8 +188,8 @@ if (isset($_POST['input_text'])) {
 
 //+ by CSL
 //함수 제출형, 코드 제한형 문제 처리
-$sql = "SELECT `front`, `rear`, `bann` FROM `problem` WHERE `problem_id`='$id' ";
-$res = mysql_query_cache($sql);
+$sql = "SELECT `front`, `rear`, `bann` FROM `problem` WHERE `problem_id`=? ";
+$res = mysql_query_cache($sql, $id);
 
 $prow = $res[0];
 $front = $prow['front'];
@@ -223,6 +227,11 @@ if ($test_run) {
 }
 
 if (!empty($_FILES)) {
+    if (isset($_FILES['answer']['error']) && $_FILES['answer']['error'] !== UPLOAD_ERR_OK) {
+        $view_errors = "파일 업로드 오류가 발생했습니다. (코드: " . intval($_FILES['answer']['error']) . ")<br>";
+        require "template/" . $OJ_TEMPLATE . "/error.php";
+        exit(0);
+    }
     $tempfile = $_FILES ["answer"] ["tmp_name"];
     $len = $_FILES['answer']['size'];
     $origin_name = trim($_FILES ["answer"]['name']);
@@ -299,51 +308,22 @@ if ($len > 65536) {
 }
 
 
-setcookie('lastlang', $language, time() + 360000);
+setcookie('lastlang', $language, ['expires' => time() + 360000, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
 
 if (!isset($ip)) {
     $ip = $_SERVER['REMOTE_ADDR'];
     if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $REMOTE_ADDR = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        $tmp_ip = explode(',', $REMOTE_ADDR);
-        $ip = htmlentities($tmp_ip[0], ENT_QUOTES, "UTF-8");
-    }
-}
-
-
-if (!$OJ_BENCHMARK_MODE) {
-    // last submit
-    if (!isset($OJ_SUBMIT_COOLDOWN_TIME)) $OJ_SUBMIT_COOLDOWN_TIME = 5;
-    $time_point = date("Y-m-d H:i:s", time() - $OJ_SUBMIT_COOLDOWN_TIME);
-    $sql = "SELECT `in_date`,solution_id FROM `solution` WHERE `user_id`=? AND in_date>? ORDER BY `in_date` DESC LIMIT 1";
-    $res = pdo_query($sql, $user_id, $time_point);
-
-    if (!empty($res)) {
-        /*
-        $view_errors = $MSG_BREAK_TIME."<br>";
-        require "template/".$OJ_TEMPLATE."/error.php";
-        exit(0);
-           // 预防WAF抽风
-        */
-        if (isset($_GET['ajax'])) {
-            echo -1;
-        } else {
-            $statusURI = "status.php?user_id=" . $_SESSION[$OJ_NAME . '_' . 'user_id'];
-            if (isset($cid)) {
-                if (isset($_GET['spa'])) $statusURI .= "&spa";
-                $statusURI .= "&cid=$cid&fixed=";
-            }
-            if (!$test_run) {
-                header("Location: $statusURI");
-            } else {
-                echo $res[0][1];
-            }
+        $tmp_ip = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+        $candidate = trim($tmp_ip[0]);
+        if (filter_var($candidate, FILTER_VALIDATE_IP)) {
+            $ip = $candidate;
         }
-        exit();
-
     }
-
+    $ip = filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '0.0.0.0';
 }
+
+
+// 서버 측 쿨다운 제거 — 클라이언트 측에서 5초 대기 처리
 
 if (~$OJ_LANGMASK & (1 << $language)) {
     $sql = "select nick FROM users WHERE user_id=?";
@@ -533,8 +513,12 @@ if (!$test_run && !isset($_GET['ajax'])) {
     header("Location: $statusURI");
 } else {
     if (isset($_GET['ajax'])) {
+        // SPA 모드: 새 CSRF 토큰 발급
+        $new_csrf = md5(uniqid(rand(), true));
+        if (!isset($_SESSION[$OJ_NAME.'_'.'csrf_keys'])) $_SESSION[$OJ_NAME.'_'.'csrf_keys'] = [];
+        $_SESSION[$OJ_NAME.'_'.'csrf_keys'][] = $new_csrf;
         ob_clean();
-        echo $insert_id;
+        echo $insert_id . '|' . $new_csrf;
     } else {
         ?>
         <script>window.parent.setTimeout("fresh_result('<?php echo $insert_id; ?>')", 1000);</script><?php

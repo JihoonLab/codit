@@ -139,6 +139,25 @@
       gap: 16px; margin-bottom: 16px;
     }
     @media (max-width: 780px) { .grid-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 600px) {
+      .hero { padding: 36px 16px 28px; }
+      .hero h1 { font-size: 32px; }
+      .hero-sub { font-size: 13px; }
+      .hero-tags { gap: 6px; }
+      .hero-tags span { padding: 4px 10px; font-size: 11px; }
+      .hero-code-l, .hero-code-r { width: 100px; font-size: 9px; }
+      .codit-main { padding: 16px 12px 40px; }
+      .home-list li { padding: 12px 14px; gap: 8px; }
+      .home-list li a { font-size: 13px; }
+      .hb { font-size: 9px; padding: 3px 8px; }
+      .nt { font-size: 10px; padding: 2px 8px; }
+      .hof-item { padding: 11px 14px; gap: 10px; }
+      .hof-medal { font-size: 18px; min-width: 26px; }
+      .hof-name { font-size: 13px; }
+      .hof-score-num { font-size: 16px; }
+      .codit-card-header-inner { padding: 12px 14px; }
+      .codit-card-header h3 { font-size: 14px; }
+    }
 
     /* Left stacked cards */
     .col-l { display: flex; flex-direction: column; gap: 0; }

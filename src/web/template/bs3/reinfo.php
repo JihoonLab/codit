@@ -96,6 +96,19 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
 @media(max-width:600px) {
   .ri-compare { grid-template-columns: 1fr; }
   .ri-compare-col:first-child { border-right: none; border-bottom: 1px solid #e5e9f0; }
+  .ce-wrap { margin: 16px auto; padding: 0 12px 40px; }
+  .ri-header { padding: 16px; }
+  .ri-header h2 { font-size: 18px; }
+  .ri-header .sid-badge { font-size: 11px; padding: 3px 8px; }
+  .ri-reason { padding: 16px; }
+  .ri-reason-header { gap: 10px; }
+  .ri-reason-header .emoji { font-size: 28px; }
+  .ri-reason-header h3 { font-size: 16px; }
+  .ri-checklist li { padding: 10px 12px; font-size: 13px; }
+  .ri-src-header { padding: 10px 14px; font-size: 12px; }
+  #source-ace { font-size: 12px !important; }
+  .ri-actions { flex-direction: column; gap: 8px; }
+  .ri-btn { width: 100%; justify-content: center; min-width: auto; padding: 14px 20px; font-size: 14px; }
 }
 
 /* 에러 메시지 (RE/CE 등) - 기본 숨김, 토글로 표시 */
@@ -155,6 +168,17 @@ pre.ri-errbox.err-pe  { background: #fff7ed !important; color: #9a3412 !importan
   transition: background 0.15s;
 }
 .ri-checklist li:hover { background: #f0f4ff; border-color: #c7d2fe; }
+.ri-checklist li:first-child {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  color: #991b1b;
+  font-weight: 600;
+}
+.ri-checklist li:first-child:hover { background: #fee2e2; border-color: #f87171; }
+.ri-checklist li:first-child .chk-icon {
+  background: #ef4444;
+  color: #fff;
+}
 .ri-checklist li .chk-icon {
   flex-shrink: 0;
   width: 22px; height: 22px;
@@ -371,7 +395,8 @@ pre.ri-errbox.err-pe  { background: #fff7ed !important; color: #9a3412 !importan
       '프로그램 실행 중 비정상 종료되었습니다',
       '코드가 실행되다가 오류로 인해 강제 종료되었습니다.',
       array(
-        '배열 인덱스가 범위를 벗어나지 않는지 확인하세요. (가장 흔한 원인)',
+        'scanf에서 변수 앞에 주소연산자(&)를 빼먹지 않았는지 확인하세요. (가장 흔한 원인)',
+        '배열 인덱스가 범위를 벗어나지 않는지 확인하세요.',
         '0으로 나누기를 하고 있지 않은지 확인하세요.',
         '초기화하지 않은 포인터를 사용하고 있지 않은지 확인하세요.',
         '재귀 호출의 종료 조건이 올바른지 확인하세요. (스택 오버플로우)',

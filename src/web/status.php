@@ -32,7 +32,12 @@ if(isset($_GET['sid']) && isset($_SESSION[$OJ_NAME.'_'.'administrator']) && $_GE
   pdo_query("DELETE FROM `solution_ai_answer` WHERE `solution_id`=?", $sid);
   pdo_query("DELETE FROM `custominput` WHERE `solution_id`=?", $sid);
   pdo_query("DELETE FROM `solution` WHERE `solution_id`=?", $sid);
-  header("location:".$_SERVER['HTTP_REFERER']);
+  $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '/status.php';
+  $parsed = parse_url($referer);
+  if (isset($parsed['host']) && $parsed['host'] !== $_SERVER['HTTP_HOST']) {
+      $referer = '/status.php';
+  }
+  header("Location: " . $referer);
   exit(0);
 }
 
@@ -322,20 +327,18 @@ for ($i = 0; $i < $rows_cnt; $i++) {
 
     if ($row['contest_id'] > 0) {
         if (isset($_SESSION[$OJ_NAME . '_' . 'administrator']))
-            $view_status[$i][1] = "<a href='contestrank.php?cid=" . $row['contest_id'] . "&user_id=" . $row['user_id'] . "#" . $row['user_id'] . "' title='" . $row['ip'] . "'>" . $row['user_id'] . "</a>";
+            $view_status[$i][1] = "<a href='contestrank.php?cid=" . $row['contest_id'] . "&user_id=" . $row['user_id'] . "#" . $row['user_id'] . "'>" . $row['user_id'] . "</a>";
         else
             $view_status[$i][1] = "<a href='contestrank.php?cid=" . $row['contest_id'] . "&user_id=" . $row['user_id'] . "#" . $row['user_id'] . "'>" . $row['user_id'] . "</a>";
     } else {
         if (isset($_SESSION[$OJ_NAME . '_' . 'administrator']))
-            $view_status[$i][1] = "<a href='userinfo.php?user=" . $row['user_id'] . "' title='" . $row['nick'] . "[" . $row['ip'] . "]'>" . $row['user_id'] . "</a>";
+            $view_status[$i][1] = "<a href='userinfo.php?user=" . $row['user_id'] . "' title='" . htmlspecialchars($row['nick'], ENT_QUOTES, 'UTF-8') . "'>" . $row['user_id'] . "</a>";
         else
             $view_status[$i][1] = "<a href='userinfo.php?user=" . $row['user_id'] . "' title='" . $row['nick'] . "'>" . $row['user_id'] . "</a>";
     }
-    if (isset($row['starred']) && $row['starred'] > 0) {
-        $view_status[$i][1] = "⭐" . $view_status[$i][1] . "<span title='用同名账户给hustoj项目加星，可以点亮此星' >⭐</span>";    //people who starred us ,we star them
-    }
+    // starred display removed
 
-    $view_status[$i]['nick'] = "<span title='" . $row['group_name'] . "@" . myLocation($row['ip']) . "'>" . (
+    $view_status[$i]['nick'] = "<span title='" . htmlspecialchars($row['group_name'], ENT_QUOTES, 'UTF-8') . "'>" . (
             mb_strlen($row['nick']) > 10 ? mb_substr($row['nick'], 0, 7) . "..." : $row['nick']) . "</span>";
 
     if ($row['contest_id'] > 0) {
@@ -423,7 +426,7 @@ for ($i = 0; $i < $rows_cnt; $i++) {
         $mark = "";
 
     $view_status[$i][3] = "<span class='hidden' style='display:none' result=" . $row['result'] . "></span>";
-    if ($row['first_time'] == 1) $view_status[$i][3] .= "⭐";
+    // first_time star removed
     if (intval($row['result']) == 11 && ((isset($_SESSION[$OJ_NAME . '_' . 'user_id']) && $row['user_id'] == $_SESSION[$OJ_NAME . '_' . 'user_id']) || isset($_SESSION[$OJ_NAME . '_' . 'source_browser']))) {
         $view_status[$i][3] .= "<a href=ceinfo.php?sid=" . $row['solution_id'] . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>" . $MSG_Compile_Error . "</a>";
     } else if ((((intval($row['result']) == 8 || intval($row['result']) == 7 || intval($row['result']) == 5 || intval($row['result']) == 6) && ($OJ_SHOW_DIFF || isset($_SESSION[$OJ_NAME . '_' . 'source_browser']))) || $row['result'] == 10 || $row['result'] == 13) && ((isset($_SESSION[$OJ_NAME . '_' . 'user_id']) && $row['user_id'] == $_SESSION[$OJ_NAME . '_' . 'user_id']) || isset($_SESSION[$OJ_NAME . '_' . 'source_browser']))) {
