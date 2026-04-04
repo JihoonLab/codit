@@ -1,11 +1,10 @@
 #include <stdio.h>
 int main(){
-    int a,b;
-    scanf("%d %d",&a,&b);
-    int s=a<b?a:b, e=a<b?b:a;
-    for(int i=s;i<=e;i++){
-        if(i>s) printf(" ");
-        printf("%d",i);
+    int n;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++) printf("*");
+        printf("\n");
     }
     return 0;
 }

@@ -1,14 +1,19 @@
 #include <stdio.h>
 int main() {
-    int a, b, c, i, j, k;
-    scanf("%d %d %d", &a, &b, &c);
-    for (i = 0; i < a; i++) {
-        for (j = 0; j < b; j++) {
-            for (k = 0; k < c; k++) {
-                printf("%d %d %d\n", i, j, k);
-            }
+    int n, arr[100], res[100], cnt = 0;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+    for (int i = 0; i < n; i++) {
+        int dup = 0;
+        for (int j = 0; j < cnt; j++) {
+            if (res[j] == arr[i]) { dup = 1; break; }
         }
+        if (!dup) res[cnt++] = arr[i];
     }
-    printf("%d\n", a * b * c);
+    for (int i = 0; i < cnt; i++) {
+        if (i > 0) printf(" ");
+        printf("%d", res[i]);
+    }
+    printf("\n");
     return 0;
 }

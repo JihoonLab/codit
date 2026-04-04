@@ -260,7 +260,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
 </div>
 
 <?php include("template/$OJ_TEMPLATE/js.php");?>
-<script src="<?php echo $OJ_CDN_URL?>ace/ace.js"></script>
+<script src="<?php echo $OJ_CDN_URL?>ace/ace.js?v=1365"></script>
 <script>
 <?php if($ok == true): ?>
 var editor = ace.edit('source-ace');

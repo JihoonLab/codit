@@ -44,6 +44,12 @@
 .ac{color:#27ae60;font-size:16px;font-weight:700}
 .no{color:#ddd;font-size:16px}
 .score{font-weight:700;color:#7c3aed}
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:13px;font-weight:800;color:#fff}
+.rank-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);box-shadow:0 2px 6px rgba(245,158,11,.4)}
+.rank-2{background:linear-gradient(135deg,#cbd5e1,#94a3b8);box-shadow:0 2px 6px rgba(148,163,184,.4)}
+.rank-3{background:linear-gradient(135deg,#d97706,#b45309);box-shadow:0 2px 6px rgba(180,83,9,.3)}
+.rank-4{background:#7c3aed;font-size:12px}
+.rank-5{background:#7c3aed;font-size:12px}
 .stat-empty{text-align:center;padding:32px;color:#aaa;font-size:14px}
 .btn-row{display:flex;gap:10px;margin-bottom:24px}
 .btn-back{background:#f0f0f0;color:#555;padding:9px 20px;border-radius:7px;font-size:14px;font-weight:600;text-decoration:none}
@@ -146,12 +152,19 @@
         <tbody>
           <?php foreach($students as $st): ?>
           <tr>
-            <td class="td-user"><?php echo htmlspecialchars($st['user_id'])?><?php if(!empty($st['nick'])): ?> <span style="color:#aaa;font-size:12px">(<?php echo htmlspecialchars($st['nick'])?>)</span><?php endif; ?></td>
+            <td class="td-user"><?php echo htmlspecialchars($st['user_id'])?> <span style="color:#aaa;font-size:12px">(<?php if(!empty($st['student_no'])) echo htmlspecialchars($st['student_no']).' '; ?><?php echo htmlspecialchars($st['nick'] ?? '')?>)</span></td>
             <?php $cnt = 0; foreach($problems as $p):
               $ok = isset($ac_map[$st['user_id']][$p['problem_id']]);
               if($ok) $cnt++;
+              $rank = $rank_map[$st['user_id']][$p['problem_id']] ?? 0;
             ?>
-            <td><?php echo $ok ? '<span class="ac">✔</span>' : '<span class="no">·</span>'?></td>
+            <td><?php if($rank >= 1 && $rank <= 5): ?>
+              <span class="rank-badge rank-<?php echo $rank?>"><?php echo $rank?></span>
+            <?php elseif($ok): ?>
+              <span class="ac">✔</span>
+            <?php else: ?>
+              <span class="no">·</span>
+            <?php endif; ?></td>
             <?php endforeach; ?>
             <td><span class="score"><?php echo $cnt?>/<?php echo count($problems)?></span></td>
           </tr>

@@ -51,8 +51,54 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
   white-space: nowrap;
 }
 
-/* 에러 메시지 표시 */
-/* 에러 메시지 공통 */
+/* 정답 vs 출력 결과 비교 */
+.ri-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid #e5e9f0;
+}
+.ri-compare-col { min-width: 0; }
+.ri-compare-col:first-child { border-right: 1px solid #e5e9f0; }
+.ri-compare-header {
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ri-compare-header.expected { background: #eff6ff; color: #1e40af; border-bottom: 2px solid #bfdbfe; }
+.ri-compare-header.yours    { background: #fef2f2; color: #991b1b; border-bottom: 2px solid #fecaca; }
+.ri-compare-body {
+  padding: 20px;
+  min-height: 60px;
+  background: #fff;
+}
+.ri-compare-body pre {
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e5e9f0 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  font-family: 'D2Coding', 'Consolas', 'Monaco', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.8 !important;
+  white-space: pre-wrap !important;
+  word-break: break-all !important;
+  color: #333 !important;
+}
+.ri-compare-col:last-child .ri-compare-body pre {
+  background: #fef7f7 !important;
+  border-color: #fecaca !important;
+}
+@media(max-width:600px) {
+  .ri-compare { grid-template-columns: 1fr; }
+  .ri-compare-col:first-child { border-right: none; border-bottom: 1px solid #e5e9f0; }
+}
+
+/* 에러 메시지 (RE/CE 등) - 기본 숨김, 토글로 표시 */
 pre.ri-errbox {
   font-family: 'SF Mono', 'Consolas', 'Monaco', monospace !important;
   font-size: 13px !important;
@@ -66,85 +112,89 @@ pre.ri-errbox {
   border: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
+  display: none;
 }
 pre.ri-errbox::-webkit-scrollbar { width: 6px; }
 pre.ri-errbox::-webkit-scrollbar-thumb { border-radius: 3px; }
-
-/* 결과별 에러 박스 색상 */
-pre.ri-errbox.err-wa  { background: #fef2f2 !important; color: #991b1b !important; }
-pre.ri-errbox.err-wa::-webkit-scrollbar-thumb { background: #e5a0a0; }
-pre.ri-errbox.err-pe  { background: #fff7ed !important; color: #9a3412 !important; }
-pre.ri-errbox.err-pe::-webkit-scrollbar-thumb { background: #e5c0a0; }
-pre.ri-errbox.err-tle { background: #fffbeb !important; color: #92400e !important; }
-pre.ri-errbox.err-tle::-webkit-scrollbar-thumb { background: #e5d0a0; }
-pre.ri-errbox.err-mle { background: #f5f3ff !important; color: #5b21b6 !important; }
-pre.ri-errbox.err-mle::-webkit-scrollbar-thumb { background: #c4b5fd; }
-pre.ri-errbox.err-ole { background: #ecfdf5 !important; color: #065f46 !important; }
-pre.ri-errbox.err-ole::-webkit-scrollbar-thumb { background: #a0d0c0; }
 pre.ri-errbox.err-re  { background: #fff1f2 !important; color: #9f1239 !important; }
-pre.ri-errbox.err-re::-webkit-scrollbar-thumb { background: #e5a0b0; }
 pre.ri-errbox.err-ce  { background: #fff5f5 !important; color: #b91c1c !important; }
-pre.ri-errbox.err-ce::-webkit-scrollbar-thumb { background: #e5a0a0; }
+pre.ri-errbox.err-tle { background: #fffbeb !important; color: #92400e !important; }
+pre.ri-errbox.err-mle { background: #f5f3ff !important; color: #5b21b6 !important; }
+pre.ri-errbox.err-ole { background: #ecfdf5 !important; color: #065f46 !important; }
+pre.ri-errbox.err-wa  { background: #fef2f2 !important; color: #991b1b !important; }
+pre.ri-errbox.err-pe  { background: #fff7ed !important; color: #9a3412 !important; }
 
-/* 원인 분석 (고정 + JS 세부) */
-.ri-reason { padding: 20px 28px; }
-.ri-reason h4 {
-  font-size: 14px;
-  font-weight: 700;
-  color: #555;
-  margin: 0 0 14px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+/* 원인 분석 - 메인 영역 */
+.ri-reason { padding: 24px 28px; }
+
+/* 이모지 아이콘 + 제목 */
+.ri-reason-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
 }
-.ri-reason-main {
-  background: #f0f5ff;
-  border: 1px solid #d0e0f5;
+.ri-reason-header .emoji { font-size: 28px; }
+.ri-reason-header .title-text h3 {
+  margin: 0; font-size: 18px; font-weight: 800; color: #1e293b;
+}
+.ri-reason-header .title-text p {
+  margin: 4px 0 0; font-size: 13px; color: #64748b; line-height: 1.5;
+}
+
+/* 체크리스트 팁 */
+.ri-checklist { list-style: none; padding: 0; margin: 0 0 16px; }
+.ri-checklist li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px;
+  background: #f8fafc;
   border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 12px;
-}
-.ri-reason-main .reason-title {
+  margin-bottom: 8px;
   font-size: 14px;
-  font-weight: 700;
-  color: #7c3aed;
-  margin: 0 0 8px;
+  color: #334155;
+  line-height: 1.6;
+  border: 1px solid #e2e8f0;
+  transition: background 0.15s;
 }
-.ri-reason-main .reason-desc {
-  font-size: 13px;
-  color: #444;
-  line-height: 1.7;
+.ri-checklist li:hover { background: #f0f4ff; border-color: #c7d2fe; }
+.ri-checklist li .chk-icon {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  background: #e0e7ff;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  color: #4f46e5;
+  font-weight: 800;
+  margin-top: 1px;
 }
-.ri-reason-main .reason-tips {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #d0e0f5;
+
+/* 채점 상세 (토글) */
+.ri-raw-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1px solid #d1d5db; border-radius: 8px;
+  padding: 8px 16px; font-size: 13px; color: #6b7280;
+  cursor: pointer; transition: all 0.2s; margin-top: 4px;
 }
-.ri-reason-main .reason-tips li {
-  font-size: 12.5px;
-  color: #555;
-  line-height: 1.8;
-  margin-bottom: 2px;
-}
+.ri-raw-toggle:hover { background: #f3f4f6; color: #374151; border-color: #9ca3af; }
+
 /* JS 세부 분석 */
 .ri-detail-item {
-  background: #f8f9fb;
-  border-left: 3px solid #7c3aed;
-  border-radius: 0 8px 8px 0;
-  padding: 12px 16px;
-  margin-bottom: 8px;
+  background: #fef2f2;
+  border-left: 3px solid #ef4444;
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  margin-bottom: 10px;
 }
 .ri-detail-item .match {
   color: #dc2626;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'SF Mono', 'Consolas', monospace;
-  font-size: 12.5px;
+  font-size: 13px;
 }
 .ri-detail-item .desc {
   color: #444;
   margin-top: 6px;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 13.5px;
+  line-height: 1.6;
 }
 
 /* 소스 코드 카드 */
@@ -177,26 +227,64 @@ pre.ri-errbox.err-ce::-webkit-scrollbar-thumb { background: #e5a0a0; }
 #ace-container { background: #272822 !important; width: 100%; min-height: 200px; }
 #source-ace { width: 100%; min-height: 200px; font-size: 14px; background: #272822 !important; }
 
-/* AC 테이블 */
-#errtxt-wrap { padding: 20px 24px; }
-#errtxt-wrap table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; font-size: 14px; box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
-#errtxt-wrap table thead tr { background: #7c3aed; color: #fff; }
-#errtxt-wrap table th { padding: 12px 16px; font-weight: 700; text-align: center; font-size: 13px; }
-#errtxt-wrap table td { padding: 11px 16px; text-align: center; border-bottom: 1px solid #eef0f5; font-size: 13.5px; color: #333; background: #fff; }
-#errtxt-wrap table tbody tr:last-child td { border-bottom: none !important; border: none !important; }
-#errtxt-wrap table tbody tr:nth-child(even) td { background: #f7f9fc; }
+/* AC 축하 */
+.ac-congrats {
+  text-align: center;
+  padding: 36px 28px 28px;
+}
+.ac-congrats .ac-emoji { font-size: 48px; margin-bottom: 12px; }
+.ac-congrats h3 { font-size: 22px; font-weight: 900; color: #059669; margin: 0 0 6px; }
+.ac-congrats p { font-size: 14px; color: #64748b; margin: 0; }
+
+/* AC 통계 카드 */
+.ac-stats {
+  display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+  padding: 0 28px 28px;
+}
+.ac-stat-card {
+  flex: 1; min-width: 100px; max-width: 160px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.ac-stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+.ac-stat-card .stat-icon { font-size: 20px; margin-bottom: 6px; }
+.ac-stat-card .stat-val {
+  font-size: 18px; font-weight: 800; color: #1e293b;
+  font-family: 'SF Mono', 'Consolas', monospace;
+}
+.ac-stat-card .stat-lbl { font-size: 11px; color: #94a3b8; font-weight: 600; margin-top: 2px; }
+
+/* AC 테스트케이스 토글 */
+.ac-detail-toggle {
+  display: block; margin: 0 auto 20px; background: none; border: 1px solid #d1d5db;
+  border-radius: 8px; padding: 8px 20px; font-size: 13px; color: #6b7280;
+  cursor: pointer; transition: all 0.2s;
+}
+.ac-detail-toggle:hover { background: #f3f4f6; color: #374151; }
+#ac-detail-table { display: none; padding: 0 24px 20px; }
+#ac-detail-table table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; font-size: 13px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+#ac-detail-table table thead tr { background: #f1f5f9; }
+#ac-detail-table table th { padding: 10px 14px; font-weight: 700; text-align: center; font-size: 12px; color: #64748b; }
+#ac-detail-table table td { padding: 10px 14px; text-align: center; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #333; background: #fff; }
+#ac-detail-table table tbody tr:last-child td { border-bottom: none; }
+#ac-detail-table table tbody tr:nth-child(even) td { background: #f8fafc; }
 
 /* 버튼 */
-.ri-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.ri-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 .ri-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 20px; border-radius: 8px; font-size: 13px; font-weight: 600;
-  text-decoration: none; transition: all 0.2s; border: 1px solid #e0e5ec;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px 36px; border-radius: 12px; font-size: 16px; font-weight: 700;
+  text-decoration: none !important; transition: all 0.2s; border: 2px solid transparent;
+  min-width: 200px; cursor: pointer;
 }
-.ri-btn-back { background: #fff; color: #555; }
-.ri-btn-back:hover { background: #f5f8fc; color: #333; text-decoration: none; }
-.ri-btn-edit { background: #7c3aed; color: #fff; border-color: #7c3aed; }
-.ri-btn-edit:hover { background: #1259a3; color: #fff; text-decoration: none; }
+.ri-btn-back { background: #f0f2f5; color: #444; border-color: #dde1e8; }
+.ri-btn-back:hover { background: #e5e8ee; color: #222; text-decoration: none; transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.ri-btn-edit { background: #7c3aed; color: #fff !important; border-color: #7c3aed; box-shadow: 0 3px 12px rgba(124,58,237,0.3); }
+.ri-btn-edit:hover { background: #6d28d9; color: #fff !important; text-decoration: none; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(124,58,237,0.4); }
 </style>
 </head>
 <body>
@@ -315,35 +403,70 @@ pre.ri-errbox.err-ce::-webkit-scrollbar-thumb { background: #e5a0a0; }
     </div>
 
     <div class="ri-card-body">
-      <?php if($isAC_flag): ?>
-        <div id="errtxt-wrap">
-          <div id="errtxt" style="display:none"><?php echo $view_reinfo?></div>
-          <div id="errtxt-rendered"></div>
-        </div>
-      <?php else: ?>
-        <?php
+      <?php
         $hasErrText = !empty(trim($view_reinfo));
-        if($hasErrText): ?>
+        $isWAorPE = ($res == 5 || $res == 6);
+      ?>
+
+      <?php if($isAC_flag): ?>
+        <div id="errtxt" style="display:none"><?php echo $view_reinfo?></div>
+        <div class="ac-congrats">
+          <div class="ac-emoji">🎉</div>
+          <h3>축하합니다! 모든 테스트를 통과했습니다</h3>
+          <p>정답 처리되었습니다. 아래에서 채점 결과를 확인하세요.</p>
+        </div>
+        <div class="ac-stats" id="ac-stats"></div>
+        <button class="ac-detail-toggle" onclick="var t=document.getElementById('ac-detail-table');t.style.display=t.style.display==='none'?'block':'none';this.textContent=t.style.display==='none'?'▶ 테스트케이스 상세 보기':'▼ 테스트케이스 상세 닫기';">▶ 테스트케이스 상세 보기</button>
+        <div id="ac-detail-table"></div>
+
+      <?php elseif($isWAorPE && $hasErrText): ?>
+        <!-- 정답 vs 출력 결과 비교 -->
+        <div id="errtxt" style="display:none"><?php echo $view_reinfo?></div>
+        <div id="ri-compare-area"></div>
+
+        <div style="padding:18px 24px 22px;background:#f8f9fb;border-top:1px solid #e5e9f0;">
+          <span style="font-size:15px;font-weight:700;color:#7c3aed;">💡 정답과 내 프로그램의 출력을 비교해보세요.</span>
+          <span style="font-size:14px;font-weight:600;color:#555;margin-left:6px;">대소문자, 공백, 줄바꿈도 정확히 일치해야 합니다.</span>
+        </div>
+
+      <?php else: ?>
+        <?php if($hasErrText): ?>
           <pre class="ri-errbox err-<?php echo $headerClass?>" id="errtxt"><?php echo $view_reinfo?></pre>
         <?php endif; ?>
 
         <div class="ri-reason">
-          <h4>💡 원인 분석</h4>
-
-          <?php if(isset($reasonMap[$res])): ?>
-          <div class="ri-reason-main">
-            <div class="reason-title"><?php echo $reasonMap[$res][0]?></div>
-            <div class="reason-desc"><?php echo $reasonMap[$res][1]?></div>
-            <ul class="reason-tips">
-              <?php foreach($reasonMap[$res][2] as $tip): ?>
-              <li><?php echo $tip?></li>
-              <?php endforeach; ?>
-            </ul>
+          <?php
+            $emojiMap = array(7=>'⏱️', 8=>'💾', 9=>'📤', 10=>'💥', 11=>'⚠️', 5=>'📝', 6=>'❌');
+            $emoji = isset($emojiMap[$res]) ? $emojiMap[$res] : '❓';
+          ?>
+          <div class="ri-reason-header">
+            <div class="emoji"><?php echo $emoji?></div>
+            <div class="title-text">
+              <?php if(isset($reasonMap[$res])): ?>
+              <h3><?php echo $reasonMap[$res][0]?></h3>
+              <p><?php echo $reasonMap[$res][1]?></p>
+              <?php else: ?>
+              <h3>채점 중 문제가 발생했습니다</h3>
+              <?php endif; ?>
+            </div>
           </div>
-          <?php endif; ?>
 
           <?php if($hasErrText): ?>
           <div id="errdetail"></div>
+          <?php endif; ?>
+
+          <?php if(isset($reasonMap[$res])): ?>
+          <ul class="ri-checklist">
+            <?php $tipNum = 1; foreach($reasonMap[$res][2] as $tip): ?>
+            <li><span class="chk-icon"><?php echo $tipNum?></span><span><?php echo $tip?></span></li>
+            <?php $tipNum++; endforeach; ?>
+          </ul>
+          <?php endif; ?>
+
+          <?php if($hasErrText): ?>
+          <button class="ri-raw-toggle" onclick="var e=document.getElementById('errtxt');e.style.display=e.style.display==='none'?'block':'none';this.querySelector('.arrow').textContent=e.style.display==='none'?'▶':'▼';">
+            <span class="arrow">▶</span> 채점 원본 로그 보기
+          </button>
           <?php endif; ?>
         </div>
       <?php endif; ?>
@@ -363,7 +486,9 @@ pre.ri-errbox.err-ce::-webkit-scrollbar-thumb { background: #e5a0a0; }
 
   <div class="ri-actions">
     <?php if($problemId > 0): ?><a href="problem.php?id=<?php echo $problemId?>" class="ri-btn ri-btn-back">← 문제로 돌아가기</a><?php else: ?><a href="javascript:history.back()" class="ri-btn ri-btn-back">← 뒤로 가기</a><?php endif; ?>
-    <?php if($problemId > 0): ?>
+    <?php if($isAC_flag && $problemId > 0): ?>
+    <a href="problem.php?id=<?php echo $problemId + 1?>" class="ri-btn ri-btn-edit">🚀 다음 문제 풀기</a>
+    <?php elseif($problemId > 0): ?>
     <a href="submitpage.php?id=<?php echo $problemId?>&sid=<?php echo $solutionId?>" class="ri-btn ri-btn-edit">✏️ 코드 수정 후 재제출</a>
     <?php endif; ?>
   </div>
@@ -371,29 +496,116 @@ pre.ri-errbox.err-ce::-webkit-scrollbar-thumb { background: #e5a0a0; }
 </div>
 
 <?php include("template/$OJ_TEMPLATE/js.php");?>
-<script src="<?php echo $OJ_CDN_URL?>ace/ace.js"></script>
+<script src="/ace/ace.js"></script>
 <script src="<?php echo $OJ_CDN_URL?>template/bs3/marked.min.js"></script>
 <script>
 <?php if($isAC_flag): ?>
 $(document).ready(function(){
-  marked.use({ gfm: true, breaks: false, mangle: false, headerIds: false });
-  var raw = document.getElementById('errtxt').innerHTML;
-  var txt = $('<textarea/>').html(raw).val();
-  document.getElementById('errtxt-rendered').innerHTML = marked.parse(txt);
+  var raw = $('<textarea/>').html(document.getElementById('errtxt').innerHTML).val();
+  var lines = raw.split('\n');
+  var testcases = [];
+  var totalMem = 0, maxMem = 0, totalTime = 0, maxTime = 0, tcCount = 0;
 
-  $('#errtxt-rendered th').each(function(){
-    var h = $(this).text().trim();
-    var map = {'Expected':'예상 출력','Yours':'제출 출력','filename':'파일명','size':'크기','result':'채점결과','memory':'메모리','time':'시간','score':'점수'};
-    if(map[h]) $(this).text(map[h]);
-  });
-  $('#errtxt-rendered td').each(function(){
-    var t = $(this).text().trim();
-    var badges = {AC:['#d1fae5','#059669'],WA:['#fee2e2','#dc2626'],TLE:['#fef3c7','#d97706'],MLE:['#ede9fe','#7c3aed'],RE:['#ffe4e6','#e11d48']};
-    if(badges[t]) $(this).html('<span style="background:'+badges[t][0]+';color:'+badges[t][1]+';padding:3px 10px;border-radius:5px;font-weight:700;font-size:13px">'+t+'</span>');
-  });
+  for(var i=0; i<lines.length; i++){
+    var line = lines[i].trim();
+    if(line.match(/filename\|size\|result\|memory\|time/)){
+      i++; // skip separator
+      for(var j=i+1; j<lines.length; j++){
+        var row = lines[j].trim();
+        if(!row || row.match(/^점수/) || row.match(/<br>/i)) break;
+        var cols = row.split('|');
+        if(cols.length >= 5){
+          var mem = parseInt(cols[3]) || 0;
+          var time = parseInt(cols[4]) || 0;
+          testcases.push({name:cols[0], size:cols[1], result:cols[2], memory:cols[3], time:cols[4]});
+          totalMem += mem; totalTime += time; tcCount++;
+          if(mem > maxMem) maxMem = mem;
+          if(time > maxTime) maxTime = time;
+        }
+      }
+      break;
+    }
+  }
+
+  // 점수 파싱
+  var scoreMatch = raw.match(/점수[:\s]*(\d+)/);
+  var score = scoreMatch ? scoreMatch[1] : '100';
+
+  // 통계 카드
+  var statsHtml = '';
+  statsHtml += '<div class="ac-stat-card"><div class="stat-icon">📊</div><div class="stat-val">'+score+'</div><div class="stat-lbl">점수</div></div>';
+  statsHtml += '<div class="ac-stat-card"><div class="stat-icon">✅</div><div class="stat-val">'+tcCount+'</div><div class="stat-lbl">통과 케이스</div></div>';
+  if(tcCount > 0){
+    statsHtml += '<div class="ac-stat-card"><div class="stat-icon">⏱️</div><div class="stat-val">'+maxTime+'ms</div><div class="stat-lbl">최대 시간</div></div>';
+    statsHtml += '<div class="ac-stat-card"><div class="stat-icon">💾</div><div class="stat-val">'+(maxMem >= 1024 ? (maxMem/1024).toFixed(1)+'MB' : maxMem+'k')+'</div><div class="stat-lbl">최대 메모리</div></div>';
+  }
+  document.getElementById('ac-stats').innerHTML = statsHtml;
+
+  // 상세 테이블
+  if(testcases.length > 0){
+    var tbl = '<table><thead><tr><th>테스트</th><th>결과</th><th>메모리</th><th>시간</th></tr></thead><tbody>';
+    for(var k=0; k<testcases.length; k++){
+      var tc = testcases[k];
+      tbl += '<tr><td>'+tc.name+'</td><td><span style="background:#d1fae5;color:#059669;padding:3px 10px;border-radius:5px;font-weight:700;font-size:12px">'+tc.result+'</span></td><td>'+tc.memory+'</td><td>'+tc.time+'</td></tr>';
+    }
+    tbl += '</tbody></table>';
+    document.getElementById('ac-detail-table').innerHTML = tbl;
+  }
 });
+
+<?php elseif(isset($isWAorPE) && $isWAorPE): ?>
+$(document).ready(function(){
+  var el = document.getElementById('errtxt');
+  if(!el) return;
+  var raw = $('<textarea/>').html(el.innerHTML).val();
+  var lines = raw.split('\n');
+
+  var expected = [], yours = [];
+  var inCompare = false;
+
+  for(var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if(line.match(/Expected\|Yours/) || line.match(/\|Expected\|Yours/)) {
+      inCompare = true;
+      i++; // 구분선 건너뛰기
+      continue;
+    }
+    if(line.match(/filename\|size\|result/) || line.match(/점수/) || line.match(/<br>/i)) {
+      inCompare = false;
+      continue;
+    }
+    if(inCompare) {
+      if(line === '' || line === '|') { inCompare = false; continue; }
+      var cols = line.replace(/^\|/, '').replace(/\|$/, '').split('|');
+      if(cols.length >= 2) {
+        var ex = cols[0].replace(/👉/g,'').replace(/`/g,'').trim();
+        var yr = cols[1].replace(/👉/g,'').replace(/`/g,'').trim();
+        if(ex === '...' && yr === '...') continue; // 동일한 줄 생략
+        if(cols[0].match(/🔴|🟢|🔵/) || cols[1].match(/🔴|🟢|🔵/)) continue;
+        expected.push(ex);
+        yours.push(yr);
+      }
+    }
+  }
+
+  var area = document.getElementById('ri-compare-area');
+  if(expected.length > 0) {
+    function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    var expText = esc(expected.join('\n'));
+    var yrText = esc(yours.join('\n'));
+
+    var html = '<div class="ri-compare">';
+    html += '<div class="ri-compare-col"><div class="ri-compare-header expected">정답</div><div class="ri-compare-body"><pre>' + expText + '</pre></div></div>';
+    html += '<div class="ri-compare-col"><div class="ri-compare-header yours">내 프로그램의 출력</div><div class="ri-compare-body"><pre>' + yrText + '</pre></div></div>';
+    html += '</div>';
+    area.innerHTML = html;
+  } else {
+    area.innerHTML = '<pre class="ri-errbox err-wa" style="margin:0">' + raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+  }
+});
+
 <?php else: ?>
-// 에러 메시지 세부 분석 (추가 정보)
+// 에러 메시지 세부 분석 (RE/CE/TLE 등)
 var pats=[], exps=[];
 function addP(p,e){ pats.push(p); exps.push(e); }
 addP(/Segmentation fault/, "세그먼테이션 폴트: 배열 범위 초과, 널 포인터 참조 등이 원인입니다.");
@@ -405,32 +617,31 @@ addP(/Bus error/, "잘못된 메모리 정렬 접근이 발생했습니다.");
 addP(/Aborted/, "비정상 종료: assert 실패, 이중 free, 힙 손상 등.");
 addP(/stack smashing detected/, "스택 버퍼 오버플로우가 감지되었습니다.");
 addP(/ArrayIndexOutOfBoundsException/, "Java 배열 인덱스가 범위를 벗어났습니다.");
-addP(/StringIndexOutOfBoundsException/, "Java 문자열 인덱스가 범위를 벗어났습니다.");
 addP(/NullPointerException/, "null 객체를 참조했습니다.");
 addP(/StackOverflowError/, "재귀 깊이 초과 (스택 오버플로우).");
 addP(/OutOfMemoryError/, "JVM 메모리 부족.");
 addP(/NumberFormatException/, "숫자로 변환할 수 없는 문자열입니다.");
 addP(/NoSuchElementException/, "더 이상 읽을 입력이 없습니다.");
-addP(/InputMismatchException/, "입력 타입이 일치하지 않습니다.");
 addP(/IndexError/, "Python 리스트 인덱스가 범위를 벗어났습니다.");
 addP(/KeyError/, "Python 딕셔너리에 해당 키가 없습니다.");
 addP(/ValueError/, "잘못된 값 변환 (예: int('abc')).");
 addP(/ZeroDivisionError/, "0으로 나누기가 발생했습니다.");
 addP(/RecursionError/, "Python 재귀 깊이 초과.");
 addP(/TypeError/, "타입이 맞지 않는 연산입니다.");
-addP(/MemoryError/, "Python 메모리 부족.");
 
 $(document).ready(function(){
   var el = document.getElementById('errtxt');
   if(!el) return;
   var errmsg = el.textContent;
+
+  // 에러 패턴 분석
   var items = [];
   for(var i=0;i<pats.length;i++){
     var ret = pats[i].exec(errmsg);
-    if(ret) items.push('<div class="ri-detail-item"><div class="match">→ '+ret[0].substring(0,120).replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div><div class="desc">'+exps[i]+'</div></div>');
+    if(ret) items.push('<div class="ri-detail-item"><div class="match">🔍 '+ret[0].substring(0,120).replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div><div class="desc">'+exps[i]+'</div></div>');
   }
   var box = document.getElementById('errdetail');
-  if(box && items.length > 0) box.innerHTML = '<div style="font-size:12px;color:#888;margin-bottom:8px;font-weight:600">에러 메시지 세부 분석</div>' + items.join('');
+  if(box && items.length > 0) box.innerHTML = items.join('');
 });
 <?php endif; ?>
 

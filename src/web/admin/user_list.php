@@ -36,14 +36,14 @@ $trash="";
 if(isset($_GET['keyword']) && $_GET['keyword']!=""){
   $gkeyword = $_GET['keyword'];
   $keyword = "%$gkeyword%";
-  $sql = "select `user_id`,`nick`,email,`accesstime`,`reg_time`,`expiry_date`,`ip`,`school`,`group_name`,`defunct` FROM `users` WHERE (user_id LIKE ?) OR (nick LIKE ?) OR (school LIKE ?)  OR (group_name LIKE ?) or (ip like ?) ORDER BY `user_id` DESC";
-  $result = pdo_query($sql,$keyword,$keyword,$keyword,$keyword,$keyword);
+  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct` FROM `users` WHERE (user_id LIKE ?) OR (nick LIKE ?) OR (school LIKE ?) ORDER BY `user_id` DESC";
+  $result = pdo_query($sql,$keyword,$keyword,$keyword);
 }else if(isset($_GET['trash'])){
   $trash="&trash";
-  $sql = "select `user_id`,`nick`,email,`accesstime`,`reg_time`,`expiry_date`,`ip`,`school`,`group_name`,`defunct` FROM `users` where defunct='Y' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
+  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct` FROM `users` where defunct='Y' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
   $result = pdo_query($sql);
 }else{
-  $sql = "select `user_id`,`nick`,email,`accesstime`,`reg_time`,`expiry_date`,`ip`,`school`,`group_name`,`defunct` FROM `users` where defunct='N' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
+  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct` FROM `users` where defunct='N' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
   $result = pdo_query($sql);
 }
 ?>
@@ -60,20 +60,17 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
   <table width=100% border=1 style="text-align:center;" class="ui striped aligned table">
 <thead>
     <tr>
-    <th><?php echo $MSG_USER_ID?></th>
+      <th><?php echo $MSG_USER_ID?></th>
       <th><?php echo $MSG_NICK?></th>
-      <th>IP</th>
-      <th><?php echo $MSG_EMAIL?></th>
       <th><?php echo $MSG_SCHOOL?></th>
-      <th><?php echo $MSG_GROUP_NAME?></th>
+      <th>번호</th>
       <th><?php echo $MSG_LAST_LOGIN?></th>
       <th><?php echo $MSG_REGISTER?></th>
-      <th><?php echo $MSG_EXPIRY_DATE?></th>
       <th><?php echo $MSG_STATUS?></th>
       <th><?php echo $MSG_ADMIN ?></th>
       <th><?php echo $MSG_SETPASSWORD?></th>
       <th><?php echo $MSG_PRIVILEGE."-".$MSG_ADD ?></th>
-      </tr>
+    </tr>
 </thead>
 
     <?php
@@ -82,30 +79,18 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
         echo "<td><a href='../userinfo.php?user=".htmlentities(urlencode($row['user_id']))."'>".$row['user_id']."</a></td>";
         if($row['nick']=="") $row['nick']="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         echo "<td><span fd='nick' user_id='".$row['user_id']."'>".$row['nick']."</span></td>";
-        echo "<td><a href='user_list.php?keyword=".htmlentities(urlencode($row['ip']))."' >".$row['ip']."</td>";
-        if($OJ_SaaS_ENABLE && $domain == $DOMAIN){
-                echo "<td><a href='http://".$row['user_id'].".$DOMAIN' target=_blank >".$row['email']."&nbsp;</a></td>";
-        }else{
-                echo "<td>".$row['email']." </td>";
-        }
         if($row['school']=="") $row['school']="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         echo "<td><span fd='school' user_id='".$row['user_id']."'>".$row['school']."</span></td>";
-        if($row['group_name']=="") $row['group_name']="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        echo "<td><span fd='group_name' user_id='".$row['user_id']."'>".$row['group_name']."</span></td>";
+        $sno = $row['student_no'] ?? '';
+        if($sno=="") $sno="&nbsp;";
+        echo "<td><span fd='student_no' user_id='".$row['user_id']."'>".$sno."</span></td>";
         echo "<td>".$row['accesstime']."</td>";
         echo "<td>".$row['reg_time']."</td>";
-        $color="red";
-        $edate= new DateTime($row['expiry_date']);
-        $tomorrow= new DateTime(add_days(7));   // 7 日临期预警蓝色
-        $today= new DateTime(add_days(0));
-        if($edate>$tomorrow) $color="green";
-        else if($edate>=$today) $color="blue";
-        echo "<td><span fd='expiry_date' user_id='".$row['user_id']."' class='".$color."' >".$row['expiry_date']."</span></td>";
 
         echo "<td>".($row['defunct']=="N"?"<span class=green >$MSG_NORMAL</span>":"<span class=red>$MSG_DELETED</span>")."</td>";
       if(isset($_SESSION[$OJ_NAME.'_'.'administrator']) && $row['user_id']!=$_SESSION[$OJ_NAME."_user_id"]){
-        echo "<td><a href=user_df_change.php?cid=".$row['user_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey'].">".
-           ($row['defunct']=="N"?"<span class='label label-danger' title='$MSG_CLICK_TO_DELETE'>$MSG_CLICK_TO_DELETE</span>":"<span class='label label-success' title='$MSG_CLICK_TO_RECOVER'>$MSG_CLICK_TO_RECOVER</span>")
+        echo "<td><a href='#' onclick=\"if(confirm('".$row['user_id']." 계정을 완전히 삭제합니다. 복구할 수 없습니다. 정말 삭제하시겠습니까?')){location.href='user_df_change.php?cid=".$row['user_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey']."';}return false;\">".
+           "<span class='label label-danger'>삭제</span>"
             ."</a></td>";
       }else{
       	   echo "<td>&nbsp;</td>";
@@ -139,25 +124,6 @@ if(!(isset($_GET['keyword']) && $_GET['keyword']!=""))
 </div>
 <script>
 function admin_mod(){
-        $("span[fd=group_name]").each(function(){
-                let sp=$(this);
-                let user_id=$(this).attr('user_id');
-                $(this).dblclick(function(){
-                        let group_name=sp.text();
-                        sp.html("<form onsubmit='return false;'><input type=hidden name='m' value='user_update_group_name'><input type='hidden' name='user_id' value='"+user_id+"'><input type='text' name='group_name' value='"+group_name+"' selected='true' class='input-large' size=20 ></form>");
-                        let ipt=sp.find("input[name=group_name]");
-                        ipt.focus();
-                        ipt[0].select();
-                        sp.find("input").change(function(){
-                                let newgroup_name=sp.find("input[name=group_name]").val();
-                                $.post("ajax.php",sp.find("form").serialize()).done(function(){
-                                        console.log("new group_name"+newgroup_name);
-                                        sp.html(newgroup_name);
-                                });
-
-                        });
-                });
-        });
         $("span[fd=school]").each(function(){
                 let sp=$(this);
                 let user_id=$(this).attr('user_id');
@@ -193,28 +159,6 @@ function admin_mod(){
                                 $.post("ajax.php",sp.find("form").serialize()).done(function(){
                                         console.log("new nick:"+newnick);
                                         sp.html(newnick);
-                                });
-
-                        });
-                });
-
-
-        });
-        $("span[fd=expiry_date]").each(function(){
-                let sp=$(this);
-                let user_id=$(this).attr('user_id');
-                $(this).dblclick(function(){
-                        let expiry_date=sp.text();
-                        console.log("user_id:"+user_id+"  expiry_date:"+expiry_date);
-                        sp.html("<form onsubmit='return false;'><input type=hidden name='m' value='user_update_expiry_date'><input type='hidden' name='user_id' value='"+user_id+"'><input type='date' name='expiry_date' value='"+expiry_date+"' selected='true' class='input-mini' size=2 ></form>");
-                        let ipt=sp.find("input[name=expiry_date]");
-                        ipt.focus();
-                        ipt[0].select();
-                        sp.find("input").change(function(){
-                                let newexpiry_date=sp.find("input[name=expiry_date]").val();
-                                $.post("ajax.php",sp.find("form").serialize()).done(function(){
-                                        console.log("new expiry_date:"+newexpiry_date);
-                                        sp.html(newexpiry_date);
                                 });
 
                         });

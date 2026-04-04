@@ -47,7 +47,7 @@ if(isset($_POST['pid'])){
       <label class="col control-label"><?php echo $MSG_TITLE?></label>
 	  <input class="input input-large" style="width:100%;" size=71 value='<?php echo isset($title)?$title."-Copy":""?>' type=text name='title' id='title' > 
 	  <input type=submit class='btn btn-success' value='<?php echo $MSG_SAVE?>' name=submit> 
-	  <input class='btn btn-primary' id='ai_bt' type=button value='AI一下' onclick='ai_gen()' >
+	  <input class='btn btn-primary' id='ai_bt' type=button value='AI 생성' onclick='ai_gen()' >
 	  <input class='btn btn-danger'  type=reset value='<?php echo $MSG_RESET?>' onclick='setTimeout("ai_gen()",500);' >
     </p>
     <p align=left>
@@ -72,7 +72,7 @@ if(isset($_POST['pid'])){
 
 	function ai_gen(filename){
 		    let oldval=$('#ai_bt').val();
-		    $('#ai_bt').val('AI思考中...请稍候...');
+		    $('#ai_bt').val('AI 처리 중...잠시만...');
 		    $('#ai_bt').prop('disabled', true);;
 		    let title=$('#title').val();
 		    $.ajax({
@@ -89,10 +89,10 @@ if(isset($_POST['pid'])){
 				    $("textarea").eq(0).val(description); // 假设 #file_data 是 div
 			    }
 		    	    $('#ai_bt').prop('disabled', false);;
-			    $('#ai_bt').val('AI一下');
+			    $('#ai_bt').val('AI 생성');
 			},
 			error: function() {
-			    $('#ai_bt').val('获取数据失败');
+			    $('#ai_bt').val('데이터 불러오기 실패');
 		    	    $('#ai_bt').prop('disabled', false);;
 			}
 		    });

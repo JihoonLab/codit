@@ -19,12 +19,12 @@ if(stripos($_SERVER['REQUEST_URI'],"template")!==false) exit();
 
 $url = basename(strtok($_SERVER['REQUEST_URI'], '?'));
 $dir = basename(getcwd());
-if($dir=="discuss3") $path_fix = "../";
+if($dir=="discuss3" || $dir=="admin") $path_fix = "../";
 else $path_fix = "";
 
 if(isset($OJ_NEED_LOGIN) && $OJ_NEED_LOGIN && ($url!='loginpage.php' && $url!='lostpassword.php' && $url!='lostpassword2.php' && $url!='registerpage.php') && !isset($_SESSION[$OJ_NAME.'_'.'user_id']))
 {
-  header("location:".$path_fix."loginpage.php");
+  header("location:/loginpage.php");
   exit();
 }
 
@@ -340,7 +340,7 @@ body {
         <?php if(!isset($OJ_ON_SITE_CONTEST_ID)): ?>
 
         <li <?php if($url=="problemset.php") echo 'class="active"'; ?>>
-          <a href="<?php echo $path_fix?>problemset.php">
+          <a href="/problemset.php">
             <span class="cn-icon nav-icon-default"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="cn-icon nav-icon-active" style="font-size:16px">📋</span>
             문제
           </a>
@@ -357,34 +357,37 @@ body {
             <?php endif; ?>
           </a>
           <ul class="cn-subdrop" id="drop-class">
-            <li><a href="<?php echo $path_fix?>classop.php">📚 수업 목록</a></li>
-            <li><a href="<?php echo $path_fix?>contest.php<?php if(isset($_SESSION[$OJ_NAME."_user_id"])) echo "?my"?>">🎮 대회</a></li>
+            <li><a href="/classop.php">📚 수업 목록</a></li>
+            <li><a href="/contest.php<?php if(isset($_SESSION[$OJ_NAME."_user_id"])) echo "?my"?>">🎮 대회</a></li>
+            <?php if(isset($_SESSION[$OJ_NAME.'_administrator'])): ?>
+            <li><a href="/admin/class_report.php">📊 포트폴리오</a></li>
+            <?php endif; ?>
           </ul>
         </li>
 
         <li <?php if($url=="edulist.php") echo 'class="active"'; ?>>
-          <a href="<?php echo $path_fix?>edulist.php">
+          <a href="/edulist.php">
             <span class="cn-icon nav-icon-default"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span><span class="cn-icon nav-icon-active" style="font-size:16px">📖</span>
             교안
           </a>
         </li>
 
         <li <?php if($url=="ranklist.php") echo 'class="active"'; ?>>
-          <a href="<?php echo $path_fix?>ranklist.php">
+          <a href="/ranklist.php">
             <span class="cn-icon nav-icon-default"><svg viewBox="0 0 24 24"><path d="M6 9H3V4h3"/><path d="M18 9h3V4h-3"/><path d="M6 4h12v7a6 6 0 0 1-12 0V4z"/><path d="M12 17v4"/><path d="M8 21h8"/></svg></span><span class="cn-icon nav-icon-active" style="font-size:16px">🏆</span>
             랭킹
           </a>
         </li>
 
         <li <?php if($url=="status.php") echo 'class="active"'; ?>>
-          <a href="<?php echo $path_fix?>status.php">
+          <a href="/status.php">
             <span class="cn-icon nav-icon-default"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span><span class="cn-icon nav-icon-active" style="font-size:16px">🚀</span>
             제출현황
           </a>
         </li>
 
         <li <?php if($url=="faqs.php") echo 'class="active"'; ?>>
-          <a href="<?php echo $path_fix?>faqs.php">
+          <a href="/faqs.php">
             <span class="cn-icon nav-icon-default"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><span class="cn-icon nav-icon-active" style="font-size:16px">💡</span>
             도움말
           </a>
@@ -392,7 +395,7 @@ body {
 
         <?php else: ?>
         <li <?php if($url=="contest.php") echo 'class="active"'; ?>>
-          <a href="<?php echo $path_fix?>contest.php">
+          <a href="/contest.php">
             <span class="cn-icon"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
             대회
           </a>
@@ -427,34 +430,43 @@ body {
               </div>
             </div>
             <!-- 메뉴 항목 -->
-            <a href="<?php echo $path_fix?>userinfo.php?user=<?php echo urlencode($logged_user)?>">
+            <a href="/userinfo.php?user=<?php echo urlencode($logged_user)?>">
               <span class="di">👤</span> 내 프로필
             </a>
-            <a href="<?php echo $path_fix?>modifypage.php">
+            <a href="/modifypage.php">
               <span class="di">✏️</span> 정보 수정
             </a>
             <div class="sep"></div>
-            <a href="<?php echo $path_fix?>status.php?user_id=<?php echo urlencode($logged_user)?>">
+            <a href="/status.php?user_id=<?php echo urlencode($logged_user)?>">
               <span class="di">📋</span> 내 제출 기록
             </a>
-            <a href="<?php echo $path_fix?>contest.php?my">
+            <a href="/contest.php?my">
               <span class="di">🎮</span> 내 대회
             </a>
             <?php if(isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'contest_creator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_editor'])): ?>
             <div class="sep"></div>
-            <a href="<?php echo $path_fix?>admin/" class="admin-link">
+            <a href="/admin/" class="admin-link">
               <span class="di">⚙️</span> 관리자 패널
             </a>
+            <?php if(isset($_SESSION[$OJ_NAME.'_'.'administrator'])):
+              $pending_cnt = 0;
+              $pr = pdo_query("SELECT COUNT(*) FROM users WHERE defunct='Y'");
+              if($pr && count($pr)>0) $pending_cnt = intval($pr[0][0]);
+            ?>
+            <a href="/admin/user_approve.php" class="admin-link">
+              <span class="di">✅</span> 가입 승인<?php if($pending_cnt > 0): ?> <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;margin-left:4px;"><?php echo $pending_cnt?></span><?php endif; ?>
+            </a>
+            <?php endif; ?>
             <?php endif; ?>
             <div class="sep"></div>
-            <a href="<?php echo $path_fix?>logout.php" class="logout-link">
+            <a href="/logout.php" class="logout-link">
               <span class="di">🚪</span> 로그아웃
             </a>
           </div>
         </div>
         <?php else: ?>
         <!-- 비로그인: 단일 로그인 버튼 -->
-        <a href="<?php echo $path_fix?>loginpage.php" class="cn-login-btn">
+        <a href="/loginpage.php" class="cn-login-btn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
           로그인
         </a>

@@ -48,15 +48,15 @@
 
 
 /* 정답률 */
-.ps-rate{display:flex;align-items:center;gap:6px;min-width:120px;flex-shrink:0}
-.ps-rate-bar{width:50px;height:5px;border-radius:3px;background:#f3f4f6;overflow:hidden;flex-shrink:0}
-.ps-rate-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c4b5fd,#7c3aed)}
-.ps-rate-text{font-size:12px;font-weight:800;color:#7c3aed;white-space:nowrap}
+.ps-rate{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:80px;flex-shrink:0}
+.ps-rate-text{font-size:15px;font-weight:800;color:#7c3aed;white-space:nowrap}
+.ps-rate-bar{width:100%;height:6px;border-radius:3px;background:#f3f4f6;overflow:hidden}
+.ps-rate-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#c4b5fd,#7c3aed);transition:width 0.3s ease}
 
 /* 열 헤더 */
 .ps-col-header{
   display:flex;align-items:center;gap:14px;
-  padding:10px 20px;font-size:13px;font-weight:700;color:#7c3aed;
+  padding:10px 20px;font-size:15px;font-weight:800;color:#7c3aed;
   border-bottom:2px solid #ede9fe;margin-bottom:4px;
 }
 .ps-col-header .ph-status{width:32px;flex-shrink:0;text-align:center}
@@ -64,6 +64,7 @@
 .ps-col-header .ph-title{flex:1}
 .ps-col-header .ph-stats{display:flex;gap:16px;flex-shrink:0}
 .ps-col-header .ph-stats span{min-width:52px;text-align:center}
+.ps-col-header .ph-rate{min-width:80px;text-align:center;flex-shrink:0}
 
 /* 문제 리스트 */
 .ps-list{display:flex;flex-direction:column;gap:6px}
@@ -153,10 +154,14 @@
 /* 통계 */
 .ps-stat-col{display:flex;gap:16px;align-items:center;flex-shrink:0}
 .ps-stat-box{text-align:center;min-width:52px}
-.ps-stat-box .num{font-size:17px;font-weight:800;display:block}
+.ps-stat-box .num{font-size:18px;font-weight:800;display:block}
 .ps-stat-box .num a{text-decoration:none}
 .ps-stat-box .num a:hover{opacity:.7}
 .ps-stat-box .lbl{font-size:11px;color:#aaa;font-weight:600}
+.ps-stat-box.stat-acc .num a{color:#16a34a}
+.ps-stat-box.stat-acc .lbl{color:#15803d}
+.ps-stat-box.stat-sub .num a{color:#64748b}
+.ps-stat-box.stat-sub .lbl{color:#475569}
 
 /* 페이지네이션 */
 .ps-page{display:flex;justify-content:center;gap:4px;margin-top:24px;flex-wrap:wrap}
@@ -255,9 +260,9 @@ a.ps-cat-btn{text-decoration:none;display:flex}
         // Count per category
         $cat_counts = [];
         $cat_sql = "SELECT 
-          SUM(problem_id BETWEEN 1 AND 199) as c_basic,
-          SUM(problem_id BETWEEN 201 AND 299) as c_adv,
-          SUM(problem_id BETWEEN 1001 AND 1098) as python,
+          SUM(problem_id BETWEEN 1 AND 100) as c_basic,
+          SUM(problem_id BETWEEN 101 AND 999 OR problem_id BETWEEN 9000 AND 9999) as c_adv,
+          SUM(problem_id BETWEEN 1000 AND 1999) as python,
           COUNT(*) as total
           FROM problem WHERE defunct='N'";
         $cat_r = pdo_query($cat_sql);
@@ -281,8 +286,8 @@ a.ps-cat-btn{text-decoration:none;display:flex}
     <span class="ph-status">상태</span>
     <span class="ph-pid">번호</span>
     <span class="ph-title">제목</span>
-    <span class="ph-stats"><span>통과</span><span>제출</span></span>
-    <span class="ph-rate" style="min-width:120px;text-align:center">정답률</span>
+    <span class="ph-stats"><span>제출</span><span>통과</span></span>
+    <span class="ph-rate">정답률</span>
   </div>
   <div class="ps-list" id="problemset">
 <?php endif; ?>
@@ -331,8 +336,8 @@ a.ps-cat-btn{text-decoration:none;display:flex}
     <?php
       // 언어 감지
       $pid_num = intval($pid);
-      if($pid_num >= 1001) $data_lang = 'Python';
-      else if($pid_num >= 201) $data_lang = 'C심화';
+      if($pid_num >= 1000 && $pid_num < 9000) $data_lang = 'Python';
+      else if($pid_num >= 101) $data_lang = 'C심화';
       else $data_lang = 'C';
       // 소분류 감지
       $data_cat = '';
@@ -353,18 +358,24 @@ a.ps-cat-btn{text-decoration:none;display:flex}
       </div>
       <?php $p_rate = ($submitted > 0) ? round(($accepted / $submitted) * 100, 1) : 0; ?>
       <div class="ps-stat-col">
-        <div class="ps-stat-box">
-          <span class="num"><a href="<?php echo $acc_href?>" onclick="event.stopPropagation()"><?php echo $accepted?></a></span>
-          <span class="lbl">통과</span>
-        </div>
-        <div class="ps-stat-box">
+        <div class="ps-stat-box stat-sub">
           <span class="num"><a href="<?php echo $sub_href?>" onclick="event.stopPropagation()"><?php echo $submitted?></a></span>
           <span class="lbl">제출</span>
         </div>
+        <div class="ps-stat-box stat-acc">
+          <span class="num"><a href="<?php echo $acc_href?>" onclick="event.stopPropagation()"><?php echo $accepted?></a></span>
+          <span class="lbl">통과</span>
+        </div>
       </div>
+      <?php
+        $bar_color = '#c4b5fd,#7c3aed';
+        if($p_rate >= 70) $bar_color = '#86efac,#22c55e';
+        elseif($p_rate >= 40) $bar_color = '#fde68a,#f59e0b';
+        elseif($p_rate > 0) $bar_color = '#fca5a5,#ef4444';
+      ?>
       <div class="ps-rate">
-        <div class="ps-rate-bar"><div class="ps-rate-fill" style="width:<?php echo $p_rate?>%"></div></div>
-        <span class="ps-rate-text"><?php echo $p_rate?>%</span>
+        <div class="ps-rate-bar"><div class="ps-rate-fill" style="width:<?php echo $p_rate?>%;background:linear-gradient(90deg,<?php echo $bar_color?>)"></div></div>
+        <span class="ps-rate-text" style="color:<?php echo explode(',',$bar_color)[1]?>"><?php echo $p_rate?>%</span>
       </div>
     </div>
     <?php } ?>

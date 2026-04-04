@@ -600,8 +600,12 @@
       }
 
       if(!(isset($OJ_OI_MODE)&&$OJ_OI_MODE)) {
-        echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."'>▶ 채점상황 (".$row['submit'].")</a>";
-
+        if(isset($_SESSION[$OJ_NAME.'_'.'user_id'])) {
+          $my_uid_btn = $_SESSION[$OJ_NAME.'_'.'user_id'];
+          $my_sub_count = pdo_query("SELECT COUNT(*) as cnt FROM solution WHERE user_id=? AND problem_id=?", $my_uid_btn, $row['problem_id']);
+          $my_cnt = $my_sub_count[0]['cnt'] ?? 0;
+          echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."&user_id=".$my_uid_btn."'>📋 내 제출 (".$my_cnt.")</a>";
+        }
       }
 
       if(isset($_SESSION[$OJ_NAME.'_'.'administrator']) || isset($_SESSION[$OJ_NAME.'_'."p".$row['problem_id']])) {
@@ -1014,7 +1018,7 @@ function transform(){
     wrap.id = 'submitPage';
     wrap.style.cssText = 'margin-top:16px;animation:slideUp 0.3s ease;';
     wrap.innerHTML = '<div style="text-align:right;margin-bottom:8px;"><button onclick="closeEditor()" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;">✕ 닫기</button></div>'
-      + '<iframe id="ansFrame" src="'+submitURL+'&spa" style="width:100%;height:'+Math.max(window.innerHeight*0.7,500)+'px;border:none;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08);"></iframe>';
+      + '<iframe id="ansFrame" src="'+submitURL+'&spa&_t='+Date.now()+'" style="width:100%;height:'+Math.max(window.innerHeight*0.7,500)+'px;border:none;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08);"></iframe>';
     main.appendChild(wrap);
     setTimeout(function(){ wrap.scrollIntoView({behavior:'smooth'}); }, 300);
   } else {
@@ -1038,7 +1042,7 @@ function transform(){
     // 닫기 버튼
     var closeBtn = '<div style="text-align:right;padding:6px 6px 8px 0;"><button onclick="closeEditor()" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;box-shadow:0 2px 8px rgba(239,68,68,0.3);" onmouseover="this.style.background=\'#dc2626\';this.style.boxShadow=\'0 2px 12px rgba(239,68,68,0.5)\'" onmouseout="this.style.background=\'#ef4444\';this.style.boxShadow=\'0 2px 8px rgba(239,68,68,0.3)\'">✕ 에디터 닫기</button></div>';
     
-    editorWrap.innerHTML = closeBtn + '<iframe src="'+submitURL+'&spa" style="width:100%;height:calc(100% - 36px);border:none;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.1);background:#fff;"></iframe>';
+    editorWrap.innerHTML = closeBtn + '<iframe src="'+submitURL+'&spa&_t='+Date.now()+'" style="width:100%;height:calc(100% - 36px);border:none;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,0.1);background:#fff;"></iframe>';
     main.appendChild(editorWrap);
 
     // 애니메이션 트리거

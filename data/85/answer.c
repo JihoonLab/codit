@@ -1,10 +1,8 @@
 #include <stdio.h>
 int main(){
-    char c;
-    scanf("%c",&c);
-    for(char i='a';i<=c;i++){
-        if(i>'a') printf(" ");
-        printf("%c",i);
-    }
+    int arr[10], k;
+    for(int i=0; i<10; i++) scanf("%d", &arr[i]);
+    scanf("%d", &k);
+    printf("%d\n", arr[k-1]);
     return 0;
 }

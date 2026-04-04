@@ -337,13 +337,13 @@ function modify_source(pid){
 				$("#source_"+pid).html("<span class='label label-info'>"+ns+"</span>");		
 			},
 			error: function() {
-				console.log("分类添加失败");
+				console.log("분류 추가 실패");
 			}
 		    });
 	});
 }
 	function fill_data(pid,data){
-		if(data.indexOf('请求过于频繁')>-1){
+		if(data.indexOf('요청이 너무 빈번합니다')>-1){
 			$("#source_"+pid).text(data);		
 			return ;
 		}
@@ -360,7 +360,7 @@ function modify_source(pid){
 				}
 			},
 			error: function() {
-				console.log("分类添加失败");
+				console.log("분류 추가 실패");
 			}
 		    });
 		
@@ -381,13 +381,13 @@ function modify_source(pid){
 			}
 		},
 		error: function() {
-		    	    console.log('获取数据失败');
+		    	    console.log('데이터 불러오기 실패');
 		}
 	    });
 	}
 	function ai_gen(btn,pid){
 		    let oldval=$(btn).text();
-		    $(btn).text('AI思考中...请稍候...');
+		    $(btn).text('AI 처리 중...잠시만...');
 		    $.ajax({
 		    	url: '../<?php echo $OJ_AI_API_URL?>', 
 			type: 'GET',
@@ -397,7 +397,7 @@ function modify_source(pid){
 					window.setTimeout('pull_result('+pid+','+data+')',1000*Math.sqrt(sleep++));
 			},
 			error: function() {
-		    	    $(btn).text('获取数据失败');
+		    	    $(btn).text('데이터 불러오기 실패');
 			}
 		    });
 	}

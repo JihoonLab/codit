@@ -11,13 +11,39 @@
 .cl-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
 .cl-header h2{font-size:26px;font-weight:800;color:#1a1a2e;margin:0}
 .cl-header h2 em{color:#7c3aed;font-style:normal}
+/* 수업 생성 드롭다운 */
+.create-wrap{position:relative;display:inline-block}
 .btn-create{
   background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;
-  padding:12px 26px;border-radius:10px;font-size:15px;font-weight:700;
+  padding:12px 26px;border-radius:12px;font-size:15px;font-weight:700;
   cursor:pointer;text-decoration:none;transition:all .2s;
-  box-shadow:0 4px 14px rgba(124,58,237,.3);
+  box-shadow:0 4px 14px rgba(124,58,237,.3);display:inline-flex;align-items:center;gap:6px;
 }
 .btn-create:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,.4);color:#fff}
+.btn-create .arrow{font-size:10px;opacity:.7;transition:transform .2s}
+.create-wrap.open .btn-create .arrow{transform:rotate(180deg)}
+.create-dropdown{
+  display:none;position:absolute;right:0;top:calc(100% + 10px);
+  background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(124,58,237,.15),0 0 0 1px rgba(124,58,237,.08);
+  min-width:260px;z-index:100;overflow:hidden;padding:6px;
+  animation:ddPop .2s cubic-bezier(.16,1,.3,1);
+}
+.create-wrap.open .create-dropdown{display:block}
+@keyframes ddPop{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.dd-item{
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  text-decoration:none;color:#333;border-radius:12px;transition:all .15s;
+}
+.dd-item:hover{background:linear-gradient(135deg,#f8f6fd,#f0ecf9);transform:translateX(2px)}
+.dd-item:hover .dd-icon-wrap{transform:scale(1.08)}
+.dd-icon-wrap{
+  width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;transition:transform .15s;
+}
+.dd-item.batch .dd-icon-wrap{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;box-shadow:0 3px 10px rgba(124,58,237,.25)}
+.dd-item.single .dd-icon-wrap{background:linear-gradient(135deg,#f0ecf9,#e8e0f8);color:#7c3aed}
+.dd-text b{font-size:14px;font-weight:700;color:#1a1a2e;display:block;margin-bottom:2px}
+.dd-text span{font-size:12px;color:#999;font-weight:400;line-height:1.3}
 
 /* 검색 */
 .cl-search{
@@ -132,7 +158,21 @@
 <div class="cl-wrap">
   <div class="cl-header">
     <h2>📚 <em>수업</em> 목록</h2>
-    <?php if($is_admin): ?><a href="classop.php?action=write" class="btn-create">+ 수업 만들기</a><?php endif; ?>
+    <?php if($is_admin): ?>
+    <div class="create-wrap" id="createWrap">
+      <button class="btn-create" onclick="document.getElementById('createWrap').classList.toggle('open')">✏️ 수업 생성 <span class="arrow">▼</span></button>
+      <div class="create-dropdown">
+        <a href="classop.php?action=write" class="dd-item single">
+          <div class="dd-icon-wrap">📝</div>
+          <div class="dd-text"><b>개별 생성</b><span>한 반씩 직접 생성</span></div>
+        </a>
+        <a href="classop.php?action=batch" class="dd-item batch">
+          <div class="dd-icon-wrap">🚀</div>
+          <div class="dd-text"><b>일괄 생성</b><span>학년 전체 반에 한번에 생성</span></div>
+        </a>
+      </div>
+    </div>
+    <?php endif; ?>
   </div>
 
   <div class="cl-search">
@@ -240,6 +280,11 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 <?php endif; ?>
+// Close create dropdown on outside click
+document.addEventListener('click', function(e) {
+  var w = document.getElementById('createWrap');
+  if(w && !w.contains(e.target)) w.classList.remove('open');
+});
 </script>
 </body>
 </html>

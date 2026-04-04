@@ -151,7 +151,14 @@
       </div>
       <div class="profile-uid">@<?php echo htmlspecialchars($user)?></div>
       <?php if($school): ?>
-      <div class="profile-school">🏫 <?php echo htmlspecialchars($school)?></div>
+      <div class="profile-school">🏫 <?php
+        $s_parts = explode('-', $school);
+        if(count($s_parts) === 2 && is_numeric($s_parts[0]) && is_numeric($s_parts[1])) {
+          echo $s_parts[0] . '학년 ' . $s_parts[1] . '반';
+        } else {
+          echo htmlspecialchars($school);
+        }
+      ?></div>
       <?php endif; ?>
     </div>
     <?php if(isset($_SESSION[$OJ_NAME.'_user_id']) && $_SESSION[$OJ_NAME.'_user_id'] == $user): ?>

@@ -61,7 +61,7 @@
         <!-- - by CSL-->
         <!--
      <div class="form-group">
-        <label>3) 为远程判题导出题面填写远程别名，正常导出请留空 for Remote judge only :</label>
+        <label>3) 원격 채점용 별명을 입력하세요. 일반 내보내기는 비워두세요 for Remote judge only :</label>
         <input class="form-control" name="remote_name" type="text" placeholder="my">
       </div>
       <br><br>

@@ -47,11 +47,11 @@
         you can't use import function at this time.<br>"; 
 
         if($OJ_LANG == "cn")
-          echo "权限异常，请先去执行sudo chmod 775 -R $OJ_DATA <br> 和 sudo chgrp -R ".get_current_user()." $OJ_DATA <br>";
+          echo "권한 오류, 먼저 실행하세요: sudo chmod 775 -R $OJ_DATA <br> 和 sudo chgrp -R ".get_current_user()." $OJ_DATA <br>";
 	  
         $show_form = false;
 	if(get_current_user()=="www")
-	  echo "如果你是宝塔用户，请关闭宝塔的跨站防护功能，如果你是lnmp或者centos用户，请禁用open_basedir。如果坚持使用，请将/home/jduge/data目录加进去。";
+	  echo "Baota 사용자는 크로스사이트 보호 기능을 비활성화하세요，如果你是lnmp或者centos用户，请禁用open_basedir。如果坚持使用，请将/home/jduge/data目录加进去。";
       }
 	    
 
@@ -124,7 +124,7 @@
       </div>
       <?php require("../include/set_post_key.php");?>
     </form>
-   - Markdown - zip<br>zip压缩的.md文件，首行为标题<br>
+   - Markdown - zip<br>zip 압축된 .md 파일, 첫 줄이 제목<br>
     <form class='form-inline' action='problem_import_md.php' method=post enctype="multipart/form-data">
       <div class='form-group'>
         <input class='form-control' type=file name=fps>

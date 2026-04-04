@@ -45,7 +45,7 @@ if(isset($_POST['do'])){
           echo "&nbsp;&nbsp;&nbsp;&nbsp;".$id_pw[0]." ... Error : User already exist!<br>";
           $ulist = $ulist.$id_pw[0]." ".$id_pw[1]."\n";
         } else {
-          $passwd = pwGen($id_pw[1]);
+          $passwd = pwGen(md5($id_pw[1]));
           if(!isset($OJ_EXPIRY_DAYS)) $OJ_EXPIRY_DAYS=365;
           $sql = "INSERT INTO `users` (`user_id`, `password`, `reg_time`,`expiry_date`, `nick`) VALUES (?, ?, NOW(),date_add(curdate(),interval $OJ_EXPIRY_DAYS  day), ?);";
           pdo_query($sql, $id_pw[0], $passwd, $id_pw[0]);
@@ -57,7 +57,7 @@ if(isset($_POST['do'])){
         }
       }
     }
-    echo "<br>Remained lines have error!<hr>";
+    if(!empty(trim($ulist))) echo "<br>Remained lines have error!<hr>";
   }
 }
 ?>

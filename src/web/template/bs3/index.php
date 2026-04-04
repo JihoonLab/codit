@@ -42,12 +42,12 @@
       pointer-events: none;
     }
     .hero-inner { position: relative; z-index: 2; }
-    .hero h1 { font-size: 40px; font-weight: 900; margin: 0 0 14px; letter-spacing: -1.5px; color: #fff; overflow: hidden; }
+    .hero h1 { font-family: 'Inter','Noto Sans KR',sans-serif; font-size: 40px; font-weight: 900; margin: 0 0 14px; letter-spacing: -1.5px; overflow: hidden; }
+    .hero h1 .codit-txt { display: inline-block; animation: fadeSlideUp 0.6s ease 0.1s both; background: linear-gradient(135deg, #c4b5fd, #a78bfa, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .hero-sub { font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.5); margin: 0 0 24px; letter-spacing: 0.5px; line-height: 1.4; animation: fadeSlideUp 0.8s ease 0.3s both; }
     .hero-sub .oj { display: inline; background: linear-gradient(135deg, #a78bfa, #7c3aed, #6d28d9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; font-size: 16px; animation: glowPulse 3s ease-in-out infinite; }
     @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes glowPulse { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.2) drop-shadow(0 0 8px rgba(124,58,237,0.4)); } }
-    .hero h1 .codit-txt { display: inline-block; animation: fadeSlideUp 0.6s ease 0.1s both; }
     .hero-tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; animation: fadeSlideUp 1s ease 0.5s both; }
     .hero-tags span { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.10); padding: 5px 14px; border-radius: 20px; font-size: 12px; color: rgba(255,255,255,0.65); font-weight: 500; }
 
@@ -151,111 +151,41 @@
     .hof-card .rk-list { }
 
     /* ===== RANK - Hall of Fame ===== */
-    .hof-bg {
-      background: #fafafa;
-      padding: 24px 16px 16px;
-      position: relative;
-      overflow: hidden;
-    }
-    /* subtle top accent — no shimmer, no sparkle */
-    .hof-bg::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, #e5e7eb, #d1d5db 30%, #fbbf24 50%, #d1d5db 70%, #e5e7eb);
-      pointer-events: none;
-    }
-
-    /* sparkle particles — hidden now */
-    .hof-particles { display: none; }
-
-    /* podium */
-    .podium {
-      display: flex; align-items: flex-end; justify-content: center;
-      gap: 10px; position: relative; z-index: 1; padding-bottom: 4px;
-    }
-    .podium-item {
-      display: flex; flex-direction: column; align-items: center;
-      text-decoration: none;
-      transition: transform 0.25s ease;
-    }
-    .podium-item:hover { transform: translateY(-3px); }
-
-    /* trophy icon area — static, no float */
-    .podium-icon { margin-bottom: 6px; position: relative; }
-    .podium-trophy {
-      font-size: 36px;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
-    }
-    .p-silver .podium-trophy { font-size: 28px; }
-    .p-bronze .podium-trophy { font-size: 28px; }
-
-    /* podium pedestal */
-    .podium-pedestal {
-      width: 100%; margin-top: 4px; border-radius: 12px;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 12px 10px 10px;
-    }
-    .p-gold .podium-pedestal {
-      background: #fff;
-      border: 1.5px solid #e5e7eb;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      min-width: 120px; min-height: 90px;
-    }
-    .p-silver .podium-pedestal {
-      background: #fff;
-      border: 1.5px solid #f3f4f6;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-      min-width: 105px; min-height: 74px;
-    }
-    .p-bronze .podium-pedestal {
-      background: #fff;
-      border: 1.5px solid #f3f4f6;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-      min-width: 105px; min-height: 68px;
-    }
-    .podium-rank-badge {
-      font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
-      padding: 2px 10px; border-radius: 10px; margin-bottom: 5px;
-      text-transform: uppercase;
-    }
-    .p-gold .podium-rank-badge { background: #fef3c7; color: #92400e; }
-    .p-silver .podium-rank-badge { background: #f3f4f6; color: #6b7280; }
-    .p-bronze .podium-rank-badge { background: #fef3c7; color: #a16207; }
-    .podium-name {
-      font-size: 13px; font-weight: 800; color: #1f2937;
-      text-align: center; max-width: 100%;
-      word-break: keep-all; line-height: 1.3; margin-bottom: 3px;
-    }
-    .podium-score { font-weight: 900; line-height: 1; }
-    .p-gold .podium-score { font-size: 26px; color: #7c3aed; }
-    .p-silver .podium-score { font-size: 20px; color: #6b7280; }
-    .p-bronze .podium-score { font-size: 20px; color: #92400e; }
-    .podium-label { font-size: 8px; color: #b0b5bf; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 2px; }
-
-    /* Rank list (4th~) */
-    .rk-list { padding: 4px 0; }
-    .rk {
+    .hof-list { padding: 0; }
+    .hof-item {
       display: flex; align-items: center; gap: 14px;
-      padding: 11px 22px; border-bottom: 1px solid #f5f6f8;
-      transition: all 0.15s;
+      padding: 13px 22px; border-bottom: 1px solid #f5f6f8;
+      transition: all 0.15s; text-decoration: none; color: inherit;
     }
-    .rk:last-child { border-bottom: none; }
-    .rk:hover { background: #faf5ff; }
-    .rk-num {
-      font-size: 11px; font-weight: 800; color: #9ca3af;
-      min-width: 26px; height: 26px; line-height: 26px;
-      text-align: center; border-radius: 8px;
-      background: #f3f4f6; flex-shrink: 0;
+    .hof-item:last-child { border-bottom: none; }
+    .hof-item:hover { background: #faf5ff; }
+    .hof-medal {
+      font-size: 22px; min-width: 32px; text-align: center; flex-shrink: 0;
     }
-    .rk-info { flex: 1; min-width: 0; }
-    .rk-name { font-size: 13.5px; font-weight: 700; color: #1f2937; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .rk-name a { color: inherit; text-decoration: none; }
-    .rk-name a:hover { color: #7c3aed; }
-    .rk-bar { height: 3px; border-radius: 2px; background: #f3f4f6; margin-top: 5px; overflow: hidden; }
-    .rk-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #c4b5fd, #7c3aed); }
-    .rk-sc-wrap { flex-shrink: 0; text-align: right; }
-    .rk-sc-num { font-size: 17px; font-weight: 900; color: #7c3aed; line-height: 1; }
-    .rk-sc-label { font-size: 9px; color: #b0b5bf; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+    .hof-num {
+      font-size: 13px; font-weight: 800; color: #7c3aed;
+      min-width: 32px; height: 32px; line-height: 32px;
+      text-align: center; border-radius: 50%;
+      background: #f0e6ff; flex-shrink: 0;
+    }
+    .hof-info { flex: 1; min-width: 0; }
+    .hof-name {
+      font-size: 14px; font-weight: 700; color: #1f2937;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .hof-item:hover .hof-name { color: #7c3aed; }
+    .hof-uid { font-size: 11px; color: #b0b5bf; font-weight: 500; margin-left: 4px; }
+    .hof-score { flex-shrink: 0; text-align: right; display: flex; align-items: baseline; gap: 3px; }
+    .hof-score-num { font-size: 18px; font-weight: 900; color: #7c3aed; line-height: 1; }
+    .hof-score-label { font-size: 10px; color: #b0b5bf; font-weight: 700; }
+    /* top 3 highlight */
+    .hof-item.hof-gold { background: linear-gradient(90deg, rgba(254,243,199,0.4), transparent); }
+    .hof-item.hof-gold .hof-score-num { color: #b45309; }
+    .hof-item.hof-gold .hof-name { font-size: 15px; font-weight: 800; }
+    .hof-item.hof-silver { background: linear-gradient(90deg, rgba(243,244,246,0.5), transparent); }
+    .hof-item.hof-silver .hof-score-num { color: #6b7280; }
+    .hof-item.hof-bronze { background: linear-gradient(90deg, rgba(254,243,199,0.25), transparent); }
+    .hof-item.hof-bronze .hof-score-num { color: #92400e; }
 
     .nt {
       margin-left: auto; font-size: 11px; flex-shrink: 0; font-weight: 600;
@@ -382,7 +312,12 @@ def fibonacci(n):
         </div>
         <ul class="home-list">
         <?php
-          $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' ORDER BY class_id DESC LIMIT 4");
+          $__my_school = isset($_SESSION[$OJ_NAME.'_user_id']) ? (pdo_query("SELECT school FROM users WHERE user_id=?", $_SESSION[$OJ_NAME.'_user_id'])[0]['school'] ?? '') : '';
+          if($__my_school !== '') {
+            $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' AND (tag=? OR tag='') ORDER BY class_id DESC LIMIT 4", $__my_school);
+          } else {
+            $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' AND tag='' ORDER BY class_id DESC LIMIT 4");
+          }
           if($class_rows && count($class_rows) > 0):
             foreach($class_rows as $cl):
         ?>
@@ -427,59 +362,32 @@ def fibonacci(n):
         </div>
       </div>
       <?php
-        $rank_rows = pdo_query("SELECT u.user_id, u.nick, COUNT(DISTINCT s.problem_id) as solved FROM users u JOIN solution s ON u.user_id=s.user_id WHERE s.result=4 GROUP BY u.user_id ORDER BY solved DESC LIMIT 8");
+        $rank_rows = pdo_query("SELECT u.user_id, u.nick, COUNT(DISTINCT s.problem_id) as solved FROM users u JOIN solution s ON u.user_id=s.user_id WHERE s.result=4 AND u.defunct='N' AND u.user_id NOT IN ('admin') GROUP BY u.user_id ORDER BY solved DESC LIMIT 8");
         if($rank_rows && count($rank_rows) > 0):
-          $top3 = array_slice($rank_rows, 0, min(3, count($rank_rows)));
-          $classes = ['p-gold','p-silver','p-bronze'];
+          $medals = ['🥇','🥈','🥉'];
+          $hof_classes = ['hof-gold','hof-silver','hof-bronze'];
       ?>
-      <div class="hof-bg">
-        <div class="hof-particles">
-          <?php for($p=0;$p<8;$p++): $sz=rand(2,4); $l=rand(10,90); $d=rand(2,5); $dl=rand(0,4); ?>
-          <div class="hof-particle" style="width:<?php echo $sz?>px;height:<?php echo $sz?>px;left:<?php echo $l?>%;top:<?php echo rand(10,80)?>%;animation-duration:<?php echo $d?>s;animation-delay:<?php echo $dl?>s;"></div>
-          <?php endfor; ?>
-        </div>
-        <div class="podium">
-          <?php
-            $order = [1,0,2];
-            $trophies = ['🏆','🥈','🥉'];
-            $badges = ['1ST','2ND','3RD'];
-            foreach($order as $idx):
-              if(!isset($top3[$idx])) continue;
-              $u = $top3[$idx];
-              $cls = $classes[$idx];
-          ?>
-          <a class="podium-item <?php echo $cls?>" href="userinfo.php?user=<?php echo htmlspecialchars($u['user_id'])?>">
-            <div class="podium-icon">
-              <div class="podium-trophy"><?php echo $trophies[$idx]?></div>
-            </div>
-            <div class="podium-pedestal">
-              <div class="podium-rank-badge"><?php echo $badges[$idx]?></div>
-              <div class="podium-name"><?php echo htmlspecialchars($u['nick'] ?: $u['user_id'])?></div>
-              <div class="podium-score"><?php echo $u['solved']?></div>
-              <div class="podium-label">solved</div>
-            </div>
-          </a>
-          <?php endforeach; ?>
-        </div>
-      </div>
-      <?php if(count($rank_rows) > 3): ?>
-      <div class="rk-list">
-        <?php $max_solved = $rank_rows[0]['solved']; ?>
-        <?php for($i=3; $i<count($rank_rows); $i++): $ru=$rank_rows[$i]; $pct=round(($ru['solved']/$max_solved)*100); ?>
-        <div class="rk">
-          <span class="rk-num"><?php echo $i+1?></span>
-          <div class="rk-info">
-            <div class="rk-name"><a href="userinfo.php?user=<?php echo htmlspecialchars($ru['user_id'])?>"><?php echo htmlspecialchars($ru['nick'] ?: $ru['user_id'])?></a></div>
-            <div class="rk-bar"><div class="rk-bar-fill" style="width:<?php echo $pct?>%"></div></div>
+      <div class="hof-list">
+        <?php foreach($rank_rows as $ri => $ru):
+          $is_top3 = $ri < 3;
+          $cls = $is_top3 ? $hof_classes[$ri] : '';
+        ?>
+        <a class="hof-item <?php echo $cls?>" href="userinfo.php?user=<?php echo htmlspecialchars($ru['user_id'])?>">
+          <?php if($is_top3): ?>
+            <span class="hof-medal"><?php echo $medals[$ri]?></span>
+          <?php else: ?>
+            <span class="hof-num"><?php echo $ri+1?></span>
+          <?php endif; ?>
+          <div class="hof-info">
+            <div class="hof-name"><?php echo htmlspecialchars($ru['nick'] ?: $ru['user_id'])?><?php if($is_top3 && $ru['nick']): ?> <span class="hof-uid"><?php echo htmlspecialchars($ru['user_id'])?></span><?php endif; ?></div>
           </div>
-          <div class="rk-sc-wrap">
-            <div class="rk-sc-num"><?php echo $ru['solved']?></div>
-            <div class="rk-sc-label">solved</div>
+          <div class="hof-score">
+            <span class="hof-score-num"><?php echo $ru['solved']?></span>
+            <span class="hof-score-label">문제</span>
           </div>
-        </div>
-        <?php endfor; ?>
+        </a>
+        <?php endforeach; ?>
       </div>
-      <?php endif; ?>
       <?php else: ?>
       <div class="empty-msg">아직 문제를 푼 사용자가 없습니다.</div>
       <?php endif; ?>

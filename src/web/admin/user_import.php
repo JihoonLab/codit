@@ -32,13 +32,13 @@ function import_user($filename) {
         while (($data = fgetcsv($h, 1000, ",")) !== FALSE) {
          // 每个单独的数组都被存入到嵌套的数组中
 	    if(!$check){
-                if ($data[0] == "学号") {
+                if ($data[0] == "학번") {
                         $check=true;
                         echo "导入名单：<hr>\n";
                         $gbk=false;
 			if(isset($data[6])) $expire=($data[6]==$MSG_EXPIRY_DATE );
                         continue;
-                }else if (iconv("gbk","utf-8",$data[0])=="学号") {
+                }else if (iconv("gbk","utf-8",$data[0])=="학번") {
                         $check=true;
                         $gbk=true;
 			$expire=(iconv("gbk","utf-8",$data[6])==$MSG_EXPIRY_DATE );
@@ -79,11 +79,11 @@ function import_user($filename) {
                     echo "$user_id : $expiry_date : $ret <br>\n";
 
             }else{
-                echo "<h1>请用下载的模板填写，保存为UTF-8编码。</h1>";
+                echo "<h1>다운로드한 템플릿을 사용하여 작성하고, UTF-8 인코딩으로 저장하세요.</h1>";
                 break;
             }
         }
-        // 关闭文件
+        // 파일 닫기
         fclose($h);
     }
 }
@@ -123,7 +123,7 @@ if (isset($_FILES["fps"])) {
 
 <br>
 <br>
-<h1>导入用户csv文件</h1>
+<h1>사용자 CSV 파일 가져오기</h1>
     <form class='form-inline' action='user_import.php' method=post enctype="multipart/form-data">
       <div class='form-group'>
         <input class='form-control' type=file name='fps' >
@@ -137,7 +137,7 @@ if (isset($_FILES["fps"])) {
       </center>
       <?php require_once ("../include/set_post_key.php"); ?>
     </form>
-<h2><a href="users.csv">下载模板</a></h2>
-<h3>请用下载的模板填写，保存为UTF-8编码。</h3>
+<h2><a href="users.csv">템플릿 다운로드</a></h2>
+<h3>다운로드한 템플릿을 사용하여 작성하고, UTF-8 인코딩으로 저장하세요.</h3>
 <?php
 } ?>

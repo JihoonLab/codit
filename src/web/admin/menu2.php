@@ -1,5 +1,4 @@
 <?php require_once("admin-header.php");
-
   if(isset($OJ_LANG)){
     require_once("../lang/$OJ_LANG.php");
   }
@@ -7,137 +6,233 @@
   $OJ_TP=$OJ_TEMPLATE;
   $OJ_TEMPLATE="bs3";
 ?>
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title><?php echo $MSG_ADMIN?></title>
-<link rel="stylesheet" href="<?php echo $OJ_CDN_URL.$path_fix."template/$OJ_TEMPLATE/"?>bootstrap-theme.min.css">
-<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-<script src="<?php echo $OJ_CDN_URL.$path_fix."template/$OJ_TEMPLATE/"?>jquery.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+/* Reset main site CSS overrides */
+.navbar, .codit-global-footer, .jumbotron, #header, .cn-topbar, .cn-nav { display:none !important; }
+a { color:inherit; }
+a:hover, a:focus { text-decoration:none; }
+html, body {
+  height:100% !important; overflow-x:hidden !important;
+  font-family:'Inter','Noto Sans KR',sans-serif !important;
+  background:#0f0b1e !important;
+  color:#c4c0d4 !important;
+  margin:0 !important; padding:0 !important;
+}
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(124,58,237,0.3); border-radius:4px; }
 
-<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="<?php echo $OJ_CDN_URL.$path_fix."template/$OJ_TEMPLATE/"?>bootstrap.min.js"></script>
+.sidebar {
+  display:flex; flex-direction:column; min-height:100vh;
+  padding:20px 16px;
+}
 
+/* Brand */
+.sb-brand {
+  text-align:center; padding:8px 0 24px; border-bottom:1px solid rgba(255,255,255,0.06);
+  margin-bottom:20px;
+}
+.sb-brand .logo {
+  font-size:26px; font-weight:900; letter-spacing:-1px;
+  background:linear-gradient(135deg,#c4b5fd,#a78bfa,#7c3aed);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.sb-brand .sub {
+  font-size:11px; color:rgba(255,255,255,0.3); margin-top:4px;
+  font-weight:500; letter-spacing:1px; text-transform:uppercase;
+}
+
+/* Quick actions */
+.sb-quick {
+  display:flex; gap:6px; margin-bottom:22px;
+}
+.sb-quick a {
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:11px 0; border-radius:10px; font-size:12.5px; font-weight:700;
+  text-decoration:none; transition:all .2s;
+  background:rgba(124,58,237,0.15); color:#c4b5fd; border:1px solid rgba(124,58,237,0.25);
+}
+.sb-quick a:hover {
+  background:rgba(124,58,237,0.3); border-color:#7c3aed; color:#e0d4fc;
+  transform:translateY(-1px);
+}
+
+/* Section */
+.sb-section { margin-bottom:8px; }
+.sb-section-head {
+  display:flex; align-items:center; gap:8px;
+  padding:11px 12px; border-radius:10px; cursor:pointer;
+  font-size:13px; font-weight:800; color:rgba(255,255,255,0.55);
+  letter-spacing:0.3px;
+  transition:all .15s; user-select:none;
+}
+.sb-section-head:hover { color:rgba(255,255,255,0.8); background:rgba(255,255,255,0.04); }
+.sb-section-head .icon { font-size:16px; width:22px; text-align:center; }
+.sb-section-head .arrow {
+  margin-left:auto; font-size:10px; transition:transform .2s; color:rgba(255,255,255,0.25);
+}
+.sb-section.open .sb-section-head .arrow { transform:rotate(90deg); color:#a78bfa; }
+.sb-section.open .sb-section-head { color:#c4b5fd; }
+
+.sb-links {
+  overflow:hidden; max-height:0; transition:max-height .3s ease;
+  padding-left:8px;
+}
+.sb-section.open .sb-links { max-height:500px; }
+
+.sb-links a {
+  display:flex; align-items:center; gap:9px;
+  padding:10px 12px; margin:2px 0; border-radius:8px;
+  font-size:13.5px; font-weight:600; color:rgba(255,255,255,0.5);
+  text-decoration:none; transition:all .15s;
+}
+.sb-links a:hover {
+  background:rgba(124,58,237,0.12); color:#e0d4fc;
+}
+.sb-links a .dot {
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,0.2); flex-shrink:0;
+  transition:background .15s;
+}
+.sb-links a:hover .dot { background:#a78bfa; }
+
+/* Footer */
+.sb-footer {
+  margin-top:auto; padding-top:16px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  text-align:center;
+}
+.sb-footer a {
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:11px; border-radius:10px; font-size:13px; font-weight:700;
+  color:rgba(255,255,255,0.4); text-decoration:none; transition:all .15s;
+}
+.sb-footer a:hover { background:rgba(255,255,255,0.05); color:#e0d4fc; }
+</style>
 </head>
+<body>
+<div class="sidebar">
 
-<body style="text-align:center;min-width:100px" >
-<hr>
-<a class='btn btn-sm' href="help.php" target="main" title="<?php echo $MSG_ADMIN?>"><b><?php echo $MSG_ADMIN?></b></a>
-<hr>
+  <div class="sb-brand">
+    <div class="logo"><?php echo $OJ_NAME?></div>
+    <div class="sub">Admin Panel</div>
+  </div>
 
-<a class='btn btn-sm' href="../status.php" target="_top" title="<?php echo $MSG_HELP_SEEOJ?>"><b><?php echo $MSG_SEEOJ?></b></a><br>
+  <div class="sb-quick">
+    <a href="help.php" target="main">🏠 대시보드</a>
+    <a href="../" target="_top">🌐 사이트 보기</a>
+  </div>
 
-<div>
-<div class="btn-group-vertical" role="menu">
-
-  <div class="btn-group" role="menu">
-    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <?php echo $MSG_NEWS."-".$MSG_ADMIN ?> <span class="caret"></span>
-    </button>
-    <div class="dropdown-menu">
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])){?>
+  <!-- 공지 관리 -->
+  <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])){?>
+  <div class="sb-section open">
+    <div class="sb-section-head" onclick="this.parentElement.classList.toggle('open')">
+      <span class="icon">📢</span> <?php echo $MSG_NEWS?> 관리
+      <span class="arrow">▶</span>
+    </div>
+    <div class="sb-links">
       <?php if ($OJ_TP=="bs3"){?>
-        <a class="dropdown-item btn-sm" href="setmsg.php" target="main" title="<?php echo $MSG_HELP_SETMESSAGE?>"><b><?php echo $MSG_NEWS."-".$MSG_SETMESSAGE?></b></a>
+      <a href="setmsg.php" target="main"><span class="dot"></span> 공지 설정</a>
       <?php }?>
-      <a class="dropdown-item btn-sm" href="news_list.php" target="main" title="<?php echo $MSG_HELP_NEWS_LIST?>"><b><?php echo $MSG_NEWS."-".$MSG_LIST?></b></a>
-      <a class="dropdown-item btn-sm" href="news_add_page.php" target="main" title="<?php echo $MSG_HELP_ADD_NEWS?>"><b><?php echo $MSG_NEWS."-".$MSG_ADD?></b></a>
-<?php }?>
+      <a href="news_list.php" target="main"><span class="dot"></span> <?php echo $MSG_NEWS?> 목록</a>
+      <a href="news_add_page.php" target="main"><span class="dot"></span> <?php echo $MSG_NEWS?> 추가</a>
     </div>
   </div>
-  <div class="btn-group" role="menu">
-    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <?php echo $MSG_USER."-".$MSG_ADMIN ?> <span class="caret"></span>
-    </button>
-    <div class="dropdown-menu">
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset( $_SESSION[$OJ_NAME.'_'.'password_setter'])){?>
-      <a class="dropdown-item btn-sm" href="user_list.php" target="main" title="<?php echo $MSG_HELP_USER_LIST?>"><b><?php echo $MSG_USER."-".$MSG_LIST?></b></a>
-<?php }?>
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'user_adder'])){?>
-      <a class="dropdown-item btn-sm" href="user_add.php" target="main" title="<?php echo $MSG_HELP_USER_ADD?>"><b><?php echo $MSG_USER."-".$MSG_ADD?></b></a>
-      <a class="dropdown-item btn-sm" href="user_import.php" target="main" title="<?php echo $MSG_HELP_USER_IMPORT ?>"><b><?php echo $MSG_USER."-".$MSG_IMPORT?></b></a>
+  <?php }?>
 
-<?php }?>
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset( $_SESSION[$OJ_NAME.'_'.'password_setter'])){?>
-      <a class="dropdown-item btn-sm" href="changepass.php" target="main" title="<?php echo $MSG_HELP_SETPASSWORD?>"><b><?php echo $MSG_USER."-".$MSG_SETPASSWORD?></b></a>
-<?php }?>
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])){?>
-      <a class="dropdown-item btn-sm" href="privilege_list.php" target="main" title="<?php echo $MSG_HELP_PRIVILEGE_LIST?>"><b><?php echo $MSG_USER."-".$MSG_PRIVILEGE."-".$MSG_LIST?></b></a>
-      <a class="dropdown-item btn-sm" href="privilege_add.php" target="main" title="<?php echo $MSG_HELP_ADD_PRIVILEGE?>"><b><?php echo $MSG_USER."-".$MSG_PRIVILEGE."-".$MSG_ADD?></b></a>
-<?php }?>
+  <!-- 사용자 관리 -->
+  <div class="sb-section open">
+    <div class="sb-section-head" onclick="this.parentElement.classList.toggle('open')">
+      <span class="icon">👤</span> <?php echo $MSG_USER?> 관리
+      <span class="arrow">▶</span>
     </div>
-  </div>
-
-  <div class="btn-group" role="menu">
-    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <?php echo $MSG_PROBLEM."-".$MSG_ADMIN ?> <span class="caret"></span>
-    </button>
-    <div class="dropdown-menu">
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_editor'])||isset($_SESSION[$OJ_NAME.'_'.'contest_creator'])) {?>
-      <a class="dropdown-item btn-sm" href="problem_list.php" target="main" title="<?php echo $MSG_HELP_PROBLEM_LIST?>"><b><?php echo $MSG_PROBLEM."-".$MSG_LIST?></b></a>
-<?php }
-      if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_editor'])) {?>
-      <a class="dropdown-item btn-sm" href="problem_add_page.php" target="main" title="<?php echo html_entity_decode($MSG_HELP_ADD_PROBLEM)?>"><b><?php echo $MSG_PROBLEM."-".$MSG_ADD?></b></a>
-<?php }
-      if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_importer'])) {?>
-      <a class="dropdown-item btn-sm" href="problem_import.php" target="main" title="<?php echo $MSG_HELP_IMPORT_PROBLEM?>"><b><?php echo $MSG_PROBLEM."-".$MSG_IMPORT?></b></a>
-      <a class="dropdown-item btn-sm" href="problem_export.php" target="main" title="<?php echo $MSG_HELP_EXPORT_PROBLEM?>"><b><?php echo $MSG_PROBLEM."-".$MSG_EXPORT?></b></a>
-<?php }?>
+    <div class="sb-links">
+      <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'password_setter'])){?>
+      <a href="user_list.php" target="main"><span class="dot"></span> <?php echo $MSG_USER?> 목록</a>
+      <?php }?>
+      <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'user_adder'])){?>
+      <a href="user_add.php" target="main"><span class="dot"></span> <?php echo $MSG_USER?> 추가</a>
+      <a href="user_import.php" target="main"><span class="dot"></span> <?php echo $MSG_USER?> 가져오기</a>
+      <?php }?>
+      <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'password_setter'])){?>
+      <a href="changepass.php" target="main"><span class="dot"></span> 비밀번호 변경</a>
+      <?php }?>
+      <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])){?>
+      <a href="privilege_list.php" target="main"><span class="dot"></span> 권한 목록</a>
+      <a href="privilege_add.php" target="main"><span class="dot"></span> 권한 추가</a>
+      <a href="user_approve.php" target="main"><span class="dot"></span> 가입 승인</a>
+      <?php }?>
     </div>
   </div>
 
-
-  <div class="btn-group" role="menu">
-    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <?php echo $MSG_CONTEST."-".$MSG_ADMIN ?> <span class="caret"></span>
-    </button>
-    <div class="dropdown-menu">
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'contest_creator'])){?>
-      <a class="dropdown-item btn-sm" href="contest_list.php" target="main"  title="<?php echo $MSG_HELP_CONTEST_LIST?>"><b><?php echo $MSG_CONTEST."-".$MSG_LIST?></b></a>
-      <a class="dropdown-item btn-sm" href="contest_add.php" target="main"  title="<?php echo $MSG_HELP_ADD_CONTEST?>"><b><?php echo $MSG_CONTEST."-".$MSG_ADD?></b></a>
-      <a class="dropdown-item btn-sm" href="user_set_ip.php" target="main" title="<?php echo $MSG_HELP_SET_LOGIN_IP?>"><b><?php echo $MSG_CONTEST."-".$MSG_SET_LOGIN_IP?></b></a>
-      <a class="dropdown-item btn-sm" href="team_generate.php" target="main" title="<?php echo $MSG_HELP_TEAMGENERATOR?>"><b><?php echo $MSG_CONTEST."-".$MSG_TEAMGENERATOR?></b></a>
-      <a class="dropdown-item btn-sm" href="team_generate2.php" target="main" title="<?php echo $MSG_HELP_TEAMGENERATOR?>"><b><?php echo $MSG_CONTEST."-".$MSG_TEAMGENERATOR?></b></a>
-      <a class="dropdown-item btn-sm" href="offline_import.php" target="main" title="<?php echo $MSG_IMPORT.$MSG_CONTEST ?>"><b><?php echo $MSG_CONTEST."-".$MSG_IMPORT ?></b></a>
-<?php }?>
+  <!-- 문제 관리 -->
+  <div class="sb-section open">
+    <div class="sb-section-head" onclick="this.parentElement.classList.toggle('open')">
+      <span class="icon">📝</span> <?php echo $MSG_PROBLEM?> 관리
+      <span class="arrow">▶</span>
+    </div>
+    <div class="sb-links">
+      <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_editor'])||isset($_SESSION[$OJ_NAME.'_'.'contest_creator'])) {?>
+      <a href="problem_list.php" target="main"><span class="dot"></span> <?php echo $MSG_PROBLEM?> 목록</a>
+      <?php }?>
+      <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_editor'])) {?>
+      <a href="problem_add_page.php" target="main"><span class="dot"></span> <?php echo $MSG_PROBLEM?> 추가</a>
+      <?php }?>
+      <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'problem_importer'])) {?>
+      <a href="problem_import.php" target="main"><span class="dot"></span> <?php echo $MSG_PROBLEM?> 가져오기</a>
+      <a href="problem_export.php" target="main"><span class="dot"></span> <?php echo $MSG_PROBLEM?> 내보내기</a>
+      <?php }?>
     </div>
   </div>
 
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])){?>
-  <div class="btn-group" role="menu">
-    <button type="button" class="btn btn-secondary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <?php echo $MSG_SYSTEM."-".$MSG_ADMIN ?> <span class="caret"></span>
-    </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item btn-sm" href="rejudge.php" target="main" title="<?php echo $MSG_HELP_REJUDGE?>"><b><?php echo $MSG_SYSTEM."-".$MSG_REJUDGE?></b></a>      
-      <a class="dropdown-item btn-sm" href="source_give.php" target="main" title="<?php echo $MSG_HELP_GIVESOURCE?>"><b><?php echo $MSG_SYSTEM."-".$MSG_GIVESOURCE?></b></a>
-      <a class="dropdown-item btn-sm" href="../online.php" target="main"><b><?php echo $MSG_SYSTEM."-".$MSG_HELP_ONLINE?></b></a>      
-      <a class="dropdown-item btn-sm" href="update_db.php" target="main" title="<?php echo $MSG_HELP_UPDATE_DATABASE?>"><b><?php echo $MSG_SYSTEM."-".$MSG_UPDATE_DATABASE?></b></a>
-      <a class="dropdown-item btn-sm" href="backup.php" target="main" title="<?php echo $MSG_HELP_BACKUP_DATABASE?>"><b><?php echo $MSG_SYSTEM."-".$MSG_BACKUP_DATABASE?></b></a>
-      <a class="dropdown-item btn-sm" href="ranklist_export.php" target="main" title="<?php echo $MSG_EXPORT.$MSG_RANKLIST ?>"><b><?php echo  $MSG_EXPORT.$MSG_RANKLIST ?></b></a>
-    
+  <!-- 수업/대회 관리 -->
+  <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])||isset($_SESSION[$OJ_NAME.'_'.'contest_creator'])){?>
+  <div class="sb-section">
+    <div class="sb-section-head" onclick="this.parentElement.classList.toggle('open')">
+      <span class="icon">🏆</span> <?php echo $MSG_CONTEST?> 관리
+      <span class="arrow">▶</span>
+    </div>
+    <div class="sb-links">
+      <a href="contest_list.php" target="main"><span class="dot"></span> <?php echo $MSG_CONTEST?> 목록</a>
+      <a href="contest_add.php" target="main"><span class="dot"></span> <?php echo $MSG_CONTEST?> 추가</a>
+      <a href="user_set_ip.php" target="main"><span class="dot"></span> 로그인 IP 설정</a>
+      <a href="team_generate.php" target="main"><span class="dot"></span> 팀 계정 생성</a>
+      <a href="team_generate2.php" target="main"><span class="dot"></span> 팀 계정 생성2</a>
+      <a href="offline_import.php" target="main"><span class="dot"></span> 오프라인 가져오기</a>
     </div>
   </div>
-<?php }?>
+  <?php }?>
+
+  <!-- 시스템 관리 -->
+  <?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])){?>
+  <div class="sb-section">
+    <div class="sb-section-head" onclick="this.parentElement.classList.toggle('open')">
+      <span class="icon">⚙️</span> <?php echo $MSG_SYSTEM?> 관리
+      <span class="arrow">▶</span>
+    </div>
+    <div class="sb-links">
+      <a href="rejudge.php" target="main"><span class="dot"></span> 재채점</a>
+      <a href="source_give.php" target="main"><span class="dot"></span> 소스 공개</a>
+      <a href="../online.php" target="main"><span class="dot"></span> 접속자 현황</a>
+      <a href="update_db.php" target="main"><span class="dot"></span> DB 업데이트</a>
+      <a href="backup.php" target="main"><span class="dot"></span> 백업</a>
+      <a href="ranklist_export.php" target="main"><span class="dot"></span> 랭킹 내보내기</a>
+    </div>
+  </div>
+  <?php }?>
+
+  <div class="sb-footer">
+    <a href="../logout.php" target="_top">🚪 로그아웃</a>
+  </div>
 
 </div>
-</div>
-
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])){?>
-  <br><a class='btn btn-sm' href="https://github.com/zhblue/hustoj/" target="_blank"><b>HUSTOJ</b></a>
-  <br><a class='btn btn-sm' href="https://yuanqi.tencent.com/agent/jADpOEWqLvTv" target="_blank"><b>小张老师(AI-help)</b></a>
-  <br><div><a class="btn btn-sm" target='main' href="http://hustoj.com"><?php echo $MSG_ADMIN." ".$MSG_FAQ?></a></div>
-  <br><a class='btn btn-sm' href="https://github.com/zhblue/freeproblemset/" target="_blank"><b>FreeProblemSet</b></a>
-  <br><a class='btn btn-sm' href="http://tk.hustoj.com" target="_blank"><b>自助题库</b></a>
-  <?php if(isset($OJ_REMOTE_JUDGE)&&$OJ_REMOTE_JUDGE){ ?>
-        <br><a class='btn btn-sm' href="https://www.ssoier.cn/api/" target="_blank"><b>一本通远程账户管理</b></a>
-  <?php } ?>
-  <br><a class='btn btn-sm' href="https://mp.weixin.qq.com/s?__biz=MzI1MTAwMTI2NA==&mid=2656403287&idx=1&sn=2b1b9a5cd0b271aa4a050c349981e715" target="_blank"><b>二次开发教程</b></a>
-  <br>
-<?php }?>
-
-<?php if (isset($_SESSION[$OJ_NAME.'_'.'administrator'])&&!$OJ_SAE){?>
-  <a href="solution_statistics.php" target="main" title="Create your own data"><font color="eeeeee">SS Report</font></a> <br>
-  <a href="problem_copy.php" target="main" title="Create your own data"><font color="eeeeee">CopyProblem</font></a> <br>
-  <a href="problem_changeid.php" target="main" title="Danger,Use it on your own risk"><font color="eeeeee">ReOrderProblem</font></a>
-<?php }?>
 </body>
 </html>

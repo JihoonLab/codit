@@ -51,7 +51,7 @@ if (!$use_cookie) {
     $failed = pdo_query("SELECT
                         (SELECT COUNT(1) FROM loginlog WHERE user_id=? AND password='login fail' AND time>=?) as user_fail,
                         (SELECT COUNT(1) FROM loginlog WHERE ip=? AND password='login fail' AND time>=?) as ip_fail;", $user_id, $fiveMinutesAgo, $ip, $fiveMinutesAgo);
-    if (isset($OJ_LOGIN_FAIL_LIMIT) && ($OJ_LOGIN_FAIL_LIMIT > 0) && ($failed[0][0] > $OJ_LOGIN_FAIL_LIMIT || $failed[0][1] > $OJ_LOGIN_FAIL_LIMIT * 4)) {
+    if ($failed[0][0] > 30 || $failed[0][1] > 400) {
         $view_errors = "Failed login too frequently!";
         require("template/" . $OJ_TEMPLATE . "/error.php");
         exit(0);
@@ -108,16 +108,15 @@ if ($login) {
         setcookie($OJ_NAME . "_user", $login, $C_time);
         setcookie($OJ_NAME . "_check", $C_res . (strlen($C_res) * strlen($C_res)) % 7, $C_time);
     }
-    echo "<script language='javascript'>\n";
     if (isset($_SESSION[$OJ_NAME . "_administrator"]))
-        echo "window.location.href='admin';\n";
+        header("Location: /");
     else if (isset($_SESSION[$OJ_NAME . "_contest_creator"]))
-        echo "window.location.href='contest.php?my';\n";
+        header("Location: /contest.php?my");
     else if ($OJ_NEED_LOGIN)
-        echo "window.location.href='index.php';\n";
+        header("Location: /index.php");
     else
-        echo "setTimeout('history.go(-2)',500);\n";
-    echo "</script>";
+        header("Location: /");
+    exit();
 } else {
     $sql = "INSERT INTO `loginlog`(user_id,password,ip,time) VALUES(?,'login fail',?,NOW())";
     pdo_query($sql, $user_id, $ip);

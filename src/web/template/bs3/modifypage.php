@@ -149,10 +149,46 @@
               placeholder="표시될 이름">
           </div>
           <div class="field-row">
-            <label for="school">학년/반</label>
-            <input id="school" name="school" type="text"
-              value="<?php echo htmlspecialchars($row['school'], ENT_QUOTES, 'UTF-8')?>"
-              placeholder="예: 2학년 3반">
+            <label for="student_no">번호</label>
+            <input id="student_no" name="student_no" type="text"
+              value="<?php echo htmlspecialchars($row['student_no'] ?? '', ENT_QUOTES, 'UTF-8')?>"
+              placeholder="출석번호" maxlength="10" inputmode="numeric">
+          </div>
+          <div class="field-row">
+            <label>학년/반</label>
+            <input id="school" name="school" type="hidden" value="<?php echo htmlspecialchars($row['school'], ENT_QUOTES, 'UTF-8')?>">
+            <div style="display:flex;gap:10px;align-items:center">
+              <select id="sel-grade" style="flex:1;padding:10px 14px;border:2px solid #e5e9f0;border-radius:8px;font-size:15px;background:#fff">
+                <option value="">학년 선택</option>
+                <option value="1">1학년</option>
+                <option value="2">2학년</option>
+                <option value="3">3학년</option>
+              </select>
+              <span style="font-size:18px;color:#aaa;font-weight:700">-</span>
+              <select id="sel-class" style="flex:1;padding:10px 14px;border:2px solid #e5e9f0;border-radius:8px;font-size:15px;background:#fff">
+                <option value="">반 선택</option>
+                <?php for($i=1;$i<=8;$i++): ?>
+                <option value="<?php echo $i?>"><?php echo $i?>반</option>
+                <?php endfor; ?>
+              </select>
+            </div>
+            <script>
+            (function(){
+              var cur = document.getElementById('school').value;
+              if(cur && cur.indexOf('-') !== -1) {
+                var parts = cur.split('-');
+                document.getElementById('sel-grade').value = parts[0];
+                document.getElementById('sel-class').value = parts[1];
+              }
+              function updateSchool() {
+                var g = document.getElementById('sel-grade').value;
+                var c = document.getElementById('sel-class').value;
+                document.getElementById('school').value = (g && c) ? g + '-' + c : '';
+              }
+              document.getElementById('sel-grade').onchange = updateSchool;
+              document.getElementById('sel-class').onchange = updateSchool;
+            })();
+            </script>
           </div>
         </div>
 
@@ -173,14 +209,6 @@
           </div>
         </div>
 
-        <!-- 개인정보 동의 -->
-        <div class="privacy-row">
-          <input type="checkbox" name="privacy_check" id="privacy_check">
-          <label for="privacy_check">
-            <a href="privacy.php" target="_blank">개인정보처리방침</a>에 의한 개인정보 수집을 동의합니다.
-          </label>
-        </div>
-
         <!-- 버튼 -->
         <div class="btn-row">
           <button type="submit" name="submit" class="btn-save">저장하기</button>
@@ -194,20 +222,26 @@
 </div>
 
 <?php include("template/$OJ_TEMPLATE/js.php");?>
+<script src="<?php echo $OJ_CDN_URL?>include/md5-min.js"></script>
 <script>
 document.querySelector('form').addEventListener('submit', function(e) {
-  var np = document.getElementById('npassword').value;
-  var rp = document.getElementById('rptpassword').value;
-  if(np && np.length < 6) {
+  var op = document.getElementById('opassword');
+  var np = document.getElementById('npassword');
+  var rp = document.getElementById('rptpassword');
+  if(np.value && np.value.length < 6) {
     alert('새 비밀번호는 6자 이상이어야 합니다.');
-    document.getElementById('npassword').focus();
+    np.focus();
     e.preventDefault(); return;
   }
-  if(np && np !== rp) {
+  if(np.value && np.value !== rp.value) {
     alert('새 비밀번호가 일치하지 않습니다.');
-    document.getElementById('rptpassword').focus();
+    rp.focus();
     e.preventDefault(); return;
   }
+  // MD5 해싱 (로그인/회원가입과 동일)
+  if(op.value) op.value = hex_md5(op.value);
+  if(np.value) np.value = hex_md5(np.value);
+  if(rp.value) rp.value = hex_md5(rp.value);
 });
 </script>
 </body>

@@ -1,12 +1,17 @@
 #include <stdio.h>
 int main() {
-    long long a, r, n;
-    scanf("%lld %lld %lld", &a, &r, &n);
-    long long result = a;
-    long long i;
-    for (i = 1; i < n; i++) {
-        result *= r;
+    int n, arr[100];
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+    int maxLen = 1, curLen = 1;
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > arr[i-1]) {
+            curLen++;
+            if (curLen > maxLen) maxLen = curLen;
+        } else {
+            curLen = 1;
+        }
     }
-    printf("%lld\n", result);
+    printf("%d\n", maxLen);
     return 0;
 }

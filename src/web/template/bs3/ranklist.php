@@ -152,21 +152,30 @@
     .rl-table td a:hover { text-decoration: underline; }
 
     /* Medal rows */
-    .rl-table .row-gold { background: linear-gradient(90deg, rgba(254,243,199,0.4), transparent); }
-    .rl-table .row-silver { background: linear-gradient(90deg, rgba(243,244,246,0.5), transparent); }
-    .rl-table .row-bronze { background: linear-gradient(90deg, rgba(254,243,199,0.2), transparent); }
-    .rank-medal { font-size: 18px; }
+    .rl-table .row-gold { background: linear-gradient(90deg, #fef9e7, #fffdf5); }
+    .rl-table .row-gold td { font-weight: 700; color: #92400e; }
+    .rl-table .row-gold td a { color: #b45309; }
+    .rl-table .row-gold td.td-solved { color: #d97706; }
+    .rl-table .row-silver { background: linear-gradient(90deg, #f3f4f8, #fafafa); }
+    .rl-table .row-silver td { font-weight: 700; color: #4b5563; }
+    .rl-table .row-silver td a { color: #6b7280; }
+    .rl-table .row-silver td.td-solved { color: #6b7280; }
+    .rl-table .row-bronze { background: linear-gradient(90deg, #fdf6ee, #fffcf8); }
+    .rl-table .row-bronze td { font-weight: 700; color: #78350f; }
+    .rl-table .row-bronze td a { color: #92400e; }
+    .rl-table .row-bronze td.td-solved { color: #b45309; }
+    .rank-medal { font-size: 22px; }
     .rank-num { font-weight: 800; color: #9ca3af; font-size: 15px; }
 
-    /* Solved highlight */
-    .td-solved { font-weight: 800; color: #7c3aed; }
-    .td-submit { font-weight: 600; color: #f59e0b; }
-    .td-rate { font-weight: 700; }
+    /* Solved / Submit */
+    .td-solved { font-size: 15px; font-weight: 800; color: #22c55e; }
+    .td-submit { font-size: 14px; font-weight: 500; color: #b0b5bf; }
+    .td-rate { font-weight: 700; font-size: 13px; }
 
     /* Progress bar in table */
-    .td-bar { display: flex; align-items: center; gap: 8px; justify-content: center; }
-    .mini-bar { width: 50px; height: 4px; border-radius: 2px; background: #f3f4f6; overflow: hidden; flex-shrink: 0; }
-    .mini-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #c4b5fd, #7c3aed); }
+    .td-bar { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .mini-bar { width: 80px; height: 6px; border-radius: 3px; background: #e5e7eb; overflow: hidden; flex-shrink: 0; }
+    .mini-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
 
     /* Pagination */
     .rl-page { display: flex; justify-content: center; gap: 6px; margin-top: 24px; flex-wrap: wrap; }
@@ -257,9 +266,9 @@
           <th style="width:60px">순위</th>
           <th>사용자ID</th>
           <th>이름</th>
-          <th>그룹</th>
-          <th style="width:90px">통과</th>
+          <th>학년/반</th>
           <th style="width:90px">제출</th>
+          <th style="width:90px">통과</th>
           <th style="width:100px">정답률</th>
         </tr>
       </thead>
@@ -291,14 +300,23 @@
           <td><?php echo $cells[1]?></td>
           <td style="font-weight:600"><?php echo $cells[2]?></td>
           <td><?php echo $cells[3]?></td>
+          <td class="td-submit"><?php echo $cells[5]?></td>
+          <td class="td-solved"><?php echo $cells[4]?></td>
           <td>
-            <div class="td-bar">
-              <span class="td-solved"><?php echo $cells[4]?></span>
-              <div class="mini-bar"><div class="mini-bar-fill" style="width:<?php echo $pct?>%"></div></div>
+            <div style="text-align:center">
+              <?php
+                $r = floatval($cells[6]);
+                if ($r >= 90) { $barGrad = '#34d399,#10b981'; $rateColor = '#059669'; }
+                elseif ($r >= 70) { $barGrad = '#a78bfa,#7c3aed'; $rateColor = '#6d28d9'; }
+                elseif ($r >= 50) { $barGrad = '#60a5fa,#3b82f6'; $rateColor = '#2563eb'; }
+                elseif ($r >= 30) { $barGrad = '#fbbf24,#f59e0b'; $rateColor = '#d97706'; }
+                elseif ($r > 0)   { $barGrad = '#f87171,#ef4444'; $rateColor = '#dc2626'; }
+                else              { $barGrad = '#d1d5db,#9ca3af'; $rateColor = '#9ca3af'; }
+              ?>
+              <span class="td-rate" style="color:<?php echo $rateColor?>"><?php echo $cells[6]?></span>
+              <div class="mini-bar" style="width:80px;margin:4px auto 0"><div class="mini-bar-fill" style="width:<?php echo max(min($r,100),2)?>%;background:linear-gradient(90deg,<?php echo $barGrad?>)"></div></div>
             </div>
           </td>
-          <td class="td-submit"><?php echo $cells[5]?></td>
-          <td class="td-rate"><?php echo $cells[6]?></td>
         </tr>
         <?php $rank++; endforeach;?>
       </tbody>

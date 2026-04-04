@@ -1,8 +1,10 @@
 #include <stdio.h>
 int main(){
-    int n,sum=0;
-    scanf("%d",&n);
-    for(int i=2;i<=n;i+=2) sum+=i;
-    printf("%d",sum);
+    int n, arr[100], sum=0, cnt=0;
+    scanf("%d", &n);
+    for(int i=0; i<n; i++){ scanf("%d", &arr[i]); sum+=arr[i]; }
+    int avg = sum/n;
+    for(int i=0; i<n; i++) if(arr[i]>=avg) cnt++;
+    printf("%d\n", cnt);
     return 0;
 }

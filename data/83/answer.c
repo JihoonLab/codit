@@ -1,9 +1,12 @@
 #include <stdio.h>
-int main() {
-    int n, i;
+int main(){
+    int n, arr[100];
     scanf("%d", &n);
-    for (i = n; i >= 1; i--) {
-        printf("%d\n", i);
+    for(int i=0; i<n; i++) scanf("%d", &arr[i]);
+    for(int i=0; i<n; i++){
+        if(i) printf(" ");
+        printf("%d", arr[i]);
     }
+    printf("\n");
     return 0;
 }

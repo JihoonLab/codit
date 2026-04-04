@@ -8,6 +8,18 @@
   <?php include("template/$OJ_TEMPLATE/css.php");?>
   <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+  @font-face {
+    font-family: 'D2Coding';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.0/D2Coding.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'D2Coding';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.0/D2CodingBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+  }
 
   .submit-wrap {
     max-width: 960px;
@@ -225,19 +237,15 @@
     letter-spacing: 0.2px;
   }
 
+  /* ACE 에디터 레이아웃 */
   #source {
-    width: 100% !important;
-    background: #272822 !important;
-    color: #f8f8f2 !important;
-    border: none !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
   }
-
-  /* ACE 에디터 다크 강제 */
-  .ace_editor { background: #272822 !important; }
   .ace_print-margin { display: none !important; }
 
   /* 제출 버튼 */
@@ -464,21 +472,14 @@
             if($OJ_ACE_EDITOR) {
               if(isset($OJ_TEST_RUN)&&$OJ_TEST_RUN) $height="300px"; else $height="360px";
             ?>
-            <pre style="width:100%;height:<?php echo $height?>;" id="source"><?php
-              if($view_src=="") {
-                if($language_name[$lastlang]=="C") {
-                  echo "#include <stdio.h>\n\nint main()\n{\n\t\n\treturn 0;\n}";
-                } elseif($language_name[$lastlang]=="C++") {
-                  echo "#include <iostream>\nusing namespace std;\n\nint main()\n{\n\t\n\treturn 0;\n}";
-                } elseif($language_name[$lastlang]=="Python") {
-                  // Python: 빈 에디터로 시작
-                } elseif($language_name[$lastlang]=="Java") {
-                  echo "import java.util.*;\nimport java.io.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        \n    }\n}";
-                }
+            <div style="width:100%;height:<?php echo $height?>;" id="source"></div>
+            <script>var __initSrc = <?php
+              if($view_src!="") {
+                echo json_encode($view_src, JSON_UNESCAPED_UNICODE);
               } else {
-                echo htmlentities($view_src, ENT_QUOTES, "UTF-8");
+                echo '""';
               }
-            ?></pre>
+            ?>;</script>
             <input type="hidden" id="hide_source" name="source" value=""/>
             <?php } else { ?>
             <textarea style="width:100%;height:520px;" cols=180 rows=20 id="source" name="source"><?php echo htmlentities($view_src,ENT_QUOTES,"UTF-8")?></textarea>
@@ -650,7 +651,9 @@ function do_submit(){
   document.getElementById("frmSolution").target="_self";
   <?php if(isset($_GET['spa'])): ?>
   $.post("submit.php?ajax",$("#frmSolution").serialize(),function(data){
-    var sid = parseInt(data);
+    var parts = String(data).split('|');
+    var sid = parseInt(parts[0]);
+    if(parts[1]) { $("input[name='csrf']").val(parts[1]); }
     if(sid > 0) {
       fresh_result(sid);
     } else {
@@ -693,7 +696,7 @@ function resume(){
   var s=$("#Submit")[0];
   if(count<0){
     s.disabled=false;
-    $("#Submit").text("🚀 제출하기");
+    $("#Submit").prop('disabled', false).removeAttr('disabled').text("🚀 제출하기");
     if(handler_interval) window.clearInterval(handler_interval);
   } else {
     $("#Submit").text("⏳ 대기 중 ("+count+")");
@@ -721,14 +724,37 @@ var templateCursorPos = {
 
 
 
+// textarea를 커서 위치에 강제 동기화 (Ace 1.3.3 버그 우회)
+function syncTextareaToCursor(row, col) {
+  if (typeof(editor) === 'undefined') return;
+  if (row === undefined) {
+    var pos = editor.getCursorPosition();
+    row = pos.row; col = pos.column;
+  }
+  editor.gotoLine(row + 1, col);
+  editor.focus();
+  setTimeout(function(){
+    var cursorLayer = editor.renderer.$cursorLayer;
+    var pixelPos = cursorLayer.getPixelPosition({row: row, column: col}, true);
+    var textarea = editor.textInput.getElement();
+    var config = editor.renderer.layerConfig;
+    textarea.style.left = (pixelPos.left + editor.renderer.$padding) + 'px';
+    textarea.style.top  = (pixelPos.top - config.offset) + 'px';
+  }, 50);
+}
+
 function applyTemplate(lang) {
   if (typeof(editor) === 'undefined') return;
   var tpl = defaultTemplates[lang] !== undefined ? defaultTemplates[lang] : '';
   editor.setValue(tpl);
   editor.clearSelection();
-  var pos = templateCursorPos[lang];
-  if (tpl !== '') editor.moveCursorToPosition(pos || {row:0, col:0});
-  editor.focus();
+  var pos = templateCursorPos[lang] || {row:0, col:0};
+  if (tpl !== '') {
+    // Ace 1.3.3: moveCursorToPosition 후 textarea 위치 동기화
+    setTimeout(function(){ syncTextareaToCursor(pos.row, pos.col); }, 150);
+  } else {
+    editor.focus();
+  }
 }
 
 function switchLang(lang){
@@ -805,26 +831,7 @@ function autoSave(){
   }
 }
 
-$(document).ready(function(){
-  $("#source").css("height", Math.max(Math.floor(window.innerHeight * 0.45), 280)+"px");
-  if(!!localStorage&&typeof(editor)!="undefined"){
-    let key="<?php echo $_SESSION[$OJ_NAME.'_user_id']?>source:"+location.href;
-    let saved=localStorage.getItem(key);
-    // 옛날 placeholder 텍스트가 localStorage에 남아있으면 무시하고 삭제
-    var isOldPlaceholder = saved && (
-      saved.indexOf('제출할 언어를 먼저 선택하세요') !== -1 ||
-      saved.indexOf('코드를 붙여넣고 제출 버튼') !== -1 ||
-      saved.indexOf('전체선택: Ctrl+A') !== -1
-    );
-    if(isOldPlaceholder) {
-      localStorage.removeItem(key);
-    } else if(saved!=null&&saved!=""&&saved.length>editor.getValue().length){
-      editor.setValue(saved);
-      editor.clearSelection();
-    }
-  }
-  window.setInterval('autoSave();',5000);
-});
+// autoSave/restore는 Ace 초기화 후에 실행 (아래 ace init 블록에서 호출)
 </script>
 
 <script src="<?php echo $OJ_CDN_URL?>include/base64.js"></script>
@@ -833,8 +840,9 @@ $(document).ready(function(){
 <script src="<?php echo $OJ_CDN_URL?>ace/ace.js"></script>
 <script src="<?php echo $OJ_CDN_URL?>ace/ext-language_tools.js"></script>
 <script>
-  ace.require("<?php echo $OJ_CDN_URL?>ace/ext/language_tools");
-  var editor=ace.edit("source");
+  ace.config.set("basePath", "/ace/");
+  ace.require("ace/ext/language_tools");
+  var editor = ace.edit("source");
   editor.setTheme("ace/theme/monokai");
   var initialLang = <?php echo isset($lastlang)?$lastlang:0; ?>;
   switchLang(initialLang);
@@ -844,19 +852,58 @@ $(document).ready(function(){
     enableLiveAutocompletion: false,
     showPrintMargin: false,
     printMarginColumn: false,
+    fontFamily: "'D2Coding','Fira Code','Consolas',monospace",
   });
   editor.renderer.setShowPrintMargin(false);
-  // 배경 강제 다크
   editor.container.style.background = "#272822";
-  editor.setShowPrintMargin(false);
-  // 저장된 글자 크기 적용
+
+  // 에디터 높이 설정
+  var edH = Math.max(Math.floor(window.innerHeight * 0.45), 280);
+  document.getElementById('source').style.height = edH + 'px';
+  editor.resize(true);
+
+  // 글자 크기 적용
   applyFontSize(currentFontIdx);
-  // 기존 코드가 없을 때 언어 기본 템플릿 삽입
-  <?php if($view_src == ""): ?>
-  applyTemplate(initialLang);
+  editor.resize(true);
+
+  // 초기 코드 설정
+  <?php if($view_src != ""): ?>
+  editor.setValue(__initSrc, -1);
   <?php else: ?>
+  applyTemplate(initialLang);
   <?php endif; ?>
-  // 사용자가 키 입력하면 플래그 설정
+
+  // localStorage 복원
+  (function(){
+    if(!localStorage) return;
+    var key = "<?php echo $_SESSION[$OJ_NAME.'_user_id']?>source:" + location.href;
+    var saved = localStorage.getItem(key);
+    var isOldPlaceholder = saved && (
+      saved.indexOf('제출할 언어를 먼저 선택하세요') !== -1 ||
+      saved.indexOf('코드를 붙여넣고 제출 버튼') !== -1 ||
+      saved.indexOf('전체선택: Ctrl+A') !== -1
+    );
+    if(isOldPlaceholder) {
+      localStorage.removeItem(key);
+    } else if(saved && saved.length > editor.getValue().length) {
+      editor.setValue(saved);
+      editor.clearSelection();
+    }
+  })();
+
+  // 자동 저장
+  window.setInterval(autoSave, 5000);
+
+  // 최종 resize 보장
+  editor.resize(true);
+  editor.renderer.updateFull(true);
+
+  // Ace 1.3.3 버그 우회: 초기 로드 후 textarea를 커서 위치에 동기화
+  // applyTemplate이 아닌 경우(initSrc, localStorage 복원)에도 동기화
+  setTimeout(function(){
+    var pos = editor.getCursorPosition();
+    syncTextareaToCursor(pos.row, pos.column);
+  }, 300);
 
 </script>
 <?php endif; ?>

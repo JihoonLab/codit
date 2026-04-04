@@ -1,11 +1,15 @@
 #include <stdio.h>
 int main() {
-    int a, b, i, j;
-    scanf("%d %d", &a, &b);
-    for (i = 1; i <= a; i++) {
-        for (j = 1; j <= b; j++) {
-            printf("%d %d\n", i, j);
-        }
+    int n, arr[100];
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
+    // sort desc, find second distinct
+    // simple: find max, then find max excluding max
+    int max1 = -1000000, max2 = -1000000;
+    for (int i = 0; i < n; i++) {
+        if (arr[i] > max1) { max2 = max1; max1 = arr[i]; }
+        else if (arr[i] > max2 && arr[i] != max1) max2 = arr[i];
     }
+    printf("%d\n", max2);
     return 0;
 }

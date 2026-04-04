@@ -72,6 +72,6 @@ if (!(isset($_SESSION[$OJ_NAME.'_'.'administrator']) || isset($_SESSION[$OJ_NAME
 		<?php require_once("../include/set_post_key.php");?>
 		<input type=submit value=Generate><br>
 	</form>
-	<span style="color:red;font-weight:bold">以相同的前缀生成账号，将覆盖昵称和密码，请谨慎操作！</span>
+	<span style="color:red;font-weight:bold">같은 접두사로 계정을 생성하면 닉네임과 비밀번호가 덮어씌워집니다. 신중하게 진행하세요!</span>
 
 </div>

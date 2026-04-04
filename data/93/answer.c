@@ -1,11 +1,12 @@
 #include <stdio.h>
 int main() {
-    int n;
+    int n, isPrime = 1;
     scanf("%d", &n);
-    int k = 1;
-    while (k * (k + 1) / 2 < n) {
-        k++;
+    if (n < 2) isPrime = 0;
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) { isPrime = 0; break; }
     }
-    printf("%d\n", k * (k + 1) / 2);
+    if (isPrime) printf("Prime\n");
+    else printf("Not Prime\n");
     return 0;
 }

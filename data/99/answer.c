@@ -1,14 +1,13 @@
 #include <stdio.h>
 int main() {
-    long long a, r, c, n;
-    scanf("%lld %lld %lld %lld", &a, &r, &c, &n);
-    long long sum = 0;
-    long long term = a;
-    long long i;
-    for (i = 0; i < n; i++) {
-        sum += term;
-        term *= r;
+    int n, original, reversed = 0;
+    scanf("%d", &n);
+    original = n;
+    while (n > 0) {
+        reversed = reversed * 10 + n % 10;
+        n /= 10;
     }
-    printf("%lld\n", sum);
+    if (original == reversed) printf("Yes\n");
+    else printf("No\n");
     return 0;
 }

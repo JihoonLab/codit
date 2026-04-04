@@ -38,7 +38,7 @@ $config = [
 
 $bak = new DatabaseTool($config);
 if (!$bak->backup()) {
-    echo "数据库备份失败: ".$bak->getError();
+    echo "데이터베이스 백업 실패: ".$bak->getError();
     exit;
 }
 
@@ -71,14 +71,14 @@ $zip = new ZipArchive();
 if ($zip->open($ztar, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
     chdir(dirname($OJ_DATA));
     if (is_dir("data"))
-        addDirToZip("data", $zip); // 测试数据
+        addDirToZip("data", $zip); // 테스트 데이터
     chdir(realpath(dirname(dirname(__FILE__))));
     if ($OJ_SaaS_ENABLE && $DOMAIN != $domain) {
         if (is_dir("upload/$domain"))
-            addDirToZip(realpath("upload/$domain"), $zip); // 子域题目图片
+            addDirToZip(realpath("upload/$domain"), $zip); // 서브도메인 문제 이미지
     } else {
         if (is_dir("upload/"))
-            addDirToZip(realpath("upload"), $zip); // 题目图片
+            addDirToZip(realpath("upload"), $zip); // 문제 이미지
     }
     chdir($OJ_DATA."/0");
     if (file_exists($db_file)) {
@@ -86,11 +86,11 @@ if ($zip->open($ztar, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
     }
 
     if (!$zip->close()) {
-        echo "ZIP 文件生成失败，请检查目标目录权限: $ztar";
+        echo "ZIP 파일 생성 실패, 대상 폴더 권한을 확인하세요: $ztar";
         exit;
     }
 } else {
-    echo "无法创建 ZIP 文件: $ztar";
+    echo "ZIP 파일을 생성할 수 없습니다: $ztar";
     exit;
 }
 
@@ -108,7 +108,7 @@ if ($zip->open($ztar, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
 }
 ?>
 
-<button onclick="phpfm(0)">查看备份文件</button>
+<button onclick="phpfm(0)">백업 파일 보기</button>
 <script src='../template/bs3/jquery.min.js'></script>
 <script>
 function phpfm(pid){

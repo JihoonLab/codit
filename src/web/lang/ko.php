@@ -101,7 +101,7 @@
 
 	//ranklist.php
 	$MSG_Number="순위";
-	$MSG_NICK="별명";
+	$MSG_NICK="이름";
 	$MSG_SOVLED="통과";
 	$MSG_RATIO="정답률";
 	$MSG_DAY="일간-순위";
@@ -114,7 +114,7 @@
 	$MSG_USER_ID="사용자ID";
 	$MSG_PASSWORD="비밀번호";
 	$MSG_REPEAT_PASSWORD="비밀번호 확인";
-	$MSG_SCHOOL="소속/학교";
+	$MSG_SCHOOL="학년/반";
     $MSG_GROUP_NAME="그룹";
 	$MSG_EMAIL="E-mail";
 	$MSG_REG_INFO="등록정보";
