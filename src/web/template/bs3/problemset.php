@@ -286,7 +286,7 @@ a.ps-cat-btn{text-decoration:none;display:flex}
     <span class="ph-status">상태</span>
     <span class="ph-pid">번호</span>
     <span class="ph-title">제목</span>
-    <span class="ph-stats"><span>제출</span><span>통과</span></span>
+    <span class="ph-stats"><span>도전</span><span>해결</span></span>
     <span class="ph-rate">정답률</span>
   </div>
   <div class="ps-list" id="problemset">
@@ -360,11 +360,11 @@ a.ps-cat-btn{text-decoration:none;display:flex}
       <div class="ps-stat-col">
         <div class="ps-stat-box stat-sub">
           <span class="num"><a href="<?php echo $sub_href?>" onclick="event.stopPropagation()"><?php echo $submitted?></a></span>
-          <span class="lbl">제출</span>
+          <span class="lbl">도전</span>
         </div>
         <div class="ps-stat-box stat-acc">
           <span class="num"><a href="<?php echo $acc_href?>" onclick="event.stopPropagation()"><?php echo $accepted?></a></span>
-          <span class="lbl">통과</span>
+          <span class="lbl">해결</span>
         </div>
       </div>
       <?php

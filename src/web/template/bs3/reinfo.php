@@ -595,8 +595,8 @@ $(document).ready(function(){
     var yrText = esc(yours.join('\n'));
 
     var html = '<div class="ri-compare">';
-    html += '<div class="ri-compare-col"><div class="ri-compare-header expected">정답</div><div class="ri-compare-body"><pre>' + expText + '</pre></div></div>';
     html += '<div class="ri-compare-col"><div class="ri-compare-header yours">내 프로그램의 출력</div><div class="ri-compare-body"><pre>' + yrText + '</pre></div></div>';
+    html += '<div class="ri-compare-col"><div class="ri-compare-header expected">정답</div><div class="ri-compare-body"><pre>' + expText + '</pre></div></div>';
     html += '</div>';
     area.innerHTML = html;
   } else {

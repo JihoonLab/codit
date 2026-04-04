@@ -73,7 +73,11 @@
       font-size: 13px; color: #888; margin-top: 6px;
     }
     .stat-card a { text-decoration: none; }
-    .stat-card a .s-num:hover { color: #6d28d9; }
+    .stat-card a .s-num:hover { opacity: 0.8; }
+    .stat-card.stat-solved .s-num { color: #16a34a; }
+    .stat-card.stat-solved .s-label { color: #15803d; }
+    .stat-card.stat-submit .s-num { color: #64748b; }
+    .stat-card.stat-submit .s-label { color: #475569; }
 
     /* 하단 2열 */
     .bottom-grid {
@@ -174,23 +178,23 @@
       </a>
       <div class="s-label">전체 순위</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card stat-solved">
       <a href="status.php?user_id=<?php echo urlencode($user)?>&jresult=4">
         <div class="s-num"><?php echo $AC?></div>
       </a>
       <div class="s-label">해결한 문제</div>
     </div>
-    <div class="stat-card">
+    <div class="stat-card stat-submit">
       <a href="status.php?user_id=<?php echo urlencode($user)?>">
         <div class="s-num"><?php echo $Submit?></div>
       </a>
-      <div class="s-label">제출한 문제</div>
+      <div class="s-label">도전한 문제</div>
     </div>
   </div>
 
   <!-- 활동 차트 (전체 너비) -->
   <div class="info-card" style="margin-bottom:20px">
-    <div class="info-card-header">📈 제출 활동</div>
+    <div class="info-card-header">📈 도전 활동</div>
     <div class="info-card-body" style="padding:12px 16px">
       <div id="activityChart"></div>
     </div>
@@ -305,12 +309,12 @@
         return s;
       }
     },
-    legend: { data:['전체 제출','맞은 문제'], bottom:0, textStyle:{fontSize:12,color:'#888'}, itemWidth:12, itemHeight:12, icon:'roundRect' },
+    legend: { data:['전체 도전','맞은 문제'], bottom:0, textStyle:{fontSize:12,color:'#888'}, itemWidth:12, itemHeight:12, icon:'roundRect' },
     grid: { left:40, right:16, top:16, bottom:40 },
     xAxis: { type:'category', data:dates, axisLabel:{fontSize:11, color:'#999', rotate:0, formatter:function(v){var p=v.split('-');return p[1]+'/'+p[2];}}, axisLine:{lineStyle:{color:'#eee'}}, axisTick:{show:false} },
     yAxis: { type:'value', minInterval:1, axisLabel:{fontSize:11,color:'#bbb'}, splitLine:{lineStyle:{color:'#f5f5f5'}}, axisLine:{show:false}, axisTick:{show:false} },
     series: [
-      { name:'전체 제출', type:'bar', data:serAll, itemStyle:{color:'#c4b5fd',borderRadius:[4,4,0,0]}, barMaxWidth:32 },
+      { name:'전체 도전', type:'bar', data:serAll, itemStyle:{color:'#c4b5fd',borderRadius:[4,4,0,0]}, barMaxWidth:32 },
       { name:'맞은 문제', type:'bar', data:serAc, itemStyle:{color:'#7c3aed',borderRadius:[4,4,0,0]}, barMaxWidth:32 }
     ]
   });

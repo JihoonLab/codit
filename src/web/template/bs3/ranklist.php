@@ -167,9 +167,11 @@
     .rank-medal { font-size: 22px; }
     .rank-num { font-weight: 800; color: #9ca3af; font-size: 15px; }
 
-    /* Solved / Submit */
-    .td-solved { font-size: 15px; font-weight: 800; color: #22c55e; }
-    .td-submit { font-size: 14px; font-weight: 500; color: #b0b5bf; }
+    /* Solved / Submit — 문제 목록과 동일 톤 */
+    .td-solved { font-size: 16px; font-weight: 900; color: #16a34a; }
+    .td-solved a { color: #16a34a !important; }
+    .td-submit { font-size: 14px; font-weight: 600; color: #64748b; }
+    .td-submit a { color: #64748b !important; }
     .td-rate { font-weight: 700; font-size: 13px; }
 
     /* Progress bar in table */
@@ -187,10 +189,185 @@
     .rl-page a:hover { border-color: #7c3aed; color: #7c3aed; }
     .rl-page a.pg-active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
+    /* 개인/반별 탭 */
+    .rl-mode-tabs {
+      display: flex; gap: 0; margin-bottom: 24px;
+      background: #fff; border-radius: 12px; overflow: hidden;
+      border: 1.5px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      width: fit-content;
+    }
+    .rl-mode-tab {
+      padding: 10px 28px; font-size: 14px; font-weight: 700;
+      color: #6b7280; cursor: pointer; transition: all 0.2s;
+      border: none; background: none; position: relative;
+    }
+    .rl-mode-tab:hover { color: #7c3aed; background: #faf5ff; }
+    .rl-mode-tab.active { background: #7c3aed; color: #fff; }
+
+    /* ===== 반별 랭킹 시상대 ===== */
+    .cr-podium-section {
+      background: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 40%, #dbeafe 70%, #ede9fe 100%);
+      border-radius: 24px; padding: 40px 20px 32px; margin-bottom: 28px;
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(99,102,241,0.1);
+      box-shadow: 0 8px 32px rgba(99,102,241,0.08);
+    }
+    .cr-podium-section::before {
+      content: '';
+      position: absolute; top: -50%; right: -30%; width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(167,139,250,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cr-podium-section::after {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .cr-podium-title {
+      text-align: center; font-size: 13px; font-weight: 800;
+      color: #6366f1; letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 28px; position: relative; z-index: 1;
+    }
+    .cr-podium {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 16px; position: relative; z-index: 1;
+    }
+    .cr-podium-item {
+      display: flex; flex-direction: column; align-items: center;
+      text-decoration: none; color: inherit;
+      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+    }
+    .cr-podium-item:hover { transform: translateY(-8px) scale(1.03); }
+    .cr-podium-emoji {
+      font-size: 40px; margin-bottom: 8px;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));
+      animation: trophyFloat 3s ease-in-out infinite;
+    }
+    .cr-p1 .cr-podium-emoji { font-size: 56px; animation-delay: 0s; }
+    .cr-p2 .cr-podium-emoji { animation-delay: 0.5s; }
+    .cr-p3 .cr-podium-emoji { animation-delay: 1s; }
+    .cr-podium-box {
+      border-radius: 18px; padding: 20px 24px 18px;
+      display: flex; flex-direction: column; align-items: center;
+      backdrop-filter: blur(12px); min-width: 150px;
+    }
+    .cr-p1 .cr-podium-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(254,240,138,0.4));
+      border: 2px solid rgba(251,191,36,0.3);
+      box-shadow: 0 8px 32px rgba(251,191,36,0.15), 0 0 0 1px rgba(255,255,255,0.5) inset;
+      min-width: 180px; min-height: 140px; justify-content: center;
+    }
+    .cr-p2 .cr-podium-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(226,232,240,0.4));
+      border: 2px solid rgba(148,163,184,0.25);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.5) inset;
+      min-width: 155px; min-height: 110px; justify-content: center;
+    }
+    .cr-p3 .cr-podium-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(253,230,138,0.3));
+      border: 2px solid rgba(217,119,6,0.2);
+      box-shadow: 0 6px 24px rgba(217,119,6,0.08), 0 0 0 1px rgba(255,255,255,0.5) inset;
+      min-width: 155px; min-height: 100px; justify-content: center;
+    }
+    .cr-podium-label {
+      font-size: 20px; font-weight: 900; color: #1e293b;
+      margin-bottom: 4px; letter-spacing: -0.5px;
+    }
+    .cr-podium-meta { font-size: 12px; color: #94a3b8; font-weight: 600; margin-bottom: 10px; }
+    .cr-podium-score { font-weight: 900; line-height: 1; }
+    .cr-p1 .cr-podium-score { font-size: 40px; color: #7c3aed; }
+    .cr-p2 .cr-podium-score { font-size: 30px; color: #64748b; }
+    .cr-p3 .cr-podium-score { font-size: 30px; color: #b45309; }
+    .cr-podium-unit { font-size: 11px; color: #a1a1aa; font-weight: 700; letter-spacing: 0.5px; margin-top: 4px; }
+
+    /* ===== 반별 랭킹 리스트 ===== */
+    .cr-list { display: flex; flex-direction: column; gap: 10px; }
+    .cr-item {
+      background: #fff; border-radius: 16px;
+      border: 1.5px solid #f1f5f9;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      padding: 0; overflow: hidden;
+      text-decoration: none; color: inherit;
+      transition: all 0.25s cubic-bezier(.4,0,.2,1);
+      display: block;
+    }
+    .cr-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px rgba(99,102,241,0.12);
+      border-color: #c7d2fe;
+    }
+    .cr-item-inner {
+      display: flex; align-items: center; padding: 18px 24px; gap: 16px;
+      position: relative;
+    }
+    .cr-item-rank {
+      font-size: 18px; font-weight: 900; color: #cbd5e1;
+      min-width: 36px; text-align: center;
+    }
+    .cr-item:nth-child(1) .cr-item-rank { color: #f59e0b; font-size: 20px; }
+    .cr-item:nth-child(2) .cr-item-rank { color: #94a3b8; font-size: 20px; }
+    .cr-item:nth-child(3) .cr-item-rank { color: #d97706; font-size: 20px; }
+    .cr-item-name {
+      font-size: 17px; font-weight: 800; color: #1e293b;
+      min-width: 110px; letter-spacing: -0.3px;
+    }
+    .cr-item-members {
+      background: #f1f5f9; border-radius: 20px;
+      padding: 4px 12px; font-size: 12px; font-weight: 700;
+      color: #64748b; white-space: nowrap;
+    }
+    .cr-item-stats {
+      display: flex; gap: 20px; flex: 1; justify-content: flex-end;
+      align-items: center;
+    }
+    .cr-stat-block { text-align: center; min-width: 60px; }
+    .cr-stat-block .num {
+      font-size: 20px; font-weight: 900;
+      background: linear-gradient(135deg, #7c3aed, #6366f1);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .cr-stat-block .label { font-size: 10px; color: #a1a1aa; font-weight: 700; letter-spacing: 0.3px; margin-top: 1px; }
+    .cr-rate-block { text-align: right; min-width: 90px; }
+    .cr-rate-num { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+    .cr-rate-bar {
+      width: 90px; height: 6px; border-radius: 3px;
+      background: #f1f5f9; overflow: hidden;
+    }
+    .cr-rate-bar-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* 반별 상위 3개 하이라이트 */
+    .cr-item:nth-child(1) { border-color: rgba(251,191,36,0.2); background: linear-gradient(90deg, #fffbeb, #fff); }
+    .cr-item:nth-child(2) { border-color: rgba(148,163,184,0.15); background: linear-gradient(90deg, #f8fafc, #fff); }
+    .cr-item:nth-child(3) { border-color: rgba(217,119,6,0.15); background: linear-gradient(90deg, #fffbf1, #fff); }
+
+    /* 진입 애니메이션 */
+    .cr-item { opacity: 0; transform: translateY(20px); animation: crSlideIn 0.5s ease forwards; }
+    .cr-item:nth-child(1) { animation-delay: 0.05s; }
+    .cr-item:nth-child(2) { animation-delay: 0.1s; }
+    .cr-item:nth-child(3) { animation-delay: 0.15s; }
+    .cr-item:nth-child(4) { animation-delay: 0.2s; }
+    .cr-item:nth-child(5) { animation-delay: 0.25s; }
+    .cr-item:nth-child(6) { animation-delay: 0.3s; }
+    .cr-item:nth-child(7) { animation-delay: 0.35s; }
+    @keyframes crSlideIn { to { opacity: 1; transform: translateY(0); } }
+
     @media (max-width: 600px) {
       .podium { gap: 10px; }
       .p-1 .podium-pedestal { min-width: 120px; }
       .p-2 .podium-pedestal, .p-3 .podium-pedestal { min-width: 100px; }
+      .cr-podium { gap: 8px; }
+      .cr-p1 .cr-podium-box { min-width: 130px; }
+      .cr-p2 .cr-podium-box, .cr-p3 .cr-podium-box { min-width: 110px; }
+      .cr-item-inner { flex-wrap: wrap; gap: 10px; padding: 16px; }
+      .cr-item-stats { gap: 12px; flex: none; width: 100%; justify-content: space-around; }
+      .cr-rate-block { min-width: auto; }
     }
   </style>
 </head>
@@ -208,6 +385,28 @@
     </div>
   </div>
 
+  <div class="rl-mode-tabs">
+    <button class="rl-mode-tab active" onclick="showTab('individual')">👤 개인별</button>
+    <button class="rl-mode-tab" onclick="showTab('classrank')">🏫 반별</button>
+  </div>
+
+  <div id="tab-individual">
+  <?php
+  // 반 필터 배지
+  if(isset($view_school_filter) && !empty($view_school_filter)):
+    $sf_parts = explode('-', $view_school_filter);
+    $sf_label = (count($sf_parts)===2 && is_numeric($sf_parts[0]) && is_numeric($sf_parts[1]))
+      ? $sf_parts[0].'학년 '.$sf_parts[1].'반' : htmlspecialchars($view_school_filter);
+  ?>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+    <span style="background:linear-gradient(135deg,#7c3aed,#6366f1);color:#fff;padding:8px 18px;border-radius:10px;font-size:15px;font-weight:800;letter-spacing:-0.3px;">
+      🏫 <?php echo $sf_label?> 랭킹
+    </span>
+    <a href="ranklist.php" style="background:#f1f5f9;color:#64748b;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;border:1.5px solid #e2e8f0;transition:all 0.15s;">
+      ✕ 전체 보기
+    </a>
+  </div>
+  <?php endif; ?>
   <?php
   $all_rows = array_values($view_rank);
   $start_offset = isset($_GET['start']) ? intval($_GET['start']) : 0;
@@ -249,7 +448,7 @@
         <div class="podium-pedestal">
           <div class="podium-badge"><?php echo $badges[$idx]?></div>
           <div class="podium-name"><?php echo htmlspecialchars($u['nick']?:$u['id'])?></div>
-          <div class="podium-solved"><?php echo $u['solved']?>문제 · <?php echo $u['submit']?>제출</div>
+          <div class="podium-solved"><?php echo $u['solved']?>해결 · <?php echo $u['submit']?>도전</div>
           <div class="podium-score-num"><?php echo $u['solved']?></div>
           <div class="podium-score-label">solved</div>
         </div>
@@ -267,8 +466,8 @@
           <th>사용자ID</th>
           <th>이름</th>
           <th>학년/반</th>
-          <th style="width:90px">제출</th>
-          <th style="width:90px">통과</th>
+          <th style="width:90px">도전</th>
+          <th style="width:90px">해결</th>
           <th style="width:100px">정답률</th>
         </tr>
       </thead>
@@ -306,12 +505,10 @@
             <div style="text-align:center">
               <?php
                 $r = floatval($cells[6]);
-                if ($r >= 90) { $barGrad = '#34d399,#10b981'; $rateColor = '#059669'; }
-                elseif ($r >= 70) { $barGrad = '#a78bfa,#7c3aed'; $rateColor = '#6d28d9'; }
-                elseif ($r >= 50) { $barGrad = '#60a5fa,#3b82f6'; $rateColor = '#2563eb'; }
-                elseif ($r >= 30) { $barGrad = '#fbbf24,#f59e0b'; $rateColor = '#d97706'; }
-                elseif ($r > 0)   { $barGrad = '#f87171,#ef4444'; $rateColor = '#dc2626'; }
-                else              { $barGrad = '#d1d5db,#9ca3af'; $rateColor = '#9ca3af'; }
+                if ($r >= 70) { $barGrad = '#86efac,#22c55e'; $rateColor = '#16a34a'; }
+                elseif ($r >= 40) { $barGrad = '#fde68a,#f59e0b'; $rateColor = '#d97706'; }
+                elseif ($r > 0)   { $barGrad = '#fca5a5,#ef4444'; $rateColor = '#dc2626'; }
+                else              { $barGrad = '#c4b5fd,#7c3aed'; $rateColor = '#7c3aed'; }
               ?>
               <span class="td-rate" style="color:<?php echo $rateColor?>"><?php echo $cells[6]?></span>
               <div class="mini-bar" style="width:80px;margin:4px auto 0"><div class="mini-bar-fill" style="width:<?php echo max(min($r,100),2)?>%;background:linear-gradient(90deg,<?php echo $barGrad?>)"></div></div>
@@ -335,7 +532,91 @@
     </a>
     <?php endfor;?>
   </div>
+  </div><!-- /tab-individual -->
+
+  <div id="tab-classrank" style="display:none">
+    <?php if(!empty($view_class_rank)):
+      $cr_top3 = array_slice($view_class_rank, 0, 3);
+      $cr_rest = $view_class_rank;
+      $cr_emojis = ['🏆','🥈','🥉'];
+    ?>
+
+    <!-- 시상대 (상위 3반) -->
+    <?php if(count($cr_top3) >= 1): ?>
+    <div class="cr-podium-section">
+      <div class="cr-podium-title">CLASS RANKING</div>
+      <div class="cr-podium">
+        <?php
+          $cr_order = [1,0,2]; // 2등, 1등, 3등
+          foreach($cr_order as $ci):
+            if(!isset($cr_top3[$ci])) continue;
+            $cr = $cr_top3[$ci];
+            $pi = $ci + 1;
+        ?>
+        <div class="cr-podium-item cr-p<?php echo $pi?>">
+          <div class="cr-podium-emoji"><?php echo $cr_emojis[$ci]?></div>
+          <div class="cr-podium-box">
+            <div class="cr-podium-label"><?php echo htmlspecialchars($cr['label'])?></div>
+            <div class="cr-podium-meta"><?php echo $cr['members']?>명 · <?php echo $cr['submit']?>도전</div>
+            <div class="cr-podium-score"><?php echo $cr['solved']?></div>
+            <div class="cr-podium-unit">SOLVED</div>
+          </div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- 전체 리스트 -->
+    <div class="cr-list">
+      <?php $ci = 1; foreach($cr_rest as $cr):
+        $r = $cr['rate'];
+        if ($r >= 70) { $barGrad = '#86efac,#22c55e'; $rateColor = '#16a34a'; }
+        elseif ($r >= 40) { $barGrad = '#fde68a,#f59e0b'; $rateColor = '#d97706'; }
+        elseif ($r > 0)   { $barGrad = '#fca5a5,#ef4444'; $rateColor = '#dc2626'; }
+        else              { $barGrad = '#c4b5fd,#7c3aed'; $rateColor = '#7c3aed'; }
+      ?>
+      <a class="cr-item" href="ranklist.php?school=<?php echo urlencode($cr['school'])?>">
+        <div class="cr-item-inner">
+          <div class="cr-item-rank">
+            <?php if($ci<=3) echo $cr_emojis[$ci-1]; else echo $ci; ?>
+          </div>
+          <div class="cr-item-name"><?php echo htmlspecialchars($cr['label'])?></div>
+          <span class="cr-item-members"><?php echo $cr['members']?>명</span>
+          <div class="cr-item-stats">
+            <div class="cr-stat-block">
+              <div class="num"><?php echo $cr['solved']?></div>
+              <div class="label">총 해결</div>
+            </div>
+            <div class="cr-stat-block">
+              <div class="num"><?php echo $cr['avg_solved']?></div>
+              <div class="label">1인당 평균</div>
+            </div>
+            <div class="cr-rate-block">
+              <div class="cr-rate-num" style="color:<?php echo $rateColor?>"><?php echo number_format($r,1)?>%</div>
+              <div class="cr-rate-bar"><div class="cr-rate-bar-fill" style="width:<?php echo max(min($r,100),2)?>%;background:linear-gradient(90deg,<?php echo $barGrad?>)"></div></div>
+            </div>
+          </div>
+        </div>
+      </a>
+      <?php $ci++; endforeach; ?>
+    </div>
+
+    <?php else: ?>
+    <div style="text-align:center;padding:60px 20px;color:#9ca3af;font-size:15px;">반별 데이터가 없습니다.</div>
+    <?php endif; ?>
+  </div><!-- /tab-classrank -->
+
 </div>
+<script>
+function showTab(tab) {
+  document.getElementById('tab-individual').style.display = tab === 'individual' ? '' : 'none';
+  document.getElementById('tab-classrank').style.display = tab === 'classrank' ? '' : 'none';
+  var tabs = document.querySelectorAll('.rl-mode-tab');
+  tabs[0].className = 'rl-mode-tab' + (tab === 'individual' ? ' active' : '');
+  tabs[1].className = 'rl-mode-tab' + (tab === 'classrank' ? ' active' : '');
+}
+</script>
 <?php include("template/$OJ_TEMPLATE/js.php");?>
 </body>
 </html>
