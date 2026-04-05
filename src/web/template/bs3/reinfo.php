@@ -54,12 +54,13 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
 /* 정답 vs 출력 결과 비교 */
 .ri-compare {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 0;
   border-top: 1px solid #e5e9f0;
 }
 .ri-compare-col { min-width: 0; }
-.ri-compare-col:first-child { border-right: 1px solid #e5e9f0; }
+.ri-compare-col { border-right: 1px solid #e5e9f0; }
+.ri-compare-col:last-child { border-right: none; }
 .ri-compare-header {
   padding: 14px 20px;
   font-size: 15px;
@@ -68,6 +69,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
   align-items: center;
   gap: 6px;
 }
+.ri-compare-header.input    { background: #f0fdf4; color: #166534; border-bottom: 2px solid #bbf7d0; }
 .ri-compare-header.expected { background: #eff6ff; color: #1e40af; border-bottom: 2px solid #bfdbfe; }
 .ri-compare-header.yours    { background: #fef2f2; color: #991b1b; border-bottom: 2px solid #fecaca; }
 .ri-compare-body {
@@ -89,12 +91,41 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
   word-break: break-all !important;
   color: #333 !important;
 }
-.ri-compare-col:last-child .ri-compare-body pre {
+.ri-compare-col:first-child .ri-compare-body pre {
+  background: #f0fdf8 !important;
+  border-color: #bbf7d0 !important;
+}
+.ri-compare-col.col-yours .ri-compare-body pre {
   background: #fef7f7 !important;
   border-color: #fecaca !important;
 }
+.ri-compare-col.col-expected .ri-compare-body pre {
+  background: #eff6ff !important;
+  border-color: #bfdbfe !important;
+}
+
+/* PE 공백 시각화 */
+.ws-space { color: #d946ef; opacity: 0.5; font-size: 12px; }
+.ws-trailing { background: #fecdd3; border-radius: 2px; color: #e11d48; font-size: 12px; }
+.ws-newline { color: #a78bfa; opacity: 0.5; font-size: 11px; user-select: none; }
+.ws-diff-line { background: #fef3c7 !important; border-left: 3px solid #f59e0b; padding-left: 9px !important; }
+.pe-notice {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 16px 20px; margin: 0;
+  background: linear-gradient(135deg, #fef3c7, #fefce8);
+  border-bottom: 1px solid #fde68a;
+}
+.pe-notice-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+.pe-notice-text { font-size: 14px; color: #92400e; line-height: 1.6; }
+.pe-notice-text strong { color: #78350f; }
+.pe-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+.pe-legend-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: #666; }
+.pe-legend-dot { display: inline-block; width: 18px; text-align: center; border-radius: 3px; font-family: monospace; }
+
 @media(max-width:600px) {
   .ri-compare { grid-template-columns: 1fr; }
+  .ri-compare-col { border-right: none !important; border-bottom: 1px solid #e5e9f0; }
+  .ri-compare-col:last-child { border-bottom: none; }
   .ri-compare-col:first-child { border-right: none; border-bottom: 1px solid #e5e9f0; }
   .ce-wrap { margin: 16px auto; padding: 0 12px 40px; }
   .ri-header { padding: 16px; }
@@ -435,6 +466,7 @@ pre.ri-errbox.err-pe  { background: #fff7ed !important; color: #9a3412 !importan
 
       <?php if($isAC_flag): ?>
         <div id="errtxt" style="display:none"><?php echo $view_reinfo?></div>
+        <div id="wa-input" style="display:none"><?php echo htmlspecialchars($view_wa_input, ENT_QUOTES, 'UTF-8')?></div>
         <div class="ac-congrats">
           <div class="ac-emoji">🎉</div>
           <h3>축하합니다! 모든 테스트를 통과했습니다</h3>
@@ -447,10 +479,11 @@ pre.ri-errbox.err-pe  { background: #fff7ed !important; color: #9a3412 !importan
       <?php elseif($isWAorPE && $hasErrText): ?>
         <!-- 정답 vs 출력 결과 비교 -->
         <div id="errtxt" style="display:none"><?php echo $view_reinfo?></div>
+        <div id="wa-input" style="display:none"><?php echo htmlspecialchars($view_wa_input, ENT_QUOTES, 'UTF-8')?></div>
         <div id="ri-compare-area"></div>
 
         <div style="padding:18px 24px 22px;background:#f8f9fb;border-top:1px solid #e5e9f0;">
-          <span style="font-size:15px;font-weight:700;color:#7c3aed;">💡 정답과 내 프로그램의 출력을 비교해보세요.</span>
+          <span style="font-size:15px;font-weight:700;color:#7c3aed;">💡 정답 출력과 내 프로그램의 출력을 비교해보세요.</span>
           <span style="font-size:14px;font-weight:600;color:#555;margin-left:6px;">대소문자, 공백, 줄바꿈도 정확히 일치해야 합니다.</span>
         </div>
 
@@ -614,16 +647,91 @@ $(document).ready(function(){
   }
 
   var area = document.getElementById('ri-compare-area');
+  var isPE = <?php echo ($res == 5) ? 'true' : 'false'; ?>;
+
   if(expected.length > 0) {
     function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    var expText = esc(expected.join('\n'));
-    var yrText = esc(yours.join('\n'));
 
-    var html = '<div class="ri-compare">';
-    html += '<div class="ri-compare-col"><div class="ri-compare-header yours">내 프로그램의 출력</div><div class="ri-compare-body"><pre>' + yrText + '</pre></div></div>';
-    html += '<div class="ri-compare-col"><div class="ri-compare-header expected">정답</div><div class="ri-compare-body"><pre>' + expText + '</pre></div></div>';
+    // PE일 때 공백/줄바꿈 시각화
+    function visualizeWS(s) {
+      // 각 줄에서 공백을 ·로, 줄 끝 공백은 빨간 하이라이트, 줄 끝에 ↵ 표시
+      var lines = s.split('\n');
+      var result = [];
+      for(var i = 0; i < lines.length; i++) {
+        var line = esc(lines[i]);
+        // 줄 끝 공백 감지 (trailing spaces)
+        var trimmed = line.replace(/\s+$/, '');
+        var trailing = line.substring(trimmed.length);
+        // 모든 공백을 · 로 표시
+        var visualLine = trimmed.replace(/ /g, '<span class="ws-space">·</span>');
+        // trailing space는 빨간 배경
+        if(trailing.length > 0) {
+          visualLine += trailing.replace(/ /g, '<span class="ws-trailing">·</span>');
+        }
+        // 줄 끝에 ↵ 추가 (마지막 줄 제외)
+        if(i < lines.length - 1) {
+          visualLine += '<span class="ws-newline">↵</span>';
+        }
+        result.push(visualLine);
+      }
+      return result.join('\n');
+    }
+
+    // 줄별 차이 하이라이트를 위한 래핑
+    function wrapDiffLines(yrLines, expLines) {
+      var maxLen = Math.max(yrLines.length, expLines.length);
+      var yrResult = [], expResult = [];
+      for(var i = 0; i < maxLen; i++) {
+        var y = i < yrLines.length ? yrLines[i] : '';
+        var e = i < expLines.length ? expLines[i] : '';
+        var isDiff = (y !== e);
+        yrResult.push(isDiff ? '<span class="ws-diff-line">' + (isPE ? visualizeWS(y) : esc(y)) + '</span>' : (isPE ? visualizeWS(y) : esc(y)));
+        expResult.push(isDiff ? '<span class="ws-diff-line">' + (isPE ? visualizeWS(e) : esc(e)) + '</span>' : (isPE ? visualizeWS(e) : esc(e)));
+      }
+      return { yr: yrResult.join('\n'), exp: expResult.join('\n') };
+    }
+
+    var diffResult = wrapDiffLines(yours, expected);
+    var yrText = diffResult.yr;
+    var expText = diffResult.exp;
+
+    // 일반 WA는 기존 방식
+    if(!isPE) {
+      expText = esc(expected.join('\n'));
+      yrText = esc(yours.join('\n'));
+    }
+
+    // 입력값 가져오기
+    var inputEl = document.getElementById('wa-input');
+    var inputText = inputEl ? esc(inputEl.textContent.trim()) : '';
+
+    var html = '';
+
+    // PE 전용 알림 배너
+    if(isPE) {
+      html += '<div class="pe-notice">';
+      html += '<div class="pe-notice-icon">🔍</div>';
+      html += '<div class="pe-notice-text">';
+      html += '<strong>출력 형식 오류(PE)</strong>는 답은 맞지만 <strong>공백, 줄바꿈</strong> 등 형식이 다를 때 발생합니다.<br>';
+      html += '아래에서 공백과 줄바꿈이 어디가 다른지 확인해보세요. <span style="color:#d946ef;font-weight:700">노란 줄</span>이 차이가 나는 부분입니다.';
+      html += '<div class="pe-legend">';
+      html += '<div class="pe-legend-item"><span class="pe-legend-dot ws-space" style="opacity:1">·</span> 공백</div>';
+      html += '<div class="pe-legend-item"><span class="pe-legend-dot ws-trailing">·</span> 줄 끝 공백</div>';
+      html += '<div class="pe-legend-item"><span class="pe-legend-dot ws-newline" style="opacity:1">↵</span> 줄바꿈</div>';
+      html += '<div class="pe-legend-item"><span class="pe-legend-dot" style="background:#fef3c7;border-left:3px solid #f59e0b">A</span> 차이</div>';
+      html += '</div></div></div>';
+    }
+
+    html += '<div class="ri-compare">';
+    if(inputText) {
+      html += '<div class="ri-compare-col"><div class="ri-compare-header input">📥 입력</div><div class="ri-compare-body"><pre>' + inputText + '</pre></div></div>';
+    }
+    html += '<div class="ri-compare-col col-yours"><div class="ri-compare-header yours">내 프로그램의 출력</div><div class="ri-compare-body"><pre>' + yrText + '</pre></div></div>';
+    html += '<div class="ri-compare-col col-expected"><div class="ri-compare-header expected">정답 출력</div><div class="ri-compare-body"><pre>' + expText + '</pre></div></div>';
     html += '</div>';
+
     area.innerHTML = html;
+    if(!inputText) { var cmp = area.querySelector('.ri-compare'); if(cmp) cmp.style.gridTemplateColumns = '1fr 1fr'; }
   } else {
     area.innerHTML = '<pre class="ri-errbox err-wa" style="margin:0">' + raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
   }

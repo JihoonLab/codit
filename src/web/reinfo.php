@@ -103,6 +103,18 @@ if (($ok && $OJ_FRIENDLY_LEVEL > 2) ||
     exit(0);
 }
 
+// WA/PE인 경우 실패 테스트케이스의 입력값 읽기
+$view_wa_input = '';
+if (($solution_row['result'] == 5 || $solution_row['result'] == 6) && !empty($view_reinfo)) {
+    $raw_err = isset($result[0]) ? $result[0]['error'] : '';
+    if (preg_match('/^(\\S+)\\.out/m', $raw_err, $fm)) {
+        $in_file = '/home/judge/data/' . intval($solution_row['problem_id']) . '/'. $fm[1] . '.in';
+        if (file_exists($in_file)) {
+            $view_wa_input = file_get_contents($in_file);
+            if (strlen($view_wa_input) > 500) $view_wa_input = substr($view_wa_input, 0, 500) . "\n... (이하 생략)";
+        }
+    }
+}
 /////////////////////////Template
 
 if (!isset($_SESSION[$OJ_NAME . '_' . 'source_browser']) && $OJ_SHOW_DIFF == false) {

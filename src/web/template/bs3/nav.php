@@ -382,7 +382,7 @@ body {
         <li <?php if($url=="status.php") echo 'class="active"'; ?>>
           <a href="/status.php">
             <span class="cn-icon nav-icon-default"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg></span><span class="cn-icon nav-icon-active" style="font-size:16px">🚀</span>
-            제출현황
+            도전현황
           </a>
         </li>
 
