@@ -223,9 +223,14 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f4f6f9; margin: 0; 
       $problemId = $solution_row['problem_id'];
       $solutionId = $solution_row['solution_id'];
     ?>
+    <?php
+      $ce_class_id = intval($solution_row['class_id']);
+      if($ce_class_id <= 0 && isset($_GET['class_id'])) $ce_class_id = intval($_GET['class_id']);
+      $ce_class_param = $ce_class_id > 0 ? '&class_id='.$ce_class_id : '';
+    ?>
     <?php if($problemId > 0): ?>
-    <a href="problem.php?id=<?php echo $problemId?>" class="ce-btn ce-btn-back">← 문제로 돌아가기</a>
-    <a href="submitpage.php?id=<?php echo $problemId?>&sid=<?php echo $solutionId?>" class="ce-btn ce-btn-edit">✏️ 코드 수정 후 재제출</a>
+    <a href="problem.php?id=<?php echo $problemId . $ce_class_param?>" class="ce-btn ce-btn-back">← 문제로 돌아가기</a>
+    <a href="submitpage.php?id=<?php echo $problemId?>&sid=<?php echo $solutionId?><?php echo $ce_class_param?>" class="ce-btn ce-btn-edit">✏️ 코드 수정 후 재제출</a>
     <?php else: ?>
     <a href="javascript:history.back()" class="ce-btn ce-btn-back">← 뒤로 가기</a>
     <?php endif; ?>

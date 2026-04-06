@@ -443,6 +443,11 @@
                 $lang = (~((int)$langmask)) & ((1<<($lang_count))-1);
                 $lastlang = $_COOKIE['lastlang'];
                 if($lastlang=="undefined") $lastlang = 0;
+                // 문제 태그에 따라 기본 언어 강제 설정 (코드 수정 시 제외)
+                if(isset($prob_source) && !isset($sid)) {
+                    if(stripos($prob_source, "Python") !== false) $lastlang = 6;
+                    elseif(stripos($prob_source, "C") !== false) $lastlang = 0;
+                }
                 // C(0) → Python(6) → C++(1) → 나머지 순서
                 $priority_order = array(0, 6, 1);
                 foreach($priority_order as $i){
@@ -579,7 +584,9 @@ function fresh_result(solution_id){
         
         // 모든 결과에 상세 페이지 링크 (OJ_SHOW_DIFF=true)
         var hasDetailLink = true;
-        var detailURL = isCE ? 'ceinfo.php?sid='+solution_id : 'reinfo.php?sid='+solution_id;
+        var classField = document.querySelector('input[name="class_id"]');
+        var classParam = (classField && classField.value > 0) ? '&class_id=' + classField.value : '';
+        var detailURL = isCE ? 'ceinfo.php?sid='+solution_id+classParam : 'reinfo.php?sid='+solution_id+classParam;
         
         var html = '<div class="result-card">';
         if(hasDetailLink){
@@ -794,11 +801,11 @@ function reloadtemplate(lang){
 }
 
 // ── 글자 크기 조절 ─────────────────────────────────────────────
-var FONT_SIZES = [12, 13, 14, 15, 16, 18, 20, 24];
+var FONT_SIZES = [12, 13, 14, 15, 16, 18, 20, 22, 24, 28, 32];
 var currentFontIdx = (function(){
   var saved = parseInt(localStorage.getItem('editorFontSize'));
   var idx = FONT_SIZES.indexOf(saved);
-  return (idx >= 0) ? idx : 5; // 기본값: 18px (index 5)
+  return (idx >= 0) ? idx : 6; // 기본값: 20px (index 6)
 })();
 
 function applyFontSize(idx) {

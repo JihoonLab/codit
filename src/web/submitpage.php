@@ -167,7 +167,7 @@ if (isset($id))
 $view_sample_input = "1 2";
 $view_sample_output = "3";
 $spj = 0;
-$sample_sql = "SELECT sample_input,sample_output,problem_id,spj,remote_oj FROM problem WHERE problem_id = ?";
+$sample_sql = "SELECT sample_input,sample_output,problem_id,spj,remote_oj,source FROM problem WHERE problem_id = ?";
 $remote_oj = "";
 if (isset($sample_sql)) {
     //echo $sample_sql;
@@ -188,6 +188,8 @@ if (isset($sample_sql)) {
     $spj = $row['spj'];
     $remote_oj = $row['remote_oj'];
     if ($spj > 1) $OJ_ACE_EDITOR = false;
+    // 문제 태그(source) - 템플릿에서 기본 언어 설정에 사용
+    $prob_source = isset($row['source']) ? $row['source'] : '';
 }
 
 $solution_file = "$OJ_DATA/$problem_id/solution.name";

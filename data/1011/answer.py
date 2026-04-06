@@ -1,3 +1,2 @@
-a, b = input().split()
-print(a)
-print(b)
+h, m = input().split(":")
+print(h, m, sep=":")

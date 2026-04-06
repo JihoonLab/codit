@@ -258,6 +258,11 @@ if ($OJ_SIM & $showsim > 0) {
         $str2 .= "&showsim=$showsim";
     }
 
+
+    // class_id 유지 (수업 컨텍스트 페이지네이션)
+    if (isset($_GET['class_id']) && intval($_GET['class_id']) > 0) {
+        $str2 .= "&class_id=" . intval($_GET['class_id']);
+    }
     //$sql=$sql.$order_str." LIMIT 20";
 } else {
     $sql = $sql0 . " " . $sql;
@@ -425,16 +430,20 @@ for ($i = 0; $i < $rows_cnt; $i++) {
     if ((!isset($_SESSION[$OJ_NAME . '_' . 'user_id']) || $row['user_id'] != $_SESSION[$OJ_NAME . '_' . 'user_id']) && !isset($_SESSION[$OJ_NAME . '_' . 'source_browser']))
         $mark = "";
 
+    // class_id for result detail links
+    $_cls_id = intval($row["class_id"]);
+    if($_cls_id <= 0 && isset($_GET['class_id'])) $_cls_id = intval($_GET['class_id']);
+    $_cls_param = ($_cls_id > 0) ? "&class_id=" . $_cls_id : "";
     $view_status[$i][3] = "<span class='hidden' style='display:none' result=" . $row['result'] . "></span>";
     // first_time star removed
     if (intval($row['result']) == 11 && ((isset($_SESSION[$OJ_NAME . '_' . 'user_id']) && $row['user_id'] == $_SESSION[$OJ_NAME . '_' . 'user_id']) || isset($_SESSION[$OJ_NAME . '_' . 'source_browser']))) {
-        $view_status[$i][3] .= "<a href=ceinfo.php?sid=" . $row['solution_id'] . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>" . $MSG_Compile_Error . "</a>";
+        $view_status[$i][3] .= "<a href=ceinfo.php?sid=" . $row['solution_id'] . $_cls_param . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>" . $MSG_Compile_Error . "</a>";
     } else if ((((intval($row['result']) == 8 || intval($row['result']) == 7 || intval($row['result']) == 5 || intval($row['result']) == 6) && ($OJ_SHOW_DIFF || isset($_SESSION[$OJ_NAME . '_' . 'source_browser']))) || $row['result'] == 10 || $row['result'] == 13) && ((isset($_SESSION[$OJ_NAME . '_' . 'user_id']) && $row['user_id'] == $_SESSION[$OJ_NAME . '_' . 'user_id']) || isset($_SESSION[$OJ_NAME . '_' . 'source_browser']))) {
-        $view_status[$i][3] .= "<a href=reinfo.php?sid=" . $row['solution_id'] . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>" . $judge_result[$row['result']] . $mark . "</a>";
+        $view_status[$i][3] .= "<a href=reinfo.php?sid=" . $row['solution_id'] . $_cls_param . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>" . $judge_result[$row['result']] . $mark . "</a>";
     } else {
         if (!$lock || $lock_time > $row['in_date'] || $row['user_id'] == $_SESSION[$OJ_NAME . '_' . 'user_id']) {
             if ($OJ_SIM && isset($row['sim']) && $row['sim'] > 80 && $row['sim_s_id'] != $row['s_id']) {
-                $view_status[$i][3] .= "<a href=reinfo.php?sid=" . $row['solution_id'] . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>*" . $judge_result[$row['result']];
+                $view_status[$i][3] .= "<a href=reinfo.php?sid=" . $row['solution_id'] . $_cls_param . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>*" . $judge_result[$row['result']];
 
                 if ($row['result'] != 4 && isset($row['pass_rate']) && $row['pass_rate'] != 1)
                     $view_status[$i][3] .= $mark . "</a>";
@@ -451,7 +460,7 @@ for ($i = 0; $i < $rows_cnt; $i++) {
                     $view_status[$i][3] .= "<span sid='" . $row['sim_s_id'] . "' class='original'></span>";
                 }
             } else {
-                $view_status[$i][3] .= "<a href=reinfo.php?sid=" . $row['solution_id'] . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>" . $judge_result[$row['result']] . $mark . "</a>";
+                $view_status[$i][3] .= "<a href=reinfo.php?sid=" . $row['solution_id'] . $_cls_param . " class='" . $judge_color[$row['result']] . "' title='$MSG_Tips'>" . $judge_result[$row['result']] . $mark . "</a>";
             }
         } else {
             $view_status[$i][3] = "----";
@@ -499,7 +508,10 @@ for ($i = 0; $i < $rows_cnt; $i++) {
                     else
                         $view_status[$i][7] = "";
                 } else {
-                    $view_status[$i][7] = "<a class='st-edit-btn' href=\"$edit_link?id=" . $row['problem_id'] . "&sid=" . $row['solution_id'] . "\">코드 수정</a>";
+                    $_cls_id = intval($row["class_id"]);
+                    if($_cls_id <= 0 && isset($_GET['class_id'])) $_cls_id = intval($_GET['class_id']);
+                    $_cls_param = ($_cls_id > 0) ? "&class_id=" . $_cls_id : "";
+                    $view_status[$i][7] = "<a class='st-edit-btn' href=\"$edit_link?id=" . $row["problem_id"] . "&sid=" . $row["solution_id"] . $_cls_param . "\">코드 수정</a>";
                 }
             } else {
                 $view_status[$i][7] = "";

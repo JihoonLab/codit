@@ -91,8 +91,8 @@
           <label>🎓 학년</label>
           <select name="grade" id="f-grade">
             <option value="">선택</option>
-            <option value="2">2학년 (4개반)</option>
-            <option value="3">3학년 (3개반)</option>
+            <option value="2">2학년 (8개반)</option>
+            <option value="3">3학년 (8개반)</option>
           </select>
         </div>
         <div class="cb-field" style="max-width:180px">
@@ -188,7 +188,7 @@
 }
 </style>
 <script>
-var classMap = {2: [1,2,3,4], 3: [1,2,3]};
+var classMap = {2: [1,2,3,4,5,6,7,8], 3: [1,2,3,4,5,6,7,8]};
 var subjectMap = {2: '정보', 3: '인공지능기초'};
 
 var fGrade = document.getElementById('f-grade');

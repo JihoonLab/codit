@@ -241,7 +241,7 @@ KindEditor.ready(function(K) {
 });
 
 // === Config ===
-var banMap = {2:[1,2,3,4], 3:[1,2,3]};
+var banMap = {2:[1,2,3,4,5,6,7,8], 3:[1,2,3,4,5,6,7,8]};
 var subjectMap = {2:'정보', 3:'인공지능기초'};
 
 var fDate = document.getElementById('f-date');

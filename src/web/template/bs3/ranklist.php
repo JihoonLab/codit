@@ -171,6 +171,26 @@
     .rl-table .row-bronze td { font-weight: 700; color: #78350f; }
     .rl-table .row-bronze td a { color: #92400e; }
     .rl-table .row-bronze td.td-solved { color: #b45309; }
+    .rl-table .row-me {
+      background: linear-gradient(90deg, #7c3aed, #6d28d9);
+      position: relative;
+    }
+    .rl-table .row-me td {
+      font-weight: 800; color: #fff;
+      border-bottom-color: rgba(255,255,255,0.1);
+    }
+    .rl-table .row-me td a { color: #e9d5ff !important; }
+    .rl-table .row-me td a:hover { color: #fff !important; }
+    .rl-table .row-me td.td-solved { color: #a5f3fc; font-size: 18px; }
+    .rl-table .row-me td.td-submit { color: rgba(255,255,255,0.7); }
+    .rl-table .row-me .td-rate { color: #fde68a !important; }
+    .rl-table .row-me .rank-num { color: #fff; }
+    .rl-table .row-me .mini-bar { background: rgba(255,255,255,0.2); }
+    .rl-table .row-me td:first-child::after {
+      content: '← ME'; font-size: 10px; color: #fde68a; font-weight: 900;
+      margin-left: 6px; letter-spacing: 1px;
+    }
+    .rl-table .row-me:hover { background: linear-gradient(90deg, #6d28d9, #5b21b6); }
     .rank-medal { font-size: 22px; }
     .rank-num { font-weight: 800; color: #9ca3af; font-size: 15px; }
 
@@ -508,11 +528,15 @@
           $first_cells = array_values((array)$all_rows[0]);
           $max_solved = max(1, intval(preg_replace('/[^0-9]/', '', strip_tags($first_cells[4]))));
         }
+        $my_uid = isset($_SESSION[$OJ_NAME.'_'.'user_id']) ? $_SESSION[$OJ_NAME.'_'.'user_id'] : '';
         foreach($view_rank as $row):
           $cells = array_values((array)$row);
           $solved_n = intval(preg_replace('/[^0-9]/', '', strip_tags($cells[4])));
+          $row_uid = strip_tags($cells[1]);
+          $is_me = ($my_uid !== '' && $row_uid === $my_uid);
           $row_class = '';
-          if($rank == 1) $row_class = 'row-gold';
+          if($is_me) $row_class = 'row-me';
+          elseif($rank == 1) $row_class = 'row-gold';
           elseif($rank == 2) $row_class = 'row-silver';
           elseif($rank == 3) $row_class = 'row-bronze';
           $pct = round(($solved_n / $max_solved) * 100);

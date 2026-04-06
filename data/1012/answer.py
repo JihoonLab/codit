@@ -1,2 +1,2 @@
-a, b = input().split()
-print(a, b)
+p = input().split(":")
+print(p[1])

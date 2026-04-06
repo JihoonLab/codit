@@ -1,4 +1,2 @@
-a = int(input())
-b = int(input())
-print(a, end="")
-print(b)
+n = input()
+print(n, n, n)

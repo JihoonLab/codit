@@ -542,12 +542,17 @@ pre.ri-errbox.err-pe  { background: #fff7ed !important; color: #9a3412 !importan
     </div>
   </div>
 
+  <?php
+    $ri_class_id = intval($solution_row['class_id']);
+    if($ri_class_id <= 0 && isset($_GET['class_id'])) $ri_class_id = intval($_GET['class_id']);
+    $ri_class_param = $ri_class_id > 0 ? '&class_id='.$ri_class_id : '';
+  ?>
   <div class="ri-actions">
-    <?php if($problemId > 0): ?><a href="problem.php?id=<?php echo $problemId?>" class="ri-btn ri-btn-back">← 문제로 돌아가기</a><?php else: ?><a href="javascript:history.back()" class="ri-btn ri-btn-back">← 뒤로 가기</a><?php endif; ?>
+    <?php if($problemId > 0): ?><a href="problem.php?id=<?php echo $problemId . $ri_class_param?>" class="ri-btn ri-btn-back">← 문제로 돌아가기</a><?php else: ?><a href="javascript:history.back()" class="ri-btn ri-btn-back">← 뒤로 가기</a><?php endif; ?>
     <?php if($isAC_flag && $problemId > 0): ?>
-    <a href="problem.php?id=<?php echo $problemId + 1?>" class="ri-btn ri-btn-edit">🚀 다음 문제 풀기</a>
+    <a href="problem.php?id=<?php echo ($problemId + 1) . $ri_class_param?>" class="ri-btn ri-btn-edit">🚀 다음 문제 풀기</a>
     <?php elseif($problemId > 0): ?>
-    <a href="submitpage.php?id=<?php echo $problemId?>&sid=<?php echo $solutionId?>" class="ri-btn ri-btn-edit">✏️ 코드 수정 후 재제출</a>
+    <a href="submitpage.php?id=<?php echo $problemId?>&sid=<?php echo $solutionId?><?php echo $ri_class_param?>" class="ri-btn ri-btn-edit">✏️ 코드 수정 후 재제출</a>
     <?php endif; ?>
   </div>
 

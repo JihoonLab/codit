@@ -185,7 +185,7 @@ body { font-family: 'Inter','Noto Sans KR',sans-serif; background: #f0f2f5; marg
   </div>
 
   <div class="st-card">
-    <table class="st-tbl">
+    <table class="st-tbl" id="result-tab">
       <thead><tr>
         <th style="width:70px">#</th>
         <th style="text-align:left">사용자</th>
@@ -238,7 +238,7 @@ body { font-family: 'Inter','Noto Sans KR',sans-serif; background: #f0f2f5; marg
           <?php if($nickText):?><div class="nick"><?php echo htmlspecialchars($nickText)?></div><?php endif;?>
         </td>
         <td class="td-prob"><?php echo $c_prob?></td>
-        <td>
+        <td class="td-result" data-result="<?php echo $rc?>" data-sid="<?php echo $sidNum?>">
           <?php if($rLink):?>
           <a href="<?php echo $rLink?>" class="res-badge rb-<?php echo $rbCls?>"><?php echo $rbTxt?></a>
           <?php else:?>
@@ -281,6 +281,59 @@ $(document).ready(function(){
   });
 });
 </script>
-<script src="<?php echo $OJ_CDN_URL?>template/<?php echo $OJ_TEMPLATE?>/auto_refresh.js?v=0.41"></script>
+<script>
+// 채점 중인 제출 자동 새로고침
+(function(){
+  var rbMap = {4:'ac',5:'pe',6:'wa',7:'tle',8:'mle',9:'ole',10:'re',11:'ce'};
+  var rbLabel = {0:'대기',1:'대기',2:'채점중',3:'채점중',4:'정답 ✓',5:'형식 오류',6:'오답 ✗',7:'시간 초과',8:'메모리 초과',9:'출력 초과',10:'런타임 에러',11:'컴파일 에러'};
+  var linkMap = {4:'reinfo',5:'reinfo',6:'reinfo',7:'reinfo',8:'reinfo',9:'reinfo',10:'reinfo',11:'ceinfo'};
+  var urlClassId = '<?php echo isset($_GET["class_id"]) ? "&class_id=".intval($_GET["class_id"]) : ""; ?>';
+
+  function pollPending(){
+    var cells = document.querySelectorAll('.td-result');
+    var pending = [];
+    cells.forEach(function(td){
+      var r = parseInt(td.getAttribute('data-result'));
+      if(r < 4) pending.push(td);
+    });
+    if(pending.length === 0) return;
+
+    pending.forEach(function(td){
+      var sid = td.getAttribute('data-sid');
+      fetch('status-ajax.php?solution_id=' + sid)
+        .then(function(res){ return res.text(); })
+        .then(function(txt){
+          var ra = txt.split(',');
+          var rc = parseInt(ra[0]);
+          var row = td.parentElement;
+
+          // 메모리, 시간 업데이트
+          var perfs = row.querySelectorAll('.td-perf');
+          if(perfs[0] && ra[1]) perfs[0].textContent = ra[1].trim();
+          if(perfs[1] && ra[2]) perfs[1].textContent = ra[2].trim();
+
+          if(rc >= 4) {
+            // 채점 완료
+            td.setAttribute('data-result', rc);
+            var cls = rbMap[rc] || 'pending';
+            var txt = rbLabel[rc] || '알 수 없음';
+            var page = linkMap[rc] || 'reinfo';
+            td.innerHTML = '<a href="' + page + '.php?sid=' + sid + urlClassId + '" class="res-badge rb-' + cls + '">' + txt + '</a>';
+
+            // AC면 행 클래스 변경
+            if(rc === 4) row.className = 'r-ac';
+            else if(rc === 6) row.className = 'r-wa';
+          }
+        });
+    });
+
+    // 아직 채점 중이면 2초 후 재시도
+    setTimeout(pollPending, 2000);
+  }
+
+  // 시작: 1초 후 첫 폴링
+  setTimeout(pollPending, 1000);
+})();
+</script>
 </body>
 </html>

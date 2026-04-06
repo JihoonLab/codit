@@ -70,7 +70,7 @@ if ($action === 'view') {
 
         $class_time = $class['time'] ?? '2000-01-01 00:00:00';
         // 제출한 학생 목록
-        $students = pdo_query("SELECT DISTINCT s.user_id, u.nick FROM solution s LEFT JOIN users u ON s.user_id=u.user_id WHERE s.problem_id IN ($pids) AND s.class_id=? ORDER BY s.user_id ASC", $cid);
+        $students = pdo_query("SELECT DISTINCT s.user_id, u.nick, u.student_no FROM solution s LEFT JOIN users u ON s.user_id=u.user_id WHERE s.problem_id IN ($pids) AND s.class_id=? ORDER BY CAST(u.student_no AS UNSIGNED) ASC, u.student_no ASC, s.user_id ASC", $cid);
 
         // AC 여부
         $solved = pdo_query("SELECT DISTINCT user_id, problem_id FROM solution WHERE problem_id IN ($pids) AND result=4 AND class_id=?", $cid);
@@ -83,9 +83,60 @@ if ($action === 'view') {
         foreach ($firsts as $f) {
             $first_map[$f['problem_id']] = ['user_id' => $f['user_id'], 'time' => $f['first_time']];
         }
+
+        // 문제별 AC 순위 (1~5등) rank_map[user_id][problem_id] = 순위
+        $rank_map = [];
+        foreach ($problems as $p) {
+            $pid = $p['problem_id'];
+            $ranks = pdo_query("SELECT user_id, MIN(in_date) as ft FROM solution WHERE problem_id=? AND result=4 AND class_id=? GROUP BY user_id ORDER BY ft ASC LIMIT 5", $pid, $cid);
+            foreach ($ranks as $ri => $rv) {
+                $rank_map[$rv['user_id']][$pid] = $ri + 1;
+            }
+        }
     }
 
     require("template/" . $OJ_TEMPLATE . "/classview.php");
+    exit(0);
+}
+
+// 수업 일괄생성
+if ($is_admin && $action === 'batch') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $date    = trim($_POST['date'] ?? '');
+        $grade   = intval($_POST['grade'] ?? 0);
+        $subject = trim($_POST['subject'] ?? '');
+        $topic   = trim($_POST['topic'] ?? '');
+        $pid_str = trim($_POST['problem_ids'] ?? '');
+        $uid     = $_SESSION[$OJ_NAME . '_user_id'];
+
+        $classes_map = [
+            2 => [1,2,3,4],
+            3 => [1,2,3]
+        ];
+        $subject_map = [
+            2 => '정보',
+            3 => '인공지능기초'
+        ];
+        if ($subject === '') $subject = $subject_map[$grade] ?? '';
+
+        $created = [];
+        if ($grade > 0 && $topic !== '' && isset($classes_map[$grade])) {
+            $pids = array_values(array_filter(array_map('intval', explode(',', $pid_str))));
+            foreach ($classes_map[$grade] as $ban) {
+                $tag = $grade . '-' . $ban;
+                $title = ($date !== '' ? "($date) " : '') . "[$tag] [$subject] $topic";
+                pdo_query("INSERT INTO class (title, description, tag, content, user_id, time, defunct) VALUES (?,?,?,?,?,NOW(),'N')",
+                    $title, $topic, $tag, '', $uid);
+                $new_id = pdo_query("SELECT LAST_INSERT_ID() as id")[0]['id'];
+                foreach ($pids as $order => $pid) {
+                    if ($pid > 0) pdo_query("INSERT INTO class_problem (class_id, problem_id, sort_order) VALUES (?,?,?)", $new_id, $pid, $order);
+                }
+                $created[] = $title;
+            }
+        }
+        $batch_result = $created;
+    }
+    require("template/" . $OJ_TEMPLATE . "/classbatch.php");
     exit(0);
 }
 

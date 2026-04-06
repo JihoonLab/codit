@@ -616,7 +616,7 @@
           $my_uid_btn = $_SESSION[$OJ_NAME.'_'.'user_id'];
           $my_sub_count = pdo_query("SELECT COUNT(*) as cnt FROM solution WHERE user_id=? AND problem_id=?", $my_uid_btn, $row['problem_id']);
           $my_cnt = $my_sub_count[0]['cnt'] ?? 0;
-          echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."&user_id=".$my_uid_btn."'>📋 내 제출 (".$my_cnt.")</a>";
+          echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."&user_id=".$my_uid_btn.$class_param."'>📋 내 제출 (".$my_cnt.")</a>";
         }
       }
 

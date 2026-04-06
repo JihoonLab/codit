@@ -509,6 +509,10 @@ if (isset($cid)) {
     $statusURI .= "&cid=$cid&top=$insert_id&fixed=";
 }
 
+if (isset($submit_class_id) && $submit_class_id > 0) {
+    $statusURI .= "&class_id=$submit_class_id";
+}
+
 if (!$test_run && !isset($_GET['ajax'])) {
     header("Location: $statusURI");
 } else {

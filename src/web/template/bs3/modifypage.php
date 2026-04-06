@@ -114,6 +114,7 @@
     /* 비밀번호 강도 */
     .pw-strength{height:4px;background:#e5e9f0;border-radius:2px;margin-top:8px;overflow:hidden}
     .pw-strength-bar{height:100%;width:0;border-radius:2px;transition:all 0.3s}
+    .pw-label{font-size:12px;font-weight:700;margin-top:4px;min-height:16px;transition:color 0.3s}
 
     /* 체크 아이콘 */
     .m-field{position:relative}
@@ -124,10 +125,18 @@
       transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
     }
     .check-icon.show{opacity:1;transform:scale(1)}
+    .mismatch-icon{
+      position:absolute;right:16px;top:38px;
+      color:#ef4444;font-size:16px;font-weight:700;
+      opacity:0;transform:scale(0);
+      transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .mismatch-icon.show{opacity:1;transform:scale(1)}
+    .pw-match-label{font-size:12px;font-weight:700;margin-top:4px;min-height:16px;transition:color 0.3s}
 
     /* ===== 토스트 ===== */
     .toast{
-      position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120px);
+      position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-120px);
       padding:14px 28px;border-radius:14px;
       font-size:14px;font-weight:700;font-family:inherit;
       box-shadow:0 8px 32px rgba(0,0,0,0.15);
@@ -228,11 +237,14 @@
             <label for="npassword">새 비밀번호</label>
             <input id="npassword" type="password" placeholder="6자 이상" autocomplete="new-password">
             <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+            <div class="pw-label" id="pw-label"></div>
           </div>
           <div class="m-field">
             <label for="rptpassword">새 비밀번호 확인</label>
             <input id="rptpassword" type="password" placeholder="다시 입력" autocomplete="new-password">
             <span class="check-icon" id="pw-match-icon">&#10003;</span>
+            <span class="mismatch-icon" id="pw-mismatch-icon">&#10007;</span>
+            <div class="pw-match-label" id="pw-match-label"></div>
           </div>
         </div>
       </div>
@@ -316,7 +328,7 @@
   };
 
   document.getElementById('npassword').addEventListener('input', function(){
-    var v = this.value, s = 0, bar = document.getElementById('pw-bar');
+    var v = this.value, s = 0, bar = document.getElementById('pw-bar'), lbl = document.getElementById('pw-label');
     if(v.length >= 6) s++;
     if(v.length >= 10) s++;
     if(/[A-Z]/.test(v) && /[a-z]/.test(v)) s++;
@@ -324,17 +336,23 @@
     if(/[^A-Za-z0-9]/.test(v)) s++;
     var pct = Math.min(s/4*100, 100);
     var colors = ['#ef4444','#f59e0b','#eab308','#22c55e'];
+    var labels = ['위험','약함','보통','안전'];
     bar.style.width = pct+'%';
     bar.style.background = colors[Math.min(s-1, 3)] || '#e5e9f0';
+    if(v.length === 0){ lbl.textContent = ''; }
+    else { lbl.textContent = '비밀번호 안전성 : ' + (labels[Math.min(s-1, 3)] || '위험'); lbl.style.color = colors[Math.min(s-1, 3)] || '#ef4444'; }
     checkMatch();
   });
 
   function checkMatch(){
     var np = document.getElementById('npassword').value;
     var rp = document.getElementById('rptpassword').value;
-    var icon = document.getElementById('pw-match-icon');
-    if(rp && np === rp) icon.classList.add('show');
-    else icon.classList.remove('show');
+    var ok = document.getElementById('pw-match-icon');
+    var no = document.getElementById('pw-mismatch-icon');
+    var lbl = document.getElementById('pw-match-label');
+    if(!rp){ ok.classList.remove('show'); no.classList.remove('show'); lbl.textContent=''; }
+    else if(np === rp){ ok.classList.add('show'); no.classList.remove('show'); lbl.textContent='비밀번호 일치'; lbl.style.color='#22c55e'; }
+    else { ok.classList.remove('show'); no.classList.add('show'); lbl.textContent='비밀번호가 일치하지 않습니다'; lbl.style.color='#ef4444'; }
   }
   document.getElementById('rptpassword').addEventListener('input', checkMatch);
 
