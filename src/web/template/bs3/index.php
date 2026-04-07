@@ -136,7 +136,7 @@
     /* ===== GRID ===== */
     .grid-2 {
       display: grid; grid-template-columns: 1fr 1fr;
-      gap: 16px; margin-bottom: 16px;
+      gap: 16px; margin-bottom: 16px; align-items: stretch;
     }
     @media (max-width: 780px) { .grid-2 { grid-template-columns: 1fr; } }
     @media (max-width: 600px) {
@@ -151,10 +151,12 @@
       .home-list li a { font-size: 13px; }
       .hb { font-size: 9px; padding: 3px 8px; }
       .nt { font-size: 10px; padding: 2px 8px; }
-      .hof-item { padding: 11px 14px; gap: 10px; }
-      .hof-medal { font-size: 18px; min-width: 26px; }
-      .hof-name { font-size: 13px; }
-      .hof-score-num { font-size: 16px; }
+      .hof-item { padding: 8px 12px; gap: 8px; }
+      .hof-medal { font-size: 15px; min-width: 22px; }
+      .hof-num { min-width: 22px; height: 22px; line-height: 22px; font-size: 10px; }
+      .hof-name { font-size: 11px; }
+      .hof-score-num { font-size: 13px; }
+      .hof-grade-header { padding: 8px 12px 4px; font-size: 10px; }
       .codit-card-header-inner { padding: 12px 14px; }
       .codit-card-header h3 { font-size: 14px; }
     }
@@ -166,45 +168,89 @@
     .col-l .card-bottom { border-radius: 0 0 16px 16px; border-top: 1px solid #e5e7eb; }
     .col-l .card-bottom:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: none; }
     .hof-card { display: flex; flex-direction: column; }
-    .hof-card .hof-bg { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .hof-card .hof-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
     .hof-card .rk-list { }
 
-    /* ===== RANK - Hall of Fame ===== */
-    .hof-list { padding: 0; }
+    /* ===== RANK - Hall of Fame (학년별 2열) ===== */
+    .hof-grid { min-height: 0; }
+    .hof-grade-section { padding: 0; display: flex; flex-direction: column; }
+    .hof-grade-section.g2-sec { border-right: 1.5px solid #f0f0f0; }
+    .hof-grade-header {
+      display: flex; align-items: center; gap: 7px;
+      padding: 12px 16px 5px; font-size: 12px; font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .hof-grade-header::after {
+      content: ''; flex: 1; height: 1.5px; border-radius: 1px;
+    }
+    .hof-grade-header.g2 { color: #7c3aed; }
+    .hof-grade-header.g2::after { background: linear-gradient(90deg, #e9d5ff, transparent); }
+    .hof-grade-header.g3 { color: #e11d48; }
+    .hof-grade-header.g3::after { background: linear-gradient(90deg, #fecdd3, transparent); }
+    .hof-grade-badge {
+      font-size: 11px; font-weight: 800; padding: 3px 10px;
+      border-radius: 10px; letter-spacing: 0.3px;
+    }
+    .g2 .hof-grade-badge { background: linear-gradient(135deg, #f3e8ff, #ede9fe); color: #7c3aed; }
+    .g3 .hof-grade-badge { background: linear-gradient(135deg, #fff1f2, #ffe4e6); color: #e11d48; }
+    .hof-grade-more {
+      margin-left: auto; font-size: 11px; color: #b0b5bf;
+      text-decoration: none; font-weight: 600; transition: color 0.15s;
+    }
+    .hof-grade-more:hover { color: #7c3aed; }
+
+    /* 리스트 아이템 — 꽉 채우기 */
+    .hof-list { padding: 0; flex: 1; display: flex; flex-direction: column; }
     .hof-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 13px 22px; border-bottom: 1px solid #f5f6f8;
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 16px; border-bottom: 1px solid #f3f4f6;
       transition: all 0.15s; text-decoration: none; color: inherit;
+      flex: 1; min-height: 38px;
     }
     .hof-item:last-child { border-bottom: none; }
     .hof-item:hover { background: #faf5ff; }
     .hof-medal {
-      font-size: 22px; min-width: 32px; text-align: center; flex-shrink: 0;
+      font-size: 20px; min-width: 26px; text-align: center; flex-shrink: 0;
     }
     .hof-num {
-      font-size: 13px; font-weight: 800; color: #7c3aed;
-      min-width: 32px; height: 32px; line-height: 32px;
+      font-size: 12px; font-weight: 800; color: #7c3aed;
+      min-width: 26px; height: 26px; line-height: 26px;
       text-align: center; border-radius: 50%;
       background: #f0e6ff; flex-shrink: 0;
     }
     .hof-info { flex: 1; min-width: 0; }
     .hof-name {
-      font-size: 14px; font-weight: 700; color: #1f2937;
+      font-size: 13.5px; font-weight: 700; color: #1f2937;
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .hof-item:hover .hof-name { color: #7c3aed; }
-    .hof-uid { font-size: 11px; color: #b0b5bf; font-weight: 500; margin-left: 4px; }
+    .hof-uid { font-size: 10px; color: #c0c5cf; font-weight: 500; margin-left: 4px; }
     .hof-score { flex-shrink: 0; text-align: right; display: flex; align-items: baseline; gap: 3px; }
-    .hof-score-num { font-size: 18px; font-weight: 900; color: #7c3aed; line-height: 1; }
+    .hof-score-num { font-size: 17px; font-weight: 900; color: #7c3aed; line-height: 1; }
     .hof-score-label { font-size: 10px; color: #b0b5bf; font-weight: 700; }
     /* top 3 highlight */
-    .hof-item.hof-gold { background: linear-gradient(90deg, rgba(254,243,199,0.4), transparent); }
-    .hof-item.hof-gold .hof-score-num { color: #b45309; }
-    .hof-item.hof-gold .hof-name { font-size: 15px; font-weight: 800; }
+    .hof-item.hof-gold { background: linear-gradient(90deg, rgba(254,243,199,0.45), transparent); }
+    .hof-item.hof-gold .hof-score-num { color: #b45309; font-size: 19px; }
+    .hof-item.hof-gold .hof-name { font-size: 14.5px; font-weight: 800; }
     .hof-item.hof-silver { background: linear-gradient(90deg, rgba(243,244,246,0.5), transparent); }
-    .hof-item.hof-silver .hof-score-num { color: #6b7280; }
+    .hof-item.hof-silver .hof-score-num { color: #6b7280; font-size: 18px; }
+    .hof-item.hof-silver .hof-name { font-size: 14px; font-weight: 700; }
     .hof-item.hof-bronze { background: linear-gradient(90deg, rgba(254,243,199,0.25), transparent); }
-    .hof-item.hof-bronze .hof-score-num { color: #92400e; }
+    .hof-item.hof-bronze .hof-score-num { color: #92400e; font-size: 18px; }
+    .hof-item.hof-bronze .hof-name { font-size: 14px; font-weight: 700; }
+    .hof-empty-grade {
+      padding: 24px; text-align: center; font-size: 12px; color: #cbd5e1; font-weight: 500;
+    }
+
+    @media (max-width: 780px) {
+      .hof-grid { grid-template-columns: 1fr; }
+      .hof-grade-section.g2-sec { border-right: none; border-bottom: 1.5px solid #f0f0f0; }
+      .hof-item { padding: 9px 16px; gap: 10px; }
+      .hof-medal { font-size: 18px; min-width: 28px; }
+      .hof-name { font-size: 13px; }
+      .hof-score-num { font-size: 16px; }
+      .hof-uid { display: inline; }
+    }
 
     .nt {
       margin-left: auto; font-size: 11px; flex-shrink: 0; font-weight: 600;
@@ -319,7 +365,7 @@ def fibonacci(n):
   <div style="margin-bottom:16px"><?php echo $view_homebanner; ?></div>
   <?php endif; ?>
 
-  <!-- Row 1: 수업목록+교안 (왼) | 명예의전당 (오) -->
+  <!-- Row 1: 수업+교안 (왼) | 명예의전당 (오) -->
   <div class="grid-2">
     <div class="col-l">
       <div class="codit-card card-top">
@@ -331,11 +377,16 @@ def fibonacci(n):
         </div>
         <ul class="home-list">
         <?php
-          $__my_school = isset($_SESSION[$OJ_NAME.'_user_id']) ? (pdo_query("SELECT school FROM users WHERE user_id=?", $_SESSION[$OJ_NAME.'_user_id'])[0]['school'] ?? '') : '';
-          if($__my_school !== '') {
-            $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' AND (tag=? OR tag='') ORDER BY class_id DESC LIMIT 4", $__my_school);
+          $__is_admin = isset($_SESSION[$OJ_NAME.'_administrator']);
+          if($__is_admin) {
+            $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' ORDER BY class_id DESC LIMIT 4");
           } else {
-            $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' AND tag='' ORDER BY class_id DESC LIMIT 4");
+            $__my_school = isset($_SESSION[$OJ_NAME.'_user_id']) ? (pdo_query("SELECT school FROM users WHERE user_id=?", $_SESSION[$OJ_NAME.'_user_id'])[0]['school'] ?? '') : '';
+            if($__my_school !== '') {
+              $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' AND (tag=? OR tag='') ORDER BY class_id DESC LIMIT 4", $__my_school);
+            } else {
+              $class_rows = pdo_query("SELECT class_id, title FROM class WHERE defunct='N' AND tag='' ORDER BY class_id DESC LIMIT 4");
+            }
           }
           if($class_rows && count($class_rows) > 0):
             foreach($class_rows as $cl):
@@ -374,43 +425,72 @@ def fibonacci(n):
     </div>
 
     <div class="codit-card hof-card">
-      <div class="codit-card-header ch-hof">
-        <div class="codit-card-header-inner">
-          <h3><span class="sec-icon">🏆</span> 명예의 전당</h3>
-          <a href="ranklist.php">전체 보기 <span class="arr">→</span></a>
-        </div>
+    <div class="codit-card-header ch-hof">
+      <div class="codit-card-header-inner">
+        <h3><span class="sec-icon">🏆</span> 명예의 전당</h3>
+        <a href="ranklist.php?grade=all">전체 보기 <span class="arr">→</span></a>
       </div>
-      <?php
-        $rank_rows = pdo_query("SELECT u.user_id, u.nick, COUNT(DISTINCT s.problem_id) as solved FROM users u JOIN solution s ON u.user_id=s.user_id WHERE s.result=4 AND u.defunct='N' AND u.user_id NOT IN ('admin') GROUP BY u.user_id ORDER BY solved DESC LIMIT 8");
-        if($rank_rows && count($rank_rows) > 0):
-          $medals = ['🥇','🥈','🥉'];
-          $hof_classes = ['hof-gold','hof-silver','hof-bronze'];
-      ?>
-      <div class="hof-list">
-        <?php foreach($rank_rows as $ri => $ru):
-          $is_top3 = $ri < 3;
-          $cls = $is_top3 ? $hof_classes[$ri] : '';
-        ?>
-        <a class="hof-item <?php echo $cls?>" href="userinfo.php?user=<?php echo htmlspecialchars($ru['user_id'])?>">
-          <?php if($is_top3): ?>
-            <span class="hof-medal"><?php echo $medals[$ri]?></span>
-          <?php else: ?>
-            <span class="hof-num"><?php echo $ri+1?></span>
-          <?php endif; ?>
-          <div class="hof-info">
-            <div class="hof-name"><?php echo htmlspecialchars($ru['nick'] ?: $ru['user_id'])?><?php if($is_top3 && $ru['nick']): ?> <span class="hof-uid"><?php echo htmlspecialchars($ru['user_id'])?></span><?php endif; ?></div>
-          </div>
-          <div class="hof-score">
-            <span class="hof-score-num"><?php echo $ru['solved']?></span>
-            <span class="hof-score-label">문제</span>
-          </div>
-        </a>
-        <?php endforeach; ?>
-      </div>
-      <?php else: ?>
-      <div class="empty-msg">아직 문제를 푼 사용자가 없습니다.</div>
-      <?php endif; ?>
     </div>
+    <?php
+      $medals = ['🥇','🥈','🥉'];
+      $hof_classes = ['hof-gold','hof-silver','hof-bronze'];
+      $hof_grades = [
+        ['grade'=>'2', 'label'=>'2학년', 'cls'=>'g2', 'sec'=>'g2-sec', 'link'=>'ranklist.php?grade=2'],
+        ['grade'=>'3', 'label'=>'3학년', 'cls'=>'g3', 'sec'=>'g3-sec', 'link'=>'ranklist.php?grade=3']
+      ];
+      $has_any = false;
+      $hof_data = [];
+      foreach($hof_grades as $hg) {
+        $g = $hg['grade'];
+        $rows = pdo_query("SELECT user_id, nick, solved FROM users WHERE solved>0 AND defunct='N' AND user_id NOT IN ('admin') AND school LIKE ? ORDER BY solved DESC LIMIT 9", $g.'-%');
+        if($rows && count($rows) > 0) $has_any = true;
+        $hof_data[$g] = $rows ?: [];
+      }
+    ?>
+    <?php if($has_any): ?>
+    <div class="hof-grid">
+      <?php foreach($hof_grades as $hg):
+        $g = $hg['grade'];
+        $hof_rows = $hof_data[$g];
+      ?>
+      <div class="hof-grade-section <?php echo $hg['sec']?>">
+        <div class="hof-grade-header <?php echo $hg['cls']?>">
+          <span class="hof-grade-badge"><?php echo $hg['label']?></span>
+          TOP <?php echo count($hof_rows)?>
+          <a class="hof-grade-more" href="<?php echo $hg['link']?>">더보기 →</a>
+        </div>
+        <?php if(count($hof_rows) > 0): ?>
+        <div class="hof-list">
+          <?php foreach($hof_rows as $ri => $ru):
+            $is_top3 = $ri < 3;
+            $cls = $is_top3 ? $hof_classes[$ri] : '';
+          ?>
+          <a class="hof-item <?php echo $cls?>" href="userinfo.php?user=<?php echo htmlspecialchars($ru['user_id'])?>">
+            <?php if($is_top3): ?>
+              <span class="hof-medal"><?php echo $medals[$ri]?></span>
+            <?php else: ?>
+              <span class="hof-num"><?php echo $ri+1?></span>
+            <?php endif; ?>
+            <div class="hof-info">
+              <div class="hof-name"><?php echo htmlspecialchars($ru['nick'] ?: $ru['user_id'])?><?php if($is_top3 && $ru['nick']): ?> <span class="hof-uid"><?php echo htmlspecialchars($ru['user_id'])?></span><?php endif; ?></div>
+            </div>
+            <div class="hof-score">
+              <span class="hof-score-num"><?php echo $ru['solved']?></span>
+              <span class="hof-score-label">문제</span>
+            </div>
+          </a>
+          <?php endforeach; ?>
+        </div>
+        <?php else: ?>
+        <div class="hof-empty-grade">아직 데이터가 없습니다</div>
+        <?php endif; ?>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <?php else: ?>
+    <div class="empty-msg">아직 문제를 푼 사용자가 없습니다.</div>
+    <?php endif; ?>
+  </div>
   </div>
 
   <!-- Row 2: 공지사항 (풀폭) -->

@@ -55,7 +55,11 @@ if ($is_admin && $action === 'delete') {
 if ($action === 'view') {
     $cid = intval($_GET['id'] ?? 0);
     if ($cid <= 0) { echo "<script>location.replace('classop.php')</script>"; exit(0); }
-    $class = pdo_query("SELECT * FROM class WHERE class_id=? AND defunct='N'", $cid);
+    if ($is_admin) {
+        $class = pdo_query("SELECT * FROM class WHERE class_id=?", $cid);
+    } else {
+        $class = pdo_query("SELECT * FROM class WHERE class_id=? AND defunct='N'", $cid);
+    }
     if (empty($class)) { echo "<script>alert('존재하지 않는 수업입니다.'); location.replace('classop.php')</script>"; exit(0); }
     $class = $class[0];
 
@@ -69,8 +73,20 @@ if ($action === 'view') {
         $pids = implode(',', array_column($problems, 'problem_id'));
 
         $class_time = $class['time'] ?? '2000-01-01 00:00:00';
-        // 제출한 학생 목록
-        $students = pdo_query("SELECT DISTINCT s.user_id, u.nick, u.student_no FROM solution s LEFT JOIN users u ON s.user_id=u.user_id WHERE s.problem_id IN ($pids) AND s.class_id=? ORDER BY CAST(u.student_no AS UNSIGNED) ASC, u.student_no ASC, s.user_id ASC", $cid);
+        $class_tag = trim($class['tag'] ?? '');
+
+        // AI분반 수업인 경우: 해당 분반 전체 학생 표시 (제출 안 한 학생 포함)
+        // 일반 반 수업인 경우: 해당 반(school) 전체 학생 표시
+        if(preg_match('/^AI-(\d+)$/', $class_tag, $ai_m)) {
+            $ai_group_num = intval($ai_m[1]);
+            $students = pdo_query("SELECT user_id, nick, student_no FROM users WHERE ai_group=? AND defunct='N' ORDER BY CAST(student_no AS UNSIGNED) ASC, student_no ASC, user_id ASC", $ai_group_num);
+        } else if($class_tag !== '') {
+            // 일반 반 태그 (예: 2-3) → school 필드 매칭
+            $students = pdo_query("SELECT user_id, nick, student_no FROM users WHERE school=? AND defunct='N' ORDER BY CAST(student_no AS UNSIGNED) ASC, student_no ASC, user_id ASC", $class_tag);
+        } else {
+            // 태그 없는 전체공개 수업: 제출한 학생만 표시
+            $students = pdo_query("SELECT DISTINCT s.user_id, u.nick, u.student_no FROM solution s LEFT JOIN users u ON s.user_id=u.user_id WHERE s.problem_id IN ($pids) AND s.class_id=? ORDER BY CAST(u.student_no AS UNSIGNED) ASC, u.student_no ASC, s.user_id ASC", $cid);
+        }
 
         // AC 여부
         $solved = pdo_query("SELECT DISTINCT user_id, problem_id FROM solution WHERE problem_id IN ($pids) AND result=4 AND class_id=?", $cid);
@@ -110,8 +126,8 @@ if ($is_admin && $action === 'batch') {
         $uid     = $_SESSION[$OJ_NAME . '_user_id'];
 
         $classes_map = [
-            2 => [1,2,3,4],
-            3 => [1,2,3]
+            2 => [1,2,3,4,5,6,7,8],
+            3 => ['AI-1','AI-2','AI-3']
         ];
         $subject_map = [
             2 => '정보',
@@ -123,7 +139,7 @@ if ($is_admin && $action === 'batch') {
         if ($grade > 0 && $topic !== '' && isset($classes_map[$grade])) {
             $pids = array_values(array_filter(array_map('intval', explode(',', $pid_str))));
             foreach ($classes_map[$grade] as $ban) {
-                $tag = $grade . '-' . $ban;
+                $tag = is_string($ban) ? $ban : $grade . '-' . $ban;
                 $title = ($date !== '' ? "($date) " : '') . "[$tag] [$subject] $topic";
                 pdo_query("INSERT INTO class (title, description, tag, content, user_id, time, defunct) VALUES (?,?,?,?,?,NOW(),'N')",
                     $title, $topic, $tag, '', $uid);
@@ -185,34 +201,43 @@ if ($is_admin && $action === 'write') {
 // 학생 소속 정보
 $my_uid = $_SESSION[$OJ_NAME . '_user_id'];
 $my_school = '';
-$school_row = pdo_query("SELECT school FROM users WHERE user_id=?", $my_uid);
-if(!empty($school_row)) $my_school = trim($school_row[0]['school'] ?? '');
+$my_ai_tag = '';
+$school_row = pdo_query("SELECT school, ai_group FROM users WHERE user_id=?", $my_uid);
+if(!empty($school_row)) {
+    $my_school = trim($school_row[0]['school'] ?? '');
+    $aig = intval($school_row[0]['ai_group'] ?? 0);
+    if($aig > 0) $my_ai_tag = 'AI-' . $aig;
+}
 
 // 수업 목록
 if($is_admin) {
     // 관리자: 전체 수업 (비공개 포함)
     $classes = pdo_query("SELECT c.*, COUNT(cp.id) as problem_count FROM class c LEFT JOIN class_problem cp ON c.class_id=cp.class_id GROUP BY c.class_id ORDER BY c.class_id DESC");
 } else if($my_school !== '') {
-    // 학생: 본인 반 태그 수업 + 태그 없는(전체공개) 수업만
-    $classes = pdo_query("SELECT c.*, COUNT(cp.id) as problem_count FROM class c LEFT JOIN class_problem cp ON c.class_id=cp.class_id WHERE c.defunct='N' AND (c.tag=? OR c.tag='') GROUP BY c.class_id ORDER BY c.class_id DESC", $my_school);
+    // 학생: 본인 반 태그 + AI분반 태그 + 전체공개 수업
+    if($my_ai_tag !== '') {
+        $classes = pdo_query("SELECT c.*, COUNT(cp.id) as problem_count FROM class c LEFT JOIN class_problem cp ON c.class_id=cp.class_id WHERE c.defunct='N' AND (c.tag=? OR c.tag=? OR c.tag='') GROUP BY c.class_id ORDER BY c.class_id DESC", $my_school, $my_ai_tag);
+    } else {
+        $classes = pdo_query("SELECT c.*, COUNT(cp.id) as problem_count FROM class c LEFT JOIN class_problem cp ON c.class_id=cp.class_id WHERE c.defunct='N' AND (c.tag=? OR c.tag='') GROUP BY c.class_id ORDER BY c.class_id DESC", $my_school);
+    }
 } else {
-    // 학년/반 미입력 학생: 태그 없는(전체공개) 수업만
-    $classes = pdo_query("SELECT c.*, COUNT(cp.id) as problem_count FROM class c LEFT JOIN class_problem cp ON c.class_id=cp.class_id WHERE c.defunct='N' AND c.tag='' GROUP BY c.class_id ORDER BY c.class_id DESC");
+    // 학년/반 미입력 학생: AI분반 태그 + 전체공개 수업
+    if($my_ai_tag !== '') {
+        $classes = pdo_query("SELECT c.*, COUNT(cp.id) as problem_count FROM class c LEFT JOIN class_problem cp ON c.class_id=cp.class_id WHERE c.defunct='N' AND (c.tag=? OR c.tag='') GROUP BY c.class_id ORDER BY c.class_id DESC", $my_ai_tag);
+    } else {
+        $classes = pdo_query("SELECT c.*, COUNT(cp.id) as problem_count FROM class c LEFT JOIN class_problem cp ON c.class_id=cp.class_id WHERE c.defunct='N' AND c.tag='' GROUP BY c.class_id ORDER BY c.class_id DESC");
+    }
 }
 
-// 내 풀이 현황
+// 내 풀이 현황 (배치 쿼리로 최적화)
 $my_solved_map = [];
 if (!empty($classes)) {
-    foreach ($classes as $c) {
-        if ($c['problem_count'] > 0) {
-            $pids_rows = pdo_query("SELECT problem_id FROM class_problem WHERE class_id=?", $c['class_id']);
-            $pids = array_column($pids_rows, 'problem_id');
-            if (!empty($pids)) {
-                $pids_str = implode(',', $pids);
-                $class_time = $c['time'] ?? '2000-01-01 00:00:00';
-                $solved = pdo_query("SELECT COUNT(DISTINCT problem_id) cnt FROM solution WHERE user_id=? AND problem_id IN ($pids_str) AND result=4 AND class_id=?", $my_uid, $c['class_id']);
-                $my_solved_map[$c['class_id']] = $solved[0]['cnt'] ?? 0;
-            }
+    $cids = array_column($classes, 'class_id');
+    $cids_str = implode(',', array_map('intval', $cids));
+    $solved_rows = pdo_query("SELECT s.class_id, COUNT(DISTINCT s.problem_id) as cnt FROM solution s INNER JOIN class_problem cp ON s.class_id=cp.class_id AND s.problem_id=cp.problem_id WHERE s.user_id=? AND s.result=4 AND s.class_id IN ($cids_str) GROUP BY s.class_id", $my_uid);
+    if ($solved_rows) {
+        foreach ($solved_rows as $sr) {
+            $my_solved_map[$sr['class_id']] = intval($sr['cnt']);
         }
     }
 }

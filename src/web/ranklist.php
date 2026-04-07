@@ -43,13 +43,40 @@ if (isset($_GET['school']) && !empty($_GET['school'])) {
     $where .= "and u.school = ? ";
     array_push($param, $view_school_filter);
 }
+// 학년 필터
+$view_grade = '';
+if (isset($_GET['grade']) && in_array($_GET['grade'], ['2','3'])) {
+    $view_grade = $_GET['grade'];
+    $where .= "and u.school LIKE ? ";
+    array_push($param, $view_grade . '-%');
+} else if (isset($_GET['grade']) && $_GET['grade'] === 'all') {
+    // 명시적 "전체" 선택: 자동감지 안함
+    $view_grade = '';
+} else {
+    // 자동 감지: 로그인한 학생의 학년
+    if (isset($_SESSION[$OJ_NAME.'_user_id'])) {
+        $my_sch_row = pdo_query("SELECT school FROM users WHERE user_id=?", $_SESSION[$OJ_NAME.'_user_id']);
+        if (!empty($my_sch_row)) {
+            $my_sch = $my_sch_row[0]['school'] ?? '';
+            $my_sch_p = explode('-', $my_sch);
+            if (count($my_sch_p) === 2 && in_array($my_sch_p[0], ['2','3'])) {
+                $view_grade = $my_sch_p[0];
+                $where .= "and u.school LIKE ? ";
+                array_push($param, $view_grade . '-%');
+            }
+        }
+    }
+}
 $rank = 0;
 
-$sql = "SELECT count(1) as `mycount` FROM `users` where defunct='N' ";
-$result = mysql_query_cache($sql);
-$row = $result[0];
-$view_total = $row['mycount'];
-
+// total count (학년 필터 반영)
+if ($view_grade !== '') {
+    $cnt_result = pdo_query("SELECT count(1) as mycount FROM users WHERE defunct='N' AND school LIKE ?", $view_grade . '-%');
+    $view_total = $cnt_result[0]['mycount'] ?? 0;
+} else {
+    $cnt_result = mysql_query_cache("SELECT count(1) as mycount FROM users WHERE defunct='N'");
+    $view_total = $cnt_result[0]['mycount'] ?? 0;
+}
 
 if (isset($_GET ['start']))
     $rank = intval($_GET ['start']);
@@ -75,18 +102,23 @@ if ($scope) {
             $s = date('Y-m-d', $monday);
             break;
         case 'm':
-            $s = date('Y') . '-' . date('m') . '-01';;
+            $s = date('Y') . '-' . date('m') . '-01';
             break;
         default :
             $s = date('Y') . '-01-01';
     }
     $last_id = mysql_query_cache("select solution_id from solution where  in_date<str_to_date('$s','%Y-%m-%d') order by solution_id desc limit 1;");
     if (!empty($last_id) && is_array($last_id)) $last_id = $last_id[0][0]; else $last_id = 0;
-    $view_total = mysql_query_cache("select count(distinct(user_id)) from solution where solution_id>$last_id")[0][0];
+    $grade_scope_filter = ($view_grade !== '') ? "AND users.school LIKE '{$view_grade}-%'" : "";
+    if ($view_grade !== '') {
+        $view_total = mysql_query_cache("select count(distinct(s.user_id)) from solution s inner join users u on s.user_id=u.user_id where s.solution_id>$last_id and u.school LIKE '{$view_grade}-%'")[0][0];
+    } else {
+        $view_total = mysql_query_cache("select count(distinct(user_id)) from solution where solution_id>$last_id")[0][0];
+    }
     $sql = "SELECT users.`user_id`,`nick`,s.`solved`,t.`submit`,group_name,school,starred FROM `users`
                                         inner join
                                         (select count(distinct (problem_id)) solved ,user_id from solution
-                                               where solution_id>$last_id and user_id not in (" . $OJ_RANK_HIDDEN . ") and problem_id>0 and result=4 and first_time=1 
+                                               where solution_id>$last_id and user_id not in (" . $OJ_RANK_HIDDEN . ") and problem_id>0 and result=4 and first_time=1
 					       group by user_id order by solved desc limit " . strval($rank) . ",$page_size) s
                                         on users.user_id=s.user_id
                                         inner join
@@ -95,6 +127,7 @@ if ($scope) {
                                                 group by user_id order by submit desc ) t
                                         on users.user_id=t.user_id
                                         and users.user_id not in (" . $OJ_RANK_HIDDEN . ") and defunct='N'
+                                        $grade_scope_filter
                                 ORDER BY s.`solved` DESC,t.submit,reg_time  LIMIT  0,50
                          ";
 //                      echo $sql;
@@ -149,6 +182,7 @@ $class_sql = "SELECT u.school,
   LEFT JOIN (SELECT user_id, COUNT(*) as cnt FROM solution GROUP BY user_id) sc ON u.user_id=sc.user_id
   WHERE u.defunct='N' AND u.school IS NOT NULL AND u.school != '' AND u.school LIKE '%-%'
   AND u.user_id NOT IN (" . $OJ_RANK_HIDDEN . ")
+  " . ($view_grade !== '' ? "AND u.school LIKE '{$view_grade}-%'" : "") . "
   GROUP BY u.school
   ORDER BY total_solved DESC, total_submit ASC";
 $class_result = pdo_query($class_sql);

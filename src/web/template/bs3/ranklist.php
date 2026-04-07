@@ -216,6 +216,23 @@
     .rl-page a:hover { border-color: #7c3aed; color: #7c3aed; }
     .rl-page a.pg-active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
 
+    /* 학년 탭 */
+    .rl-grade-tabs {
+      display: flex; gap: 0; margin-bottom: 16px;
+      background: #fff; border-radius: 12px; overflow: hidden;
+      border: 1.5px solid #e5e7eb;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      width: fit-content;
+    }
+    .rl-grade-tab {
+      padding: 10px 24px; font-size: 14px; font-weight: 700;
+      color: #6b7280; text-decoration: none;
+      transition: all 0.15s; border-right: 1px solid #e5e7eb;
+    }
+    .rl-grade-tab:last-child { border-right: none; }
+    .rl-grade-tab:hover { color: #7c3aed; background: #faf5ff; }
+    .rl-grade-tab.active { background: #7c3aed; color: #fff; }
+
     /* 개인/반별 탭 */
     .rl-mode-tabs {
       display: flex; gap: 0; margin-bottom: 24px;
@@ -424,13 +441,24 @@
 <div class="rl-wrap">
   <div class="rl-header">
     <h2>🏆 <em>랭킹</em></h2>
+    <?php $gq = ($view_grade !== '') ? '&grade='.$view_grade : ''; ?>
     <div class="rl-scope">
-      <a href="ranklist.php" <?php if(!isset($scope)) echo 'class="active"'?>>전체</a>
-      <a href="ranklist.php?scope=d" <?php if(isset($scope)&&$scope=='d') echo 'class="active"'?>>오늘</a>
-      <a href="ranklist.php?scope=w" <?php if(isset($scope)&&$scope=='w') echo 'class="active"'?>>이번주</a>
-      <a href="ranklist.php?scope=m" <?php if(isset($scope)&&$scope=='m') echo 'class="active"'?>>이번달</a>
-      <a href="ranklist.php?scope=y" <?php if(isset($scope)&&$scope=='y') echo 'class="active"'?>>올해</a>
+      <a href="ranklist.php?<?php echo trim('grade='.($view_grade?:('all')))?>" <?php if(!$scope) echo 'class="active"'?>>전체</a>
+      <a href="ranklist.php?scope=d<?php echo $gq?>" <?php if($scope=='d') echo 'class="active"'?>>오늘</a>
+      <a href="ranklist.php?scope=w<?php echo $gq?>" <?php if($scope=='w') echo 'class="active"'?>>이번주</a>
+      <a href="ranklist.php?scope=m<?php echo $gq?>" <?php if($scope=='m') echo 'class="active"'?>>이번달</a>
+      <a href="ranklist.php?scope=y<?php echo $gq?>" <?php if($scope=='y') echo 'class="active"'?>>올해</a>
     </div>
+  </div>
+
+  <?php
+    $grade_qs = '';
+    if(isset($scope) && $scope !== '') $grade_qs .= '&scope='.htmlspecialchars($scope);
+  ?>
+  <div class="rl-grade-tabs">
+    <a class="rl-grade-tab <?php if($view_grade==='') echo 'active'?>" href="ranklist.php?grade=all<?php echo $grade_qs?>">전체</a>
+    <a class="rl-grade-tab <?php if($view_grade==='2') echo 'active'?>" href="ranklist.php?grade=2<?php echo $grade_qs?>">2학년</a>
+    <a class="rl-grade-tab <?php if($view_grade==='3') echo 'active'?>" href="ranklist.php?grade=3<?php echo $grade_qs?>">3학년</a>
   </div>
 
   <div class="rl-mode-tabs">
@@ -478,7 +506,7 @@
     $order = [1,0,2]; // 2등, 1등, 3등 순서
   ?>
   <div class="podium-section">
-    <div class="podium-title">INDIVIDUAL RANKING</div>
+    <div class="podium-title"><?php echo $view_grade !== '' ? $view_grade.'학년 ' : ''?>INDIVIDUAL RANKING</div>
     <div class="sparkles">
       <?php for($sp=0;$sp<10;$sp++): $sz=rand(2,4); ?>
       <div class="sparkle" style="width:<?php echo $sz?>px;height:<?php echo $sz?>px;left:<?php echo rand(5,95)?>%;top:<?php echo rand(10,80)?>%;animation-duration:<?php echo rand(2,5)?>s;animation-delay:<?php echo rand(0,4)?>s;"></div>
@@ -576,7 +604,8 @@
   <div class="rl-page">
     <?php
     $qs = "";
-    if(isset($scope)) $qs .= "&scope=".htmlspecialchars($scope);
+    if(isset($scope) && $scope !== '') $qs .= "&scope=".htmlspecialchars($scope);
+    if($view_grade !== '') $qs .= "&grade=".htmlspecialchars($view_grade);
     for($i=0; $i<$view_total; $i+=$page_size):
       $active = $start_offset == $i;
     ?>
@@ -597,7 +626,7 @@
     <!-- 시상대 (상위 3반) -->
     <?php if(count($cr_top3) >= 1): ?>
     <div class="cr-podium-section">
-      <div class="cr-podium-title">CLASS RANKING</div>
+      <div class="cr-podium-title"><?php echo $view_grade !== '' ? $view_grade.'학년 ' : ''?>CLASS RANKING</div>
       <div class="cr-podium">
         <?php
           $cr_order = [1,0,2]; // 2등, 1등, 3등

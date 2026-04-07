@@ -96,6 +96,15 @@ if($_SERVER['REQUEST_METHOD']=="POST"){
 	try_ajax("problem","time_limit","administrator");
         try_ajax("problem","memory_limit","administrator");
 
+	if($m=="user_update_ai_group" && isset($_SESSION[$OJ_NAME.'_administrator'])){
+		$user_id = $_POST['user_id'];
+		$ai_group = intval($_POST['ai_group']);
+		$sql = "UPDATE users SET ai_group=? WHERE user_id=?";
+		pdo_query($sql, $ai_group, $user_id);
+		echo "OK";
+		exit;
+	}
+
 	if($m=="reset_password" && isset($_SESSION[$OJ_NAME.'_administrator'])){
 		require_once("../include/my_func.inc.php");
 		$user_id = $_POST['user_id'];

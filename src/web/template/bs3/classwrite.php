@@ -108,12 +108,18 @@
   $edit_ban = '';
   $edit_subject = '';
   $edit_topic = $class['title'];
-  if($cid > 0 && preg_match('/^\((\d+\/\d+)\)\s*\[(\d)-(\d)\]\s*\[([^\]]+)\]\s*(.+)$/', $class['title'], $m)) {
+  if($cid > 0 && preg_match('/^\((\d+\/\d+)\)\s*\[([^\]]+)\]\s*\[([^\]]+)\]\s*(.+)$/', $class['title'], $m)) {
     $edit_date = $m[1];
-    $edit_grade = $m[2];
-    $edit_ban = $m[3];
-    $edit_subject = $m[4];
-    $edit_topic = $m[5];
+    $tag_part = $m[2]; // e.g., "2-3" or "AI-1"
+    $edit_subject = $m[3];
+    $edit_topic = $m[4];
+    if(preg_match('/^(\d)-(\d)$/', $tag_part, $tm)) {
+      $edit_grade = $tm[1];
+      $edit_ban = $tm[2];
+    } else if(preg_match('/^AI-\d$/', $tag_part)) {
+      $edit_grade = '3';
+      $edit_ban = $tag_part; // "AI-1", "AI-2", "AI-3"
+    }
   }
 ?>
 <div class="cw-wrap">
@@ -241,7 +247,7 @@ KindEditor.ready(function(K) {
 });
 
 // === Config ===
-var banMap = {2:[1,2,3,4,5,6,7,8], 3:[1,2,3,4,5,6,7,8]};
+var banMap = {2:[1,2,3,4,5,6,7,8], 3:[{v:'AI-1',t:'AI-1 박지훈T'},{v:'AI-2',t:'AI-2 박지훈T'},{v:'AI-3',t:'AI-3 안예찬T'}]};
 var subjectMap = {2:'정보', 3:'인공지능기초'};
 
 var fDate = document.getElementById('f-date');
@@ -260,7 +266,8 @@ function onGradeChange() {
   if(g && banMap[g]) {
     banMap[g].forEach(function(b) {
       var opt = document.createElement('option');
-      opt.value = b; opt.textContent = b + '반';
+      if(typeof b === 'object') { opt.value = b.v; opt.textContent = b.t; }
+      else { opt.value = b; opt.textContent = b + '반'; }
       fBan.appendChild(opt);
     });
   }
@@ -291,7 +298,7 @@ function updateTitle() {
     titleText.style.opacity = '0.4';
     return;
   }
-  var tag = g + '-' + b;
+  var tag = (b.indexOf('AI') === 0) ? b : g + '-' + b;
   var title = (date ? '(' + date + ') ' : '') + '[' + tag + '] [' + subj + '] ' + topic;
   titleText.textContent = title;
   titleText.style.opacity = '1';

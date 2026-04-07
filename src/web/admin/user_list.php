@@ -36,14 +36,14 @@ $trash="";
 if(isset($_GET['keyword']) && $_GET['keyword']!=""){
   $gkeyword = $_GET['keyword'];
   $keyword = "%$gkeyword%";
-  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct` FROM `users` WHERE (user_id LIKE ?) OR (nick LIKE ?) OR (school LIKE ?) ORDER BY `user_id` DESC";
+  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct`,`ai_group` FROM `users` WHERE (user_id LIKE ?) OR (nick LIKE ?) OR (school LIKE ?) ORDER BY `user_id` DESC";
   $result = pdo_query($sql,$keyword,$keyword,$keyword);
 }else if(isset($_GET['trash'])){
   $trash="&trash";
-  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct` FROM `users` where defunct='Y' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
+  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct`,`ai_group` FROM `users` where defunct='Y' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
   $result = pdo_query($sql);
 }else{
-  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct` FROM `users` where defunct='N' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
+  $sql = "select `user_id`,`nick`,`student_no`,`accesstime`,`reg_time`,`school`,`defunct`,`ai_group` FROM `users` where defunct='N' ORDER BY `accesstime` DESC LIMIT $sid, $idsperpage";
   $result = pdo_query($sql);
 }
 ?>
@@ -64,6 +64,7 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
       <th><?php echo $MSG_NICK?></th>
       <th><?php echo $MSG_SCHOOL?></th>
       <th>번호</th>
+      <th>AI분반</th>
       <th><?php echo $MSG_LAST_LOGIN?></th>
       <th><?php echo $MSG_REGISTER?></th>
       <th><?php echo $MSG_STATUS?></th>
@@ -84,6 +85,15 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
         $sno = $row['student_no'] ?? '';
         if($sno=="") $sno="&nbsp;";
         echo "<td><span fd='student_no' user_id='".$row['user_id']."'>".$sno."</span></td>";
+        $aig = intval($row['ai_group'] ?? 0);
+        $aig_labels = ['', 'AI-1', 'AI-2', 'AI-3'];
+        $aig_colors = ['#9ca3af', '#22c55e', '#3b82f6', '#f59e0b'];
+        echo "<td><select class='ai-group-sel' data-uid='".$row['user_id']."' style='border:none;font-weight:700;color:".$aig_colors[$aig].";background:transparent;cursor:pointer;font-size:12px;'>";
+        echo "<option value='0'".($aig==0?" selected":"")." style='color:#9ca3af'>미배정</option>";
+        echo "<option value='1'".($aig==1?" selected":"")." style='color:#22c55e'>AI-1 박지훈</option>";
+        echo "<option value='2'".($aig==2?" selected":"")." style='color:#3b82f6'>AI-2 박지훈</option>";
+        echo "<option value='3'".($aig==3?" selected":"")." style='color:#f59e0b'>AI-3 안예찬</option>";
+        echo "</select></td>";
         echo "<td>".$row['accesstime']."</td>";
         echo "<td>".$row['reg_time']."</td>";
 
@@ -181,6 +191,16 @@ function resetPw(uid){
 }
 $(document).ready(function(){
         admin_mod();
+        // AI분반 드롭다운 변경 이벤트
+        $(document).on('change', '.ai-group-sel', function(){
+                var sel = $(this);
+                var uid = sel.data('uid');
+                var val = sel.val();
+                var colors = ['#9ca3af', '#22c55e', '#3b82f6', '#f59e0b'];
+                $.post('ajax.php', {m:'user_update_ai_group', user_id:uid, ai_group:val}).done(function(resp){
+                        sel.css('color', colors[val]);
+                });
+        });
 });
 
 </script>

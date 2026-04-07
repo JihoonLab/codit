@@ -187,7 +187,13 @@
     if($t !== '' && !in_array($t, $all_tags)) $all_tags[] = $t;
   }
   sort($all_tags);
-  $student_tag = $is_admin ? '' : ($my_school ?? '');
+  // AI분반 + 학교 반 둘 다 있으면 자동필터 안함 (전체 보기)
+  $student_tag = '';
+  if(!$is_admin) {
+    if($my_ai_tag !== '' && $my_school !== '') $student_tag = ''; // 둘 다 있으면 전체
+    else if($my_ai_tag !== '') $student_tag = $my_ai_tag;
+    else if($my_school !== '') $student_tag = $my_school;
+  }
   ?>
   <?php if(!empty($all_tags)): ?>
   <div class="cl-tags">

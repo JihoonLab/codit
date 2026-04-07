@@ -1,2 +1,2 @@
-s = input()
-print(s[0:2], s[2:4], s[4:6])
+y, m, d = input().split(".")
+print(f"{d}-{m}-{y}")

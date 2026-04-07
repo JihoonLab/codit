@@ -130,11 +130,16 @@
     <?php endif; ?>
 
     <!-- 풀이 현황 -->
-    <div class="cv-section-title">📊 학생별 풀이 현황</div>
+    <div class="cv-section-title">📊 학생별 풀이 현황 <?php if(!empty($students)): ?><span style="font-size:13px;font-weight:500;color:#999">(<?php echo count($students)?>명)</span><?php endif; ?></div>
     <?php if(empty($problems)): ?>
       <div class="stat-empty">등록된 문제가 없습니다.</div>
     <?php elseif(empty($students)): ?>
-      <div class="stat-empty">아직 제출한 학생이 없습니다.</div>
+      <div class="stat-empty"><?php
+        $class_tag = trim($class['tag'] ?? '');
+        if(preg_match('/^AI-/', $class_tag)) echo '해당 AI분반에 배정된 학생이 없습니다.';
+        else if($class_tag !== '') echo '해당 반에 등록된 학생이 없습니다.';
+        else echo '아직 제출한 학생이 없습니다.';
+      ?></div>
     <?php else: ?>
     <div class="stat-table-wrap">
       <table class="stat-table">

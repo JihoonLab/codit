@@ -1,8 +1,8 @@
 #include <stdio.h>
 int main()
 {
-    double d;
-    scanf("%lf", &d);
-    printf("%.11f", d);
+    double data;
+    scanf("%lf", &data);
+    printf("%.8lf", data);
     return 0;
 }

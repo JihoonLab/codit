@@ -92,7 +92,7 @@
           <select name="grade" id="f-grade">
             <option value="">선택</option>
             <option value="2">2학년 (8개반)</option>
-            <option value="3">3학년 (8개반)</option>
+            <option value="3">3학년 (AI 3분반)</option>
           </select>
         </div>
         <div class="cb-field" style="max-width:180px">
@@ -188,7 +188,7 @@
 }
 </style>
 <script>
-var classMap = {2: [1,2,3,4,5,6,7,8], 3: [1,2,3,4,5,6,7,8]};
+var classMap = {2: [1,2,3,4,5,6,7,8], 3: [{v:'AI-1',t:'AI-1 박지훈T'},{v:'AI-2',t:'AI-2 박지훈T'},{v:'AI-3',t:'AI-3 안예찬T'}]};
 var subjectMap = {2: '정보', 3: '인공지능기초'};
 
 var fGrade = document.getElementById('f-grade');
@@ -216,7 +216,7 @@ function updatePreview() {
 
   var bans = classMap[grade] || [];
   bans.forEach(function(ban) {
-    var tag = grade + '-' + ban;
+    var tag = (typeof ban === 'object') ? ban.v : (typeof ban === 'string') ? ban : grade + '-' + ban;
     var title = (date ? '(' + date + ') ' : '') + '[' + tag + '] [' + subject + '] ' + topic;
     var div = document.createElement('div');
     div.className = 'cb-preview-item';
