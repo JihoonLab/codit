@@ -49,6 +49,20 @@
   line-height: 1.3;
 }
 
+.prob-lang-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-left: 8px;
+  position: relative;
+  top: -2px;
+}
+.prob-lang-badge.python { background: #fef3c7; color: #92400e; }
+.prob-lang-badge.c { background: #e0e7ff; color: #3730a3; }
+
 .prob-credits {
   font-size: 13px;
   color: #aaa;
@@ -584,10 +598,18 @@
   <div class="prob-header">
     <?php
     if($pr_flag) {
-      echo "<div class='prob-title'>$id: ".htmlspecialchars($row['title'])."</div>";
+      $pid_num = intval($id);
+      $lang_badge = '';
+      if($pid_num >= 1000 && $pid_num < 9000) $lang_badge = "<span class='prob-lang-badge python'>Python</span>";
+      elseif($pid_num < 1000) $lang_badge = "<span class='prob-lang-badge c'>C</span>";
+      echo "<div class='prob-title'>$id: ".htmlspecialchars($row['title'])."$lang_badge</div>";
     } else {
       $id = $row['problem_id'];
-      echo "<div class='prob-title'>$MSG_PROBLEM ".$PID[$pid].": ".htmlspecialchars($row['title'])."</div>";
+      $pid_num = intval($id);
+      $lang_badge = '';
+      if($pid_num >= 1000 && $pid_num < 9000) $lang_badge = "<span class='prob-lang-badge python'>Python</span>";
+      elseif($pid_num < 1000) $lang_badge = "<span class='prob-lang-badge c'>C</span>";
+      echo "<div class='prob-title'>$MSG_PROBLEM ".$PID[$pid].": ".htmlspecialchars($row['title'])."$lang_badge</div>";
     }
     ?>
     <?php if(!empty($row["credits"])): ?><div class="prob-credits"><?php echo $MSG_Creator.": ".$row["credits"]; ?></div><?php endif; ?>

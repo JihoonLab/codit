@@ -162,12 +162,15 @@
     }
 
     /* Left stacked cards */
-    .col-l { display: flex; flex-direction: column; gap: 0; }
+    .col-l { display: flex; flex-direction: column; gap: 0; transition: box-shadow 0.25s, transform 0.25s; border-radius: 16px; }
+    .col-l:hover { transform: translateY(-2px); }
+    .col-l:hover .card-top, .col-l:hover .card-bottom { box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06); }
     .col-l .card-top { border-radius: 16px 16px 0 0; border-bottom: none; }
-    .col-l .card-top:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: none; }
-    .col-l .card-bottom { border-radius: 0 0 16px 16px; border-top: 1px solid #e5e7eb; }
-    .col-l .card-bottom:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); transform: none; }
-    .hof-card { display: flex; flex-direction: column; }
+    .col-l .card-top:hover { transform: none; }
+    .col-l .card-bottom { border-radius: 0 0 16px 16px; border-top: 1px solid #e5e7eb; flex: 1; display: flex; flex-direction: column; }
+    .col-l .card-bottom .home-list { flex: 1; }
+    .col-l .card-bottom:hover { transform: none; }
+    .hof-card { display: flex; flex-direction: column; min-height: 540px; }
     .hof-card .hof-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; }
     .hof-card .rk-list { }
 
@@ -243,6 +246,7 @@
     }
 
     @media (max-width: 780px) {
+      .hof-card { min-height: auto; }
       .hof-grid { grid-template-columns: 1fr; }
       .hof-grade-section.g2-sec { border-right: none; border-bottom: 1.5px solid #f0f0f0; }
       .hof-item { padding: 9px 16px; gap: 10px; }
