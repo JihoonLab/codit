@@ -52,26 +52,37 @@ tr:hover .rp-arrow{color:#7c3aed}
 <div class="rp-wrap">
   <div class="rp-header">
     <h1>📊 포트폴리오 대시보드</h1>
-    <p>반별 수업 진척도를 종합하여 10점 만점 포트폴리오 점수를 산출합니다.</p>
+    <p>반별 수업 진척도를 종합하여 포트폴리오 점수를 산출합니다.</p>
   </div>
 
-  <div class="rp-score-legend">
-    <h3>📏 포트폴리오 점수 기준 (10점 만점)</h3>
-    <div class="rp-score-row" style="display:grid;grid-template-columns:repeat(9,1fr);gap:6px">
-      <?php foreach($score_table as $s): ?>
-      <div class="rp-score-item" style="flex-direction:column;text-align:center;padding:8px 4px;gap:4px">
-        <div class="rp-score-badge" style="background:<?php
-          if($s['score']>=9) echo '#22c55e';
-          elseif($s['score']>=7) echo '#84cc16';
-          elseif($s['score']>=5) echo '#f59e0b';
-          elseif($s['score']>=4) echo '#f97316';
-          else echo '#ef4444';
-        ?>"><?php echo $s['score']?>점</div>
-        <span style="font-size:11px"><?php echo $s['min']?>%↑</span>
-      </div>
-      <?php endforeach; ?>
-    </div>
-  </div>
+  <?php
+  function render_score_legend($title, $table, $max, $cols) {
+    echo '<div class="rp-score-legend" style="margin-bottom:16px">';
+    echo '<h3>📏 '.$title.' ('.$max.'점 만점)</h3>';
+    echo '<div class="rp-score-row" style="display:grid;grid-template-columns:repeat('.$cols.',1fr);gap:6px">';
+    foreach($table as $s) {
+      $color = '#ef4444';
+      if($max == 20) {
+        if($s['score']>=18) $color = '#22c55e';
+        elseif($s['score']>=14) $color = '#84cc16';
+        elseif($s['score']>=10) $color = '#f59e0b';
+        elseif($s['score']>=8) $color = '#f97316';
+      } else {
+        if($s['score']>=9) $color = '#22c55e';
+        elseif($s['score']>=7) $color = '#84cc16';
+        elseif($s['score']>=5) $color = '#f59e0b';
+        elseif($s['score']>=4) $color = '#f97316';
+      }
+      echo '<div class="rp-score-item" style="flex-direction:column;text-align:center;padding:8px 4px;gap:4px">';
+      echo '<div class="rp-score-badge" style="background:'.$color.'">'.$s['score'].'점</div>';
+      echo '<span style="font-size:11px">'.$s['label'].'</span>';
+      echo '</div>';
+    }
+    echo '</div></div>';
+  }
+  render_score_legend('정보 점수 기준', $score_table_10, 10, 9);
+  render_score_legend('인공지능기초 점수 기준', $score_table_20, 20, 8);
+  ?>
 
   <?php if(empty($dashboard)): ?>
   <div class="rp-empty">등록된 수업이 없습니다.<br>수업을 먼저 만들고 반 태그를 지정해주세요.</div>

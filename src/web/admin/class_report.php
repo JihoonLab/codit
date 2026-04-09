@@ -14,18 +14,35 @@ if (!isset($_SESSION[$OJ_NAME . '_administrator'])) {
     exit;
 }
 
-// 10점 만점 포트폴리오 점수 기준
-$score_table = [
-    ['min' => 100, 'score' => 10, 'label' => '진척도 100%'],
-    ['min' =>  90, 'score' =>  9, 'label' => '90% 이상'],
-    ['min' =>  80, 'score' =>  8, 'label' => '80% 이상'],
-    ['min' =>  70, 'score' =>  7, 'label' => '70% 이상'],
-    ['min' =>  60, 'score' =>  6, 'label' => '60% 이상'],
-    ['min' =>  50, 'score' =>  5, 'label' => '50% 이상'],
-    ['min' =>  40, 'score' =>  4, 'label' => '40% 이상'],
-    ['min' =>   1, 'score' =>  3, 'label' => '기본점수'],
-    ['min' =>   0, 'score' =>  2, 'label' => '미참여'],
+// 포트폴리오 점수 기준 (정보: 10점, AI: 20점)
+$score_table_10 = [
+    ['min' => 100, 'score' => 10, 'label' => '100%'],
+    ['min' =>  90, 'score' =>  9, 'label' => '90%↑'],
+    ['min' =>  80, 'score' =>  8, 'label' => '80%↑'],
+    ['min' =>  70, 'score' =>  7, 'label' => '70%↑'],
+    ['min' =>  60, 'score' =>  6, 'label' => '60%↑'],
+    ['min' =>  50, 'score' =>  5, 'label' => '50%↑'],
+    ['min' =>  40, 'score' =>  4, 'label' => '40%↑'],
+    ['min' =>   1, 'score' =>  3, 'label' => '1%↑'],
+    ['min' =>   0, 'score' =>  2, 'label' => '0%↑'],
 ];
+$score_table_20 = [
+    ['min' => 100, 'score' => 20, 'label' => '100%'],
+    ['min' =>  90, 'score' => 18, 'label' => '90%↑'],
+    ['min' =>  80, 'score' => 16, 'label' => '80%↑'],
+    ['min' =>  70, 'score' => 14, 'label' => '70%↑'],
+    ['min' =>  60, 'score' => 12, 'label' => '60%↑'],
+    ['min' =>  50, 'score' => 10, 'label' => '50%↑'],
+    ['min' =>  40, 'score' =>  8, 'label' => '40%↑'],
+    ['min' =>   0, 'score' =>  6, 'label' => '기본'],
+];
+function get_score_table($tag) {
+    global $score_table_10, $score_table_20;
+    return preg_match('/^AI-/', $tag) ? $score_table_20 : $score_table_10;
+}
+function get_max_score($tag) {
+    return preg_match('/^AI-/', $tag) ? 20 : 10;
+}
 
 function calc_score($pct, $score_table) {
     foreach ($score_table as $s) {
@@ -64,7 +81,11 @@ if ($tag === '' && $export === '') {
     $dashboard = [];
     foreach ($tag_groups as $t => $data) {
         $total = count($data['problem_ids']);
-        $students = pdo_query("SELECT user_id FROM users WHERE school=? AND defunct='N'", $t);
+        if (preg_match('/^AI-(\d+)$/', $t, $ai_m)) {
+            $students = pdo_query("SELECT user_id FROM users WHERE ai_group=? AND defunct='N'", intval($ai_m[1]));
+        } else {
+            $students = pdo_query("SELECT user_id FROM users WHERE school=? AND defunct='N'", $t);
+        }
         $sc = count($students);
         $ts = 0;
         if ($total > 0 && $sc > 0) {
@@ -81,6 +102,7 @@ if ($tag === '' && $export === '') {
             'problem_count' => $total,
             'student_count' => $sc,
             'avg_pct' => $avg,
+            'max_score' => get_max_score($t),
         ];
     }
     usort($dashboard, function($a, $b) { return strcmp($a['tag'], $b['tag']); });
@@ -118,7 +140,11 @@ $total = count($all_problem_ids);
 $pids_str = $total > 0 ? implode(',', array_keys($all_problem_ids)) : '0';
 
 // 학생 목록
-$students = pdo_query("SELECT user_id, nick, student_no FROM users WHERE school=? AND defunct='N' ORDER BY CAST(student_no AS UNSIGNED) ASC, user_id ASC", $tag);
+if (preg_match('/^AI-(\d+)$/', $tag, $ai_m)) {
+    $students = pdo_query("SELECT user_id, nick, student_no FROM users WHERE ai_group=? AND defunct='N' ORDER BY CAST(student_no AS UNSIGNED) ASC, user_id ASC", intval($ai_m[1]));
+} else {
+    $students = pdo_query("SELECT user_id, nick, student_no FROM users WHERE school=? AND defunct='N' ORDER BY CAST(student_no AS UNSIGNED) ASC, user_id ASC", $tag);
+}
 
 // 리포트 생성
 $report = [];
@@ -144,7 +170,7 @@ foreach ($students as $st) {
 
     $sc = count($solved_set);
     $pct = $total > 0 ? round($sc / $total * 100, 1) : 0;
-    $score_info = calc_score($pct, $score_table);
+    $score_info = calc_score($pct, get_score_table($tag));
 
     $report[] = [
         'user_id' => $uid,
@@ -170,7 +196,8 @@ if ($export === 'csv') {
     // 헤더
     $h = ['번호', '학생ID', '이름'];
     foreach ($classes as $c) $h[] = $c['title'];
-    $h = array_merge($h, ['해결', '전체', '진척도(%)', '점수(10)']);
+    $max = get_max_score($tag);
+    $h = array_merge($h, ['해결', '전체', '진척도(%)', "점수($max)"]);
     fputcsv($fp, $h);
 
     foreach ($report as $r) {

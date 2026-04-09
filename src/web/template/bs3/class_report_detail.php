@@ -120,19 +120,33 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f4f6f9;margin:0;color:#33
     </div>
   </div>
 
+  <?php
+    $cur_score_table = get_score_table($tag);
+    $cur_max = get_max_score($tag);
+    $is_ai = preg_match('/^AI-/', $tag);
+    $cols = $is_ai ? 8 : 9;
+  ?>
   <div class="rd-score-legend">
-    <h3>📏 포트폴리오 점수 기준 (10점 만점)</h3>
-    <div class="rd-score-row" style="display:grid;grid-template-columns:repeat(9,1fr);gap:6px">
-      <?php foreach($score_table as $s): ?>
+    <h3>📏 포트폴리오 점수 기준 (<?php echo $cur_max?>점 만점)</h3>
+    <div class="rd-score-row" style="display:grid;grid-template-columns:repeat(<?php echo $cols?>,1fr);gap:6px">
+      <?php foreach($cur_score_table as $s): ?>
       <div class="rd-score-item" style="flex-direction:column;text-align:center;padding:8px 4px;gap:4px">
         <span class="score-badge" style="min-width:32px;height:32px;padding:0 6px;font-size:13px;border-radius:8px;background:<?php
-          if($s['score']>=9) echo '#22c55e';
-          elseif($s['score']>=7) echo '#84cc16';
-          elseif($s['score']>=5) echo '#f59e0b';
-          elseif($s['score']>=4) echo '#f97316';
-          else echo '#ef4444';
+          if($is_ai) {
+            if($s['score']>=18) echo '#22c55e';
+            elseif($s['score']>=14) echo '#84cc16';
+            elseif($s['score']>=10) echo '#f59e0b';
+            elseif($s['score']>=8) echo '#f97316';
+            else echo '#ef4444';
+          } else {
+            if($s['score']>=9) echo '#22c55e';
+            elseif($s['score']>=7) echo '#84cc16';
+            elseif($s['score']>=5) echo '#f59e0b';
+            elseif($s['score']>=4) echo '#f97316';
+            else echo '#ef4444';
+          }
         ?>"><?php echo $s['score']?>점</span>
-        <span style="font-size:11px"><?php echo $s['min']?>%↑</span>
+        <span style="font-size:11px"><?php echo $s['label']?></span>
       </div>
       <?php endforeach; ?>
     </div>
@@ -161,7 +175,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f4f6f9;margin:0;color:#33
           <?php endforeach; ?>
           <th>해결</th>
           <th>진척도</th>
-          <th>점수</th>
+          <th>점수(<?php echo $cur_max?>)</th>
         </tr>
       </thead>
       <tbody>
@@ -208,18 +222,29 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f4f6f9;margin:0;color:#33
   <div style="background:#fff;border-radius:10px;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,.05);border:1px solid #e8f0fe">
     <h3 style="font-size:14px;font-weight:700;color:#7c3aed;margin:0 0 14px">📊 점수 분포</h3>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <?php for($sc=10;$sc>=2;$sc--): ?>
+      <?php
+        $score_values = array_map(function($s){ return $s['score']; }, $cur_score_table);
+        foreach($score_values as $sc):
+      ?>
       <div style="text-align:center;min-width:50px">
         <div style="font-size:20px;font-weight:800;color:<?php
-          if($sc>=9) echo '#22c55e';
-          elseif($sc>=7) echo '#84cc16';
-          elseif($sc>=5) echo '#f59e0b';
-          elseif($sc>=4) echo '#f97316';
-          else echo '#ef4444';
+          if($is_ai) {
+            if($sc>=18) echo '#22c55e';
+            elseif($sc>=14) echo '#84cc16';
+            elseif($sc>=10) echo '#f59e0b';
+            elseif($sc>=8) echo '#f97316';
+            else echo '#ef4444';
+          } else {
+            if($sc>=9) echo '#22c55e';
+            elseif($sc>=7) echo '#84cc16';
+            elseif($sc>=5) echo '#f59e0b';
+            elseif($sc>=4) echo '#f97316';
+            else echo '#ef4444';
+          }
         ?>"><?php echo $score_dist[$sc] ?? 0?></div>
         <div style="font-size:11px;color:#999"><?php echo $sc?>점</div>
       </div>
-      <?php endfor; ?>
+      <?php endforeach; ?>
     </div>
   </div>
   <?php endif; ?>
