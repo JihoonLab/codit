@@ -52,6 +52,14 @@
 .cb-btn-secondary{background:#f0f0f0;color:#555}
 .cb-btn-secondary:hover{background:#e0e0e0}
 
+.cb-lang-btn{
+  padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;
+  cursor:pointer;border:1.5px solid #e5e0f0;background:#faf9fd;color:#888;
+  transition:all .15s;font-family:inherit;
+}
+.cb-lang-btn:hover{background:#f0ecf9;border-color:#d4c8f0;color:#7c3aed}
+.cb-lang-btn.active{background:#7c3aed;color:#fff;border-color:#7c3aed}
+
 /* Result */
 .cb-result{
   background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;
@@ -115,6 +123,11 @@
           <div style="display:flex;gap:8px;margin-bottom:8px">
             <input type="text" id="prob-search" placeholder="문제 ID 또는 제목 검색..." style="flex:1;padding:10px 14px;border:1.5px solid #e5e0f0;border-radius:10px;font-size:13px;background:#faf9fd">
             <button type="button" onclick="toggleProbList()" class="cb-btn cb-btn-secondary" style="padding:8px 16px;font-size:13px;border-radius:10px">📋 목록 열기</button>
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:8px">
+            <button type="button" class="cb-lang-btn active" data-lang="all" onclick="filterLangBatch(this)">전체</button>
+            <button type="button" class="cb-lang-btn" data-lang="c" onclick="filterLangBatch(this)">C언어</button>
+            <button type="button" class="cb-lang-btn" data-lang="py" onclick="filterLangBatch(this)">Python</button>
           </div>
           <div id="selected-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:24px"></div>
           <div id="prob-list-wrap" style="display:none;max-height:320px;overflow-y:auto;border:1.5px solid #e5e0f0;border-radius:10px;background:#fff;margin-top:8px">
@@ -245,6 +258,27 @@ document.getElementById('batchForm').addEventListener('submit', function(e) {
 });
 
 // Problem picker
+var cbCurrentLang = 'all';
+
+function filterLangBatch(btn) {
+  document.querySelectorAll('.cb-lang-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  cbCurrentLang = btn.dataset.lang;
+  cbApplyFilters();
+  document.getElementById('prob-list-wrap').style.display = 'block';
+}
+
+function cbApplyFilters() {
+  var q = document.getElementById('prob-search').value.toLowerCase();
+  document.querySelectorAll('.prob-row').forEach(function(row) {
+    var pid = parseInt(row.dataset.pid);
+    var title = row.dataset.title;
+    var langOk = (cbCurrentLang === 'all') || (cbCurrentLang === 'c' && pid < 1000) || (cbCurrentLang === 'py' && pid >= 1000);
+    var searchOk = !q || row.dataset.pid.indexOf(q) !== -1 || title.indexOf(q) !== -1;
+    row.style.display = (langOk && searchOk) ? '' : 'none';
+  });
+}
+
 function toggleProbList() {
   var w = document.getElementById('prob-list-wrap');
   w.style.display = w.style.display === 'none' ? 'block' : 'none';
@@ -262,12 +296,7 @@ document.querySelectorAll('.prob-row').forEach(function(row) {
 
 // Search filter
 document.getElementById('prob-search').addEventListener('input', function() {
-  var q = this.value.toLowerCase();
-  document.querySelectorAll('.prob-row').forEach(function(row) {
-    var pid = row.dataset.pid;
-    var title = row.dataset.title;
-    row.style.display = (!q || pid.indexOf(q) !== -1 || title.indexOf(q) !== -1) ? '' : 'none';
-  });
+  cbApplyFilters();
 });
 
 function updateSelected() {

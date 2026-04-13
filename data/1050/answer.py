@@ -1,2 +1,2 @@
-a, b = map(int, input().split())
-print(a != b)
+for i in range(1, 101):
+    print(i, end=" ")

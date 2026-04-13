@@ -1,2 +1,11 @@
-a, b = map(int, input().split())
-print(a == b)
+a, op, b = input().split()
+a = int(a)
+b = int(b)
+if op == "+":
+    print(a + b)
+elif op == "-":
+    print(a - b)
+elif op == "*":
+    print(a * b)
+elif op == "/":
+    print(f"{a/b:.2f}")

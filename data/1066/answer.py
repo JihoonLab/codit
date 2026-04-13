@@ -1,9 +1,7 @@
 n = int(input())
-if n >= 90:
-    print("A")
-elif n >= 70:
-    print("B")
-elif n >= 40:
-    print("C")
-else:
-    print("D")
+for i in range(1, n+1):
+    for j in range(n - i):
+        print(" ", end="")
+    for j in range(i):
+        print("*", end="")
+    print()

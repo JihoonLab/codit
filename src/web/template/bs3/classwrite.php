@@ -49,6 +49,14 @@
 .pp-toggle:hover{background:#f0ecf9;border-color:#d4c8f0}
 .pp-toggle.active{background:#7c3aed;color:#fff;border-color:#7c3aed}
 
+.pp-lang-btn{
+  padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;
+  cursor:pointer;border:1.5px solid #e5e0f0;background:#faf9fd;color:#888;
+  transition:all .15s;font-family:inherit;
+}
+.pp-lang-btn:hover{background:#f0ecf9;border-color:#d4c8f0;color:#7c3aed}
+.pp-lang-btn.active{background:#7c3aed;color:#fff;border-color:#7c3aed}
+
 .pp-list{
   display:none;max-height:320px;overflow-y:auto;
   border:1.5px solid #e5e0f0;border-radius:10px;background:#fff;margin-top:8px;
@@ -198,6 +206,11 @@
             <input type="text" id="pp-search-input" placeholder="문제 ID 또는 제목 검색...">
             <button type="button" class="pp-toggle" id="pp-toggle-btn" onclick="toggleList()">📋 목록</button>
           </div>
+          <div class="pp-lang-filter" style="display:flex;gap:6px;margin-bottom:8px">
+            <button type="button" class="pp-lang-btn active" data-lang="all" onclick="filterLang(this)">전체</button>
+            <button type="button" class="pp-lang-btn" data-lang="c" onclick="filterLang(this)">C언어</button>
+            <button type="button" class="pp-lang-btn" data-lang="py" onclick="filterLang(this)">Python</button>
+          </div>
           <div class="sel-tags" id="sel-tags"></div>
           <div class="pp-list" id="pp-list">
             <table>
@@ -311,6 +324,28 @@ onGradeChange();
 updateTitle();
 
 // === Problem Picker ===
+var currentLang = 'all';
+
+function filterLang(btn) {
+  document.querySelectorAll('.pp-lang-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentLang = btn.dataset.lang;
+  applyFilters();
+  document.getElementById('pp-list').style.display = 'block';
+  document.getElementById('pp-toggle-btn').classList.add('active');
+}
+
+function applyFilters() {
+  var q = document.getElementById('pp-search-input').value.toLowerCase();
+  document.querySelectorAll('.pp-row').forEach(function(row) {
+    var pid = parseInt(row.dataset.pid);
+    var title = row.dataset.title;
+    var langOk = (currentLang === 'all') || (currentLang === 'c' && pid < 1000) || (currentLang === 'py' && pid >= 1000);
+    var searchOk = !q || row.dataset.pid.indexOf(q) !== -1 || title.indexOf(q) !== -1;
+    row.style.display = (langOk && searchOk) ? '' : 'none';
+  });
+}
+
 function toggleList() {
   var list = document.getElementById('pp-list');
   var btn = document.getElementById('pp-toggle-btn');
@@ -325,14 +360,8 @@ function toggleList() {
 
 // Search
 document.getElementById('pp-search-input').addEventListener('input', function() {
-  var q = this.value.toLowerCase();
-  document.querySelectorAll('.pp-row').forEach(function(row) {
-    var pid = row.dataset.pid;
-    var title = row.dataset.title;
-    row.style.display = (!q || pid.indexOf(q)!==-1 || title.indexOf(q)!==-1) ? '' : 'none';
-  });
-  // Auto open list on search
-  if(q) { document.getElementById('pp-list').style.display = 'block'; document.getElementById('pp-toggle-btn').classList.add('active'); }
+  applyFilters();
+  if(this.value) { document.getElementById('pp-list').style.display = 'block'; document.getElementById('pp-toggle-btn').classList.add('active'); }
 });
 
 // Click row

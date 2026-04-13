@@ -1,3 +1,5 @@
-a, b, c = map(int, input().split())
-for x in [a, b, c]:
-    print("even" if x % 2 == 0 else "odd")
+n = int(input())
+for i in range(n, 0, -1):
+    for j in range(i):
+        print("*", end="")
+    print()

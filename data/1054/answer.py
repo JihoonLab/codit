@@ -1,2 +1,5 @@
-a, b = map(int, input().split())
-print(bool(a) or bool(b))
+n = int(input())
+s = 0
+for i in range(1, n+1):
+    s += i
+print(s)
