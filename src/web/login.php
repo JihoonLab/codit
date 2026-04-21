@@ -14,7 +14,7 @@ if ($OJ_LONG_LOGIN && isset($_COOKIE[$OJ_NAME . "_user"]) && isset($_COOKIE[$OJ_
     if ($C_check[strlen($C_check) - 1] != $C_num) {
         setcookie($OJ_NAME . "_check", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
         setcookie($OJ_NAME . "_user", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
-        echo "<script>\n alert('Cookie失效或错误!(-1)'); \n history.go(-1); \n </script>";
+        echo "<script>\n alert('쿠키가 만료되었거나 잘못되었어요. (-1)'); \n history.go(-1); \n </script>";
         exit(0);
     }
     $C_info = pdo_query("SELECT `password`,`accesstime` FROM `users` WHERE `user_id`=? and defunct='N'", $C_user)[0];
@@ -28,7 +28,7 @@ if ($OJ_LONG_LOGIN && isset($_COOKIE[$OJ_NAME . "_user"]) && isset($_COOKIE[$OJ_
     else {
         setcookie($OJ_NAME . "_check", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
         setcookie($OJ_NAME . "_user", "", ['expires' => 0, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
-        echo "<script>\n alert('Cookie失效或错误!(-2)'); \n history.go(-1); \n </script>";
+        echo "<script>\n alert('쿠키가 만료되었거나 잘못되었어요. (-2)'); \n history.go(-1); \n </script>";
         exit(0);
     }
 }

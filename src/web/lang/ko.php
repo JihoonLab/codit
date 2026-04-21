@@ -186,12 +186,12 @@
     $MSG_CLICK_TO_RECOVER="Click to recover";
 
 	//contest.php
-	$MSG_PRIVATE_WARNING="대회에 참가할 수 있는 권한이 없습니다.";
+	$MSG_PRIVATE_WARNING="대회에 입장하려면 비밀번호를 입력하세요.";
 	$MSG_PRIVATE_USERS_ADD="*참여시킬 사용자ID를 줄을 바꿔 입력하거나, 스프레드시트에서 사용자ID를 복사해서 붙여넣으세요.";
 	$MSG_PLS_ADD="*Ctrl+클릭으로 제출 가능 언어를 모두 선택하세요.";
 	$MSG_TIME_WARNING="대회 시작전입니다.";
 	$MSG_WATCH_RANK="대회순위 보기";
-	$MSG_NOIP_WARNING=$OJ_NOIP_KEYWORD." 대회는 종료 전까지 결과를 보여주지 않습니다.";
+	$MSG_NOIP_WARNING="대회가 진행 중이라 접근이 제한돼요.<br>대회 종료 후 자동으로 공개됩니다.";
 	$MSG_NOIP_NOHINT=$OJ_NOIP_KEYWORD." 대회는 힌트를 제공하지 않습니다.";
 	$MSG_SERVER_TIME="현재 시간";
 	$MSG_START_TIME="시작 시간";

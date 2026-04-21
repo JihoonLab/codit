@@ -40,21 +40,11 @@ if (isset($_GET['id'])) {
     else if ($OJ_FREE_PRACTICE)
         $sql = "SELECT * FROM `problem` WHERE defunct='N' and `problem_id`=?";
     else
-    //* by CSL
     {
-        $sql = "SELECT * FROM `problem` WHERE `problem_id`=? AND `defunct`='N' AND `problem_id` NOT IN (
-                SELECT `problem_id` FROM `contest_problem` WHERE `contest_id` IN (
-                    SELECT `contest_id` FROM `contest` WHERE ( '$now'<`end_time` AND defunct='N' )
-                )
-            )";
-//        $sql = "SELECT * FROM `problem` WHERE `problem_id`=? AND `defunct`='N' AND `problem_id` NOT IN (
-//				SELECT `problem_id` FROM `contest_problem` WHERE `contest_id` IN (
-//					SELECT `contest_id` FROM `contest` WHERE ( `end_time`>'$now' and defunct='N' ) or `private`='1'    
-//				)
-//			)";        //////////  people should not see the problem used in contest before they end by modifying url in browser address bar
-    /////////   if you give students opportunities to test their result out side the contest ,they can bypass the penalty time of 20 mins for
-    /////////   each non-AC sumbission in contest. if you give them opportunities to view problems before exam ,they will ask classmates to write
-    /////////   code for them in advance, if you want to share private contest problem to practice you should modify the contest into public
+        // [수행평가 대응] 대회 포함 여부 필터 제거 - 시험 문제 ID 유출 방지
+        // 기존: 진행중 대회에 포함된 문제를 직접 접근 시 차단 → 어떤 ID가 시험 문제인지 역추론 가능
+        // 변경: 공개 문제는 항상 접근 허용. 대회 제출 통제는 비밀번호/subnet/contest_type 플래그로 유지
+        $sql = "SELECT * FROM `problem` WHERE `problem_id`=? AND `defunct`='N'";
     }
 
     $pr_flag = true;
@@ -64,6 +54,9 @@ if (isset($_GET['id'])) {
     $cid = intval($_GET['cid']);
     $pid = intval($_GET['pid']);
     require_once("contest-check.php");
+    // [2026-04-21 B 옵션] 종료된 대회의 문제 페이지는 학생 접근 차단
+    // (문제 재사용을 위해 종료 후 문제 노출 방지. 대회 상세/순위/통계는 계속 접근 가능)
+    require_contest_not_ended_for_students($cid, $end_time);
     if (isset($_SESSION[$OJ_NAME . '_' . 'administrator']) || isset($_SESSION[$OJ_NAME . '_' . 'contest_creator']) || isset($_SESSION[$OJ_NAME . '_' . 'problem_editor']))
         $sql = "SELECT langmask,private,defunct FROM `contest` WHERE `contest_id`=?";
     else

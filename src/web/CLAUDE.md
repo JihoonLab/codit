@@ -199,3 +199,83 @@ APCu 캐시 때문에 PHP 파일 수정 후 반드시 실행해야 반영됨
 - 태그 없는 수업: 기존처럼 제출한 학생만 표시
 - 학생 수 카운트 표시, 빈 상태 메시지 분반별 차별화
 - 관리자 비공개 수업 상세 접근 허용
+
+## 완료된 작업 (2026-04-21)
+
+### 대회 상세 페이지 전면 리디자인 (`template/bs3/contest.php`)
+- 보라 테마 통일 (예상 점수 노랑→보라, ct-ended 회고형 UI, 슬레이트 톤)
+- 메타 정보 바 추가 (참가자 수, 허용 언어, 출제자, 서버시계 chip)
+- 다음 문제 CTA 에 문제 제목 표시 (pid 배지 + 제목, ellipsis)
+- 🏁 종료된 대회 워터마크 + "대회 결과"/"N시간 전 종료" 동적 표시
+- 모바일 600px/420px 브레이크포인트 강화
+- 데드코드 정리 (`.label` 스타일 제거)
+- 트렌디 애니메이션 (shimmer, 플로팅 오브, bounce)
+
+### 대회 비밀번호 PRG 패턴 (`contest-check.php`)
+- 비밀번호 POST → 303 See Other 리다이렉트 → GET
+- 뒤로가기 시 "양식 재제출" 팝업 제거
+- `session_write_close()` + `ob_end_clean()` 포함
+
+### 대회 입장하기 버튼 스타일 (`template/bs3/error.php`)
+- Bootstrap 3 `form-control` height:34px 고정 덮어쓰기
+- `height: auto !important; line-height: 1.2; display: inline-flex` 로 input과 높이 매칭
+
+### B 옵션: 종료 대회 학생 접근 제한
+- 종료 대회 상세 진입 시 순위표 배너만 노출, 문제 목록 숨김
+- `problem.php?cid=X&pid=Y`: 가드 추가 (학생 종료 대회 문제 차단)
+- `submitpage.php`: 가드 추가 (종료 대회 제출 차단)
+- `status.php?cid=X`, `conteststatistics.php`: 가드 추가 (순위만 열람 가능)
+- `require_contest_not_ended_for_students()` 헬퍼 함수 (`my_func.inc.php`)
+
+### 대회 제출 코드 보안 강화 (`reinfo.php`, `ceinfo.php`)
+- 연습 제출(contest_id=0)이 현재 활성 대회에 잠긴 문제면 본인이어도 차단
+- `problem_locked($pid, 28)` 사용
+- 대회 제출(contest_id>0)은 본인의 정당한 활동이므로 항상 허용
+
+### 중국어 메시지 한국어 번역
+- `contest-check.php:50`: "比赛已经关闭!" → "대회를 찾을 수 없어요"
+- `contest-check.php:45`: "Not in subnet" → "허용된 네트워크에서만 접속할 수 있어요"
+- `suspect_list.php`: 동일 메시지 번역
+- `reinfo.php`: 런타임 에러 힌트 한글화
+- `login.php`: 쿠키 에러 alert 한글화
+- `lostpassword.php`: 이메일 불일치 한글화
+
+### 🚨 대회 삭제 안전장치 (매우 중요)
+- **`contest_df_change.php` 버그 발견**: 활성 대회 defunct 토글 버튼이 실제로는 **완전 삭제** 수행
+- **수정**: 순수 defunct 플래그 토글만 (데이터 보존)
+- **신규 `contest_hard_delete.php`**: 이중 확인 + 명시적 문구 타이핑 필요 (`DELETE-{cid}`)
+- **`contest_list.php` UI**: "👁 공개/🙈 숨김" 토글 + "🗑️ 삭제" 별도 빨간 버튼
+- 영구 삭제 페이지: 영향 범위 표시 + confirm 입력 + JavaScript 팝업 3중 안전장치
+
+### MyISAM 삭제 데이터 복구 (긴급 대응)
+- 수행평가 28명 × 863 제출 실수 삭제 → **완전 복구 성공**
+- MyISAM 고정 길이 레코드(766 bytes) 직접 Python 파싱
+- flag byte 0x00 (deleted) 블록 863개 → contest_id=1 필터
+- DB 재삽입: contest, contest_problem, solution, privilege 전부 복원
+- 이전 분석 결과와 100% 일치 확인
+- 백업 보관: `/root/mysql_emergency_backup_20260421/`
+
+### 엑셀 순위표 다운로드 개선 (`contestrank.xls.php`)
+- **Nick 버그 수정**: `$row['nick']` → `$U[$i]->nick` (전원 같은 이름 나오던 버그)
+- **수행평가 컬럼 추가**: exam_max 기준 비율별 티어 환산 (20점/40점 만점)
+- **학번 컬럼 추가**: User ↔ Nick 사이 ("3608" 형식 = school 3-6 + student_no 08)
+- **Penalty 컬럼 제거**
+- **학번순 정렬**
+- **SpreadsheetML XML 포맷**으로 전환 (Excel 경고 최소화)
+- **고급 디자인**:
+  - 🏆 타이틀 행 (병합, 보라 배경, 16pt)
+  - 📅 부제 (대회 기간·참가자수·문제수)
+  - 🟣 헤더 (보라 배경 + 흰색 굵은)
+  - 🦓 Zebra striping (짝수행 연회색)
+  - 🥇🥈🥉 메달 이모지 (1-3등)
+  - 🎨 수행평가 레벨별 색상 (초록/노랑/빨강)
+  - 🔢 학번 monospace (D2Coding)
+  - 🟢🔴 AC/WA 셀 색상 구분
+  - 🔒 첫 4행 스크롤 고정
+- **파일명 타임스탬프 추가** (중복 다운로드 권한 충돌 방지)
+
+### 수행평가 구성 확정 (3학년 AI-1,2,3)
+- 10문제 × 3유형 (A/B/C), 35분
+- 공통 4문제: 1014(f-string), 1044(and/or/%), 1054(반복누적), 1061(반복+조건)
+- 차별 6문제: 분반별 비슷한 난이도 다른 문제
+- 실제 AI-3(C형) 시행: 28명 참가, 평균 52점, 만점 2명, 변별력 확보

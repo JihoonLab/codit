@@ -567,7 +567,14 @@
     $cur_user = $_SESSION[$OJ_NAME.'_'.'user_id'];
     $pid_check = $row['problem_id'];
     $banner_class_id = isset($_GET['class_id']) ? intval($_GET['class_id']) : 0;
-    if($banner_class_id > 0) {
+    $banner_cid      = isset($cid) && $cid > 0 ? intval($cid) : 0;
+    if($banner_cid > 0) {
+      // 대회에서 접속: 해당 대회 내 제출만 확인 (과거 연습 기록 무시)
+      $ac_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=? AND result=4 AND contest_id=?", $cur_user, $pid_check, $banner_cid);
+      $has_ac = ($ac_check && $ac_check[0]['cnt'] > 0);
+      $sub_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=? AND contest_id=?", $cur_user, $pid_check, $banner_cid);
+      $has_sub = ($sub_check && $sub_check[0]['cnt'] > 0);
+    } else if($banner_class_id > 0) {
       // 수업에서 접속: 해당 수업 내 제출만 확인
       $ac_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=? AND result=4 AND class_id=?", $cur_user, $pid_check, $banner_class_id);
       $has_ac = ($ac_check && $ac_check[0]['cnt'] > 0);
@@ -580,7 +587,7 @@
       $sub_check = pdo_query("SELECT COUNT(1) as cnt FROM solution WHERE user_id=? AND problem_id=?", $cur_user, $pid_check);
       $has_sub = ($sub_check && $sub_check[0]['cnt'] > 0);
     }
-    
+
     if($has_ac) {
       echo '<div id="solve-banner" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:1px solid #6ee7b7;border-radius:10px;padding:12px 20px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">';
       echo '<span style="font-size:24px;">🎉</span><span style="font-size:15px;font-weight:800;color:#059669;">해결한 문제</span><span style="font-size:13px;color:#047857;">이 문제를 정답 처리했습니다.</span></div>';
@@ -636,9 +643,16 @@
       if(!(isset($OJ_OI_MODE)&&$OJ_OI_MODE)) {
         if(isset($_SESSION[$OJ_NAME.'_'.'user_id'])) {
           $my_uid_btn = $_SESSION[$OJ_NAME.'_'.'user_id'];
-          $my_sub_count = pdo_query("SELECT COUNT(*) as cnt FROM solution WHERE user_id=? AND problem_id=?", $my_uid_btn, $row['problem_id']);
-          $my_cnt = $my_sub_count[0]['cnt'] ?? 0;
-          echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."&user_id=".$my_uid_btn.$class_param."'>📋 내 제출 (".$my_cnt.")</a>";
+          if(isset($cid) && $cid > 0) {
+            // 대회 모드: 해당 대회 제출만 카운트 + 링크
+            $my_sub_count = pdo_query("SELECT COUNT(*) as cnt FROM solution WHERE user_id=? AND problem_id=? AND contest_id=?", $my_uid_btn, $row['problem_id'], $cid);
+            $my_cnt = $my_sub_count[0]['cnt'] ?? 0;
+            echo "<a class='prob-btn prob-btn-status' href='status.php?cid=".$cid."&problem_id=".$row['problem_id']."&user_id=".$my_uid_btn."'>📋 내 제출 (".$my_cnt.")</a>";
+          } else {
+            $my_sub_count = pdo_query("SELECT COUNT(*) as cnt FROM solution WHERE user_id=? AND problem_id=?", $my_uid_btn, $row['problem_id']);
+            $my_cnt = $my_sub_count[0]['cnt'] ?? 0;
+            echo "<a class='prob-btn prob-btn-status' href='status.php?problem_id=".$row['problem_id']."&user_id=".$my_uid_btn.$class_param."'>📋 내 제출 (".$my_cnt.")</a>";
+          }
         }
       }
 
@@ -663,7 +677,11 @@
 
     <!-- 정답률 -->
     <?php
-      $rate = ($row['submit'] > 0) ? round(($row['accepted'] / $row['submit']) * 100, 1) : 0;
+      // NOIP/숨김 대회에서는 $row['accepted']/$row['submit']이 HTML 문자열(<font>?</font>)로 교체됨
+      // PHP 8에서 string/string 연산 시 TypeError 발생 → is_numeric 체크로 방어
+      $rate_acc = is_numeric($row['accepted']) ? (int)$row['accepted'] : 0;
+      $rate_sub = is_numeric($row['submit'])   ? (int)$row['submit']   : 0;
+      $rate = ($rate_sub > 0) ? round(($rate_acc / $rate_sub) * 100, 1) : 0;
     ?>
     <div class="prob-rate-wrap">
       <span class="prob-rate-label">정답률</span>
@@ -679,7 +697,24 @@
       $my_solutions = [];
       $lang_names = array("C","C++","Pascal","Java","Ruby","Bash","Python","PHP","Perl","C#","Obj-C","FreeBasic","Scheme","Clang","Clang++","Lua","JavaScript","Go","SQL","Fortran","Matlab","Cobol","R","Scratch3","Cangjie");
 
-      if(isset($_SESSION[$OJ_NAME.'_'.'user_id']) && $pr_flag && !isset($_GET['class_id'])) {
+      // [시험모드] 대회/시험 중에는 "내 풀이" 숨김 (관리자/소스브라우저 제외)
+      $exam_bypass = isset($_SESSION[$OJ_NAME.'_'.'administrator']) || isset($_SESSION[$OJ_NAME.'_'.'source_browser']);
+      $global_exam_active = (isset($OJ_EXAM_CONTEST_ID) && $OJ_EXAM_CONTEST_ID > 0)
+                          || (isset($OJ_ON_SITE_CONTEST_ID) && $OJ_ON_SITE_CONTEST_ID > 0);
+      $problem_in_locked_contest = function_exists('problem_locked') ? problem_locked($row['problem_id'], 1) : false;
+      // 추가 방어선: 이 문제가 현재 진행중인 어떤 대회에든 포함되어 있으면 숨김
+      $problem_in_any_active_contest = false;
+      if (!$exam_bypass) {
+        $now_chk = date('Y-m-d H:i:s', time());
+        $chk_rows = pdo_query(
+          "SELECT 1 FROM contest c INNER JOIN contest_problem cp ON c.contest_id=cp.contest_id WHERE cp.problem_id=? AND c.defunct='N' AND c.start_time<=? AND c.end_time>? LIMIT 1",
+          $row['problem_id'], $now_chk, $now_chk
+        );
+        $problem_in_any_active_contest = !empty($chk_rows);
+      }
+      $hide_my_solutions = (!$exam_bypass) && ($global_exam_active || $problem_in_locked_contest || $problem_in_any_active_contest);
+
+      if(isset($_SESSION[$OJ_NAME.'_'.'user_id']) && $pr_flag && !isset($_GET['class_id']) && !$hide_my_solutions) {
         $my_uid_sol = $_SESSION[$OJ_NAME.'_'.'user_id'];
         $my_pid_sol = $row['problem_id'];
         $my_solutions = pdo_query("SELECT s.solution_id, s.language, s.in_date, s.time, s.memory, LENGTH(sc.source) as code_len FROM solution s LEFT JOIN source_code_user sc ON s.solution_id=sc.solution_id WHERE s.user_id=? AND s.problem_id=? AND s.result=4 ORDER BY s.in_date DESC LIMIT 3", $my_uid_sol, $my_pid_sol);

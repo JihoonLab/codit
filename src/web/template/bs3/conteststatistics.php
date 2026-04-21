@@ -26,6 +26,111 @@
     .cs-card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); overflow: hidden; margin-bottom: 20px; }
     .cs-card-header { background: #f8fafc; border-bottom: 2px solid #7c3aed; padding: 13px 20px; font-size: 15px; font-weight: 700; color: #7c3aed; }
 
+    /* ═══ 수행평가 채점 카드 ═══ */
+    .cs-grade-card {
+      background: linear-gradient(135deg, #fff7ed 0%, #fff 60%);
+      border: 1.5px solid #fdba74;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      box-shadow: 0 2px 14px rgba(249,115,22,0.08);
+    }
+    .cs-grade-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid #fed7aa;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+      background: rgba(255,247,237,0.5);
+    }
+    .cs-grade-title { font-size: 17px; font-weight: 800; color: #9a3412; margin-bottom: 3px; }
+    .cs-grade-sub { font-size: 12.5px; color: #7c2d12; font-weight: 500; }
+    .cs-grade-sub strong { color: #9a3412; font-weight: 800; margin: 0 2px; }
+    .cs-grade-meta {
+      background: #fff; border: 1px solid #fed7aa; border-radius: 100px;
+      padding: 6px 14px; font-size: 12.5px; color: #7c2d12; font-weight: 600;
+    }
+    .cs-grade-meta strong { color: #c2410c; font-weight: 900; margin: 0 2px; }
+
+    .cs-grade-distribution {
+      padding: 18px 24px;
+      border-bottom: 1px solid #fed7aa;
+    }
+    .cs-grade-distribution-label {
+      font-size: 12px; font-weight: 700; color: #9a3412;
+      margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .cs-grade-bars {
+      display: flex; align-items: flex-end; gap: 8px;
+      height: 120px; padding: 8px 0;
+    }
+    .cs-grade-bar {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-end; min-width: 36px; height: 100%;
+    }
+    .cs-grade-count {
+      font-size: 11px; font-weight: 700; color: #7c2d12; margin-bottom: 4px;
+    }
+    .cs-grade-col {
+      width: 100%; max-width: 44px;
+      background: linear-gradient(180deg, #fb923c, #ea580c);
+      border-radius: 6px 6px 0 0;
+      min-height: 6px;
+      transition: height 0.3s;
+      box-shadow: inset 0 -1px 2px rgba(0,0,0,0.1);
+    }
+    .cs-grade-score {
+      font-size: 11.5px; font-weight: 800; color: #9a3412;
+      margin-top: 6px; white-space: nowrap;
+    }
+
+    .cs-grade-table-wrap { padding: 0; max-height: 500px; overflow-y: auto; }
+    .cs-grade-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .cs-grade-table thead {
+      position: sticky; top: 0; background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .cs-grade-table thead th {
+      padding: 10px 12px; font-size: 11px; font-weight: 700;
+      color: #9a3412; text-align: center; text-transform: uppercase;
+      letter-spacing: 0.5px; border-bottom: 1px solid #fed7aa;
+    }
+    .cs-grade-table thead th.th-left { text-align: left; padding-left: 20px; }
+    .cs-grade-table tbody tr {
+      border-bottom: 1px solid #fff7ed; transition: background 0.1s;
+    }
+    .cs-grade-table tbody tr:hover { background: #fff7ed; }
+    .cs-grade-table td {
+      padding: 10px 12px; text-align: center; vertical-align: middle;
+    }
+    .cs-grade-table td.td-left { text-align: left; padding-left: 20px; }
+    .gt-rank {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+      background: #fff; color: #9a3412; font-weight: 800; font-size: 12px;
+      border: 1px solid #fed7aa; border-radius: 50%;
+    }
+    .gt-nick { color: #7c3aed; font-weight: 700; text-decoration: none; }
+    .gt-nick:hover { text-decoration: underline; }
+    .gt-uid { font-size: 11px; color: #9ca3af; font-weight: 500; margin-left: 6px; }
+    .gt-solved {
+      display: inline-flex; align-items: baseline; gap: 2px;
+      color: #0f172a; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .gt-solved small { font-size: 10.5px; color: #94a3b8; font-weight: 600; }
+
+    .exam-score {
+      display: inline-flex; align-items: baseline; justify-content: center; gap: 2px;
+      padding: 4px 11px; border-radius: 7px;
+      font-weight: 900; font-size: 14px; font-variant-numeric: tabular-nums;
+      min-width: 56px;
+    }
+    .exam-score small { font-size: 10px; font-weight: 600; opacity: 0.7; }
+    .exam-score.sc-perfect { background: linear-gradient(135deg, #fef3c7, #fcd34d); color: #78350f; border: 1.5px solid #f59e0b; }
+    .exam-score.sc-high    { background: #dcfce7; color: #14532d; border: 1px solid #86efac; }
+    .exam-score.sc-mid     { background: #fef9c3; color: #713f12; border: 1px solid #fde047; }
+    .exam-score.sc-below   { background: #ffedd5; color: #7c2d12; border: 1px solid #fdba74; }
+    .exam-score.sc-low     { background: #fee2e2; color: #7f1d1d; border: 1px solid #fca5a5; }
+
     /* 통계 테이블 */
     .cs-table-wrap { overflow-x: auto; }
     .cs-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -69,6 +174,82 @@
       <?php endif; ?>
     </div>
   </div>
+
+  <?php if($_is_grading_admin): ?>
+  <!-- 관리자 전용: 수행평가 채점 결과 -->
+  <div class="cs-grade-card">
+    <div class="cs-grade-header">
+      <div>
+        <div class="cs-grade-title">📝 수행평가 채점 결과</div>
+        <div class="cs-grade-sub"><?php echo htmlspecialchars($exam_subject_lbl)?> · 만점 <strong><?php echo $exam_max_score?>점</strong> · 전체 <strong><?php echo $pid_cnt?>문제</strong></div>
+      </div>
+      <div class="cs-grade-meta">
+        참여 학생 <strong><?php echo count($exam_user_info)?>명</strong>
+      </div>
+    </div>
+
+    <!-- 점수 분포 -->
+    <?php if(!empty($exam_distribution)): ?>
+    <div class="cs-grade-distribution">
+      <div class="cs-grade-distribution-label">점수 분포</div>
+      <div class="cs-grade-bars">
+        <?php
+          $max_cnt = max(array_values($exam_distribution) ?: [1]);
+          foreach ($exam_distribution as $score => $cnt):
+            $height_pct = max(8, round($cnt / $max_cnt * 100));
+        ?>
+        <div class="cs-grade-bar">
+          <div class="cs-grade-count"><?php echo $cnt?>명</div>
+          <div class="cs-grade-col" style="height:<?php echo $height_pct?>%"></div>
+          <div class="cs-grade-score"><?php echo $score?>점</div>
+        </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- 학생별 점수 테이블 -->
+    <div class="cs-grade-table-wrap">
+      <table class="cs-grade-table">
+        <thead>
+          <tr>
+            <th style="width:50px">#</th>
+            <th class="th-left">학생</th>
+            <th style="width:90px">해결</th>
+            <th style="width:100px">점수</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php
+            // 점수 높은 순, 같으면 해결 수 높은 순 정렬
+            uasort($exam_user_info, function($a, $b){
+              if ($a['score'] != $b['score']) return $b['score'] - $a['score'];
+              return $b['solved'] - $a['solved'];
+            });
+            $rank_no = 1;
+            foreach ($exam_user_info as $uid => $info):
+              $rate = $pid_cnt > 0 ? $info['solved']/$pid_cnt : 0;
+              $scls = 'sc-low';
+              if ($rate >= 0.9) $scls = 'sc-perfect';
+              elseif ($rate >= 0.7) $scls = 'sc-high';
+              elseif ($rate >= 0.5) $scls = 'sc-mid';
+              elseif ($rate >= 0.3) $scls = 'sc-below';
+          ?>
+          <tr>
+            <td><span class="gt-rank"><?php echo $rank_no++?></span></td>
+            <td class="td-left">
+              <a href="userinfo.php?user=<?php echo urlencode($uid)?>" class="gt-nick"><?php echo htmlspecialchars($info['nick'] ?: $uid)?></a>
+              <span class="gt-uid">@<?php echo htmlspecialchars($uid)?></span>
+            </td>
+            <td><span class="gt-solved"><?php echo $info['solved']?><small>/<?php echo $pid_cnt?></small></span></td>
+            <td><span class="exam-score <?php echo $scls?>"><?php echo $info['score']?><small>/<?php echo $exam_max_score?></small></span></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <?php endif; ?>
 
   <!-- 채점 결과 통계 테이블 -->
   <div class="cs-card">

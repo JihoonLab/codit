@@ -337,9 +337,120 @@ if (isset($_GET['cid'])) {
 }
 
 /////////////////////////Template
+
+// ═══ [UX 메타 정보] 참가자/언어/출제자 ═══
+$contest_meta = [
+  'participants' => 0,
+  'languages'    => [],
+  'creator'      => '',
+  'lang_raw'     => 0,
+];
+if (isset($cid)) {
+  // 참가자 수 (제출 이력 있는 고유 유저)
+  $pr = mysql_query_cache("SELECT COUNT(DISTINCT user_id) as c FROM solution WHERE contest_id=?", $cid);
+  $contest_meta['participants'] = intval($pr[0]['c'] ?? 0);
+
+  // 출제자 + 허용 언어 비트마스크
+  $cr = mysql_query_cache("SELECT user_id, langmask FROM contest WHERE contest_id=?", $cid);
+  if (!empty($cr)) {
+    $contest_meta['creator']  = $cr[0]['user_id'] ?? '';
+    $contest_meta['lang_raw'] = intval($cr[0]['langmask'] ?? 0);
+  }
+
+  // langmask 해석: 비트가 꺼진 언어가 허용된 언어 (HustOJ 관례)
+  // $OJ_LANGMASK는 전역 차단 마스크, 대회 langmask는 대회별 차단 마스크
+  // 실제 컴파일 가능한 언어는 $language_ext 기준 (UnknownLanguage 더미 제외)
+  global $language_name, $language_ext, $OJ_LANGMASK;
+  if (isset($language_name, $language_ext) && is_array($language_name)) {
+    $mask = $contest_meta['lang_raw'];
+    $count = min(count($language_name), count($language_ext));
+    for ($i = 0; $i < $count; $i++) {
+      if (((1 << $i) & $OJ_LANGMASK) !== 0) continue; // 전역 차단
+      if (((1 << $i) & $mask) !== 0) continue;        // 대회 차단
+      $name = $language_name[$i];
+      if ($name === 'UnknownLanguage' || trim($name) === '') continue;
+      $contest_meta['languages'][] = $name;
+    }
+  }
+}
+
+// ═══ [UX 개선] 학생별 문제 풀이 상태 + 진척도 집계 ═══
+$my_progress = [
+  'solved_count' => 0,
+  'total_count'  => 0,
+  'by_num'       => [],   // num => ['ac'=>bool, 'attempts'=>int, 'pid'=>int]
+  'next_num'     => null, // 다음 안 푼 문제 num (없으면 null)
+  'exam_max'     => 0,    // 수행평가 만점 (0=자동감지, 20, 40)
+  'exam_score'   => 0,    // 현재 예상 점수
+];
+if (isset($cid) && isset($_SESSION[$OJ_NAME.'_'.'user_id'])) {
+    $my_uid = $_SESSION[$OJ_NAME.'_'.'user_id'];
+    $my_progress['total_count'] = isset($view_problemset) ? count($view_problemset) : 0;
+
+    // 사용자 제출 집계: 각 num 별로 AC 여부 + 총 시도 수
+    $sql_user = "SELECT num, MAX(result=4) as ac, COUNT(*) as attempts
+                 FROM solution
+                 WHERE contest_id=? AND user_id=? AND num>=0
+                 GROUP BY num";
+    $user_subs = pdo_query($sql_user, $cid, $my_uid);
+    if ($user_subs) {
+        foreach ($user_subs as $r) {
+            $my_progress['by_num'][intval($r['num'])] = [
+                'ac' => (intval($r['ac']) === 1),
+                'attempts' => intval($r['attempts']),
+            ];
+            if ($r['ac']) $my_progress['solved_count']++;
+        }
+    }
+
+    // 다음 안 푼 문제 찾기
+    for ($i = 0; $i < $my_progress['total_count']; $i++) {
+        $s = $my_progress['by_num'][$i] ?? null;
+        if (!$s || !$s['ac']) { $my_progress['next_num'] = $i; break; }
+    }
+
+    // 수행평가 배점 로드 + 예상 점수
+    $exam_row = mysql_query_cache("SELECT exam_max_score FROM contest WHERE contest_id=?", $cid);
+    $stored = intval($exam_row[0]['exam_max_score'] ?? 0);
+    if ($stored == 20 || $stored == 40) {
+        $my_progress['exam_max'] = $stored;
+    } else {
+        // 자동 감지 (problem_id 다수결)
+        $sc = mysql_query_cache(
+            "SELECT SUM(CASE WHEN problem_id<1000 THEN 1 ELSE 0 END) c,
+                    SUM(CASE WHEN problem_id>=1000 THEN 1 ELSE 0 END) p
+             FROM contest_problem WHERE contest_id=?", $cid);
+        $my_progress['exam_max'] = (intval($sc[0]['c'] ?? 0) >= intval($sc[0]['p'] ?? 0)) ? 20 : 40;
+    }
+
+    // 예상 점수 계산 (템플릿에서도 함수 있지만 여기서 한번 계산)
+    if ($my_progress['total_count'] > 0) {
+        $rate = $my_progress['solved_count'] / $my_progress['total_count'];
+        $mx = $my_progress['exam_max'];
+        if ($mx == 20) {
+            if ($rate >= 0.9) $my_progress['exam_score'] = 20;
+            elseif ($rate >= 0.7) $my_progress['exam_score'] = 18;
+            elseif ($rate >= 0.6) $my_progress['exam_score'] = 16;
+            elseif ($rate >= 0.5) $my_progress['exam_score'] = 14;
+            elseif ($rate >= 0.4) $my_progress['exam_score'] = 12;
+            elseif ($rate >= 0.3) $my_progress['exam_score'] = 10;
+            elseif ($rate >= 0.2) $my_progress['exam_score'] = 8;
+            else $my_progress['exam_score'] = 6;
+        } else {
+            if ($rate >= 0.9) $my_progress['exam_score'] = 40;
+            elseif ($rate >= 0.7) $my_progress['exam_score'] = 36;
+            elseif ($rate >= 0.6) $my_progress['exam_score'] = 32;
+            elseif ($rate >= 0.5) $my_progress['exam_score'] = 28;
+            elseif ($rate >= 0.4) $my_progress['exam_score'] = 24;
+            elseif ($rate >= 0.3) $my_progress['exam_score'] = 20;
+            elseif ($rate >= 0.2) $my_progress['exam_score'] = 16;
+            else $my_progress['exam_score'] = 12;
+        }
+    }
+}
+
 /**
  * 根据参数加载相应的模板文件
- * 有cid参数时加载竞赛模板，否则加载竞赛集模板
  */
 if (isset($_GET['cid']))
     require("template/" . $OJ_TEMPLATE . "/contest.php");

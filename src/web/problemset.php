@@ -119,17 +119,11 @@ if (isset($_SESSION[$OJ_NAME . '_' . 'user_id'])) {
 //if($OJ_SAE) $first=1;
 if (isset($_SESSION[$OJ_NAME . '_' . 'administrator'])) {  //all problems
     //$limit = $limit_sql;
-} else if ($OJ_FREE_PRACTICE) {  // open free practice without limit of contest using
-    $filter_sql .= " and defunct='N' ";
-} else {  //page problems (not include in contests period)
-    $now = date('Y-m-d H:i', time());
-    $filter_sql .= " and `defunct`='N' AND `problem_id` NOT IN (
-					SELECT  `problem_id`
-						FROM contest c
-						INNER JOIN  `contest_problem` cp ON c.`contest_id` = cp.`contest_id` " .
-        " AND (c.`defunct` = 'N' AND '$now'<c.`end_time`)" .    // option style show all non-running contest
-        //"and (c.`end_time` >  '$now'  OR c.private =1)" . // original style , hidden all private contest problems
-        ") ";
+} else {
+    // [수행평가 대응] 대회 포함 여부 필터 제거 - 시험 문제 ID 유출 방지
+    // 기존: 진행중/예정 대회에 포함된 문제를 목록에서 숨김 → 어떤 문제가 빠졌는지 역추론 가능
+    // 변경: 항상 모든 공개 문제 표시. 대회 제출 통제는 비밀번호/subnet/contest_type 플래그로 유지
+    $filter_sql .= " and `defunct`='N' ";
 }
 // End Page Setting
 

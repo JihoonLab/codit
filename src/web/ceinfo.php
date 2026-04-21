@@ -63,6 +63,18 @@ $lang = $row["language"];
 // 检查用户权限：用户是解决方案的所有者或具有源码浏览权限
 if ($row && $row['user_id'] == $_SESSION[$OJ_NAME . '_' . 'user_id']) $ok = true;
 if (isset($_SESSION[$OJ_NAME . '_' . 'source_browser'])) $ok = true;
+
+// [보안 수정 2026-04-21] 연습 제출이 활성 대회에 잠긴 문제면 본인이어도 차단.
+// - 대회 제출(contest_id>0)은 본인의 정당한 대회 활동 기록이므로 항상 허용.
+// - 연습 제출(contest_id=0)만 문제 잠금 상태에 따라 차단.
+if ($ok && !isset($_SESSION[$OJ_NAME . '_' . 'administrator']) && !isset($_SESSION[$OJ_NAME . '_' . 'source_browser'])
+        && isset($row['problem_id']) && $row['problem_id'] > 0
+        && intval($row['contest_id']) == 0) {
+    $_locked_cid = problem_locked(intval($row['problem_id']), 28);
+    if ($_locked_cid) {
+        $ok = false;
+    }
+}
 $view_reinfo = "";
 
 // 如果用户有权限查看编译错误信息

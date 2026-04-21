@@ -46,6 +46,8 @@ if (isset($_GET['id'])) {
     $cid = intval($_GET['cid']);
     $pid = intval($_GET['pid']);
     require_once("contest-check.php");
+// [2026-04-21 B 옵션] 종료된 대회 제출 페이지 학생 차단
+if (isset($cid) && isset($end_time)) require_contest_not_ended_for_students($cid, $end_time);
     $psql = "SELECT problem_id FROM contest_problem WHERE contest_id=? AND num=?";
     $data = pdo_query($psql, $cid, $pid);
     $row = $data[0];

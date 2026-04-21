@@ -56,6 +56,22 @@ if (contest_locked($contest_id, 256))
 if ((!contest_locked($contest_id, 32)) && (isset($_SESSION[$OJ_NAME . '_' . 'user_id']) && $row && ($row['user_id'] == $_SESSION[$OJ_NAME . '_' . 'user_id'])) || isset($_SESSION[$OJ_NAME . '_' . 'source_browser'])) {
     $ok = true;
 }
+
+// [보안 수정 2026-04-21] 연습 제출이 활성 대회에 잠긴 문제면 본인이어도 차단.
+// - 대회 제출(contest_id>0)은 본인의 정당한 대회 활동 기록이므로 항상 허용.
+// - 연습 제출(contest_id=0)만 문제 잠금 상태에 따라 차단 → 대회 중 과거 연습코드 누수 방지.
+// level 28 = bits 2,3,4 (problem.php와 동일한 기준)
+if ($ok && !isset($_SESSION[$OJ_NAME . '_' . 'administrator']) && !isset($_SESSION[$OJ_NAME . '_' . 'source_browser'])
+        && isset($row['problem_id']) && $row['problem_id'] > 0
+        && $contest_id == 0) {
+    $_locked_cid = problem_locked(intval($row['problem_id']), 28);
+    if ($_locked_cid) {
+        $ok = false;
+        $view_errors = $MSG_WARNING_ACCESS_DENIED;
+        require("template/" . $OJ_TEMPLATE . "/error.php");
+        exit(0);
+    }
+}
 $spj = pdo_query("select spj from problem where problem_id=?", $row['problem_id']);
 if (!empty($spj) && $spj[0][0] == 2 && $OJ_HIDE_RIGHT_ANSWER && !isset($_SESSION[$OJ_NAME . '_' . 'source_browser'])) {
     $view_errors = "<h1>$MSG_MARK:$mark</h1><br>";
@@ -85,7 +101,7 @@ if (($ok && $OJ_FRIENDLY_LEVEL > 2) ||
         $view_reinfo = htmlentities(str_replace("\n\r", "\n", $row['error']), ENT_QUOTES, "UTF-8");
     }
 
-    if (strpos($row['error'], "judge/") !== false && !isset($_SESSION[$OJ_NAME . "_administrator"])) $view_reinfo = "潜在的数组或指针越界，请检查代码。";
+    if (strpos($row['error'], "judge/") !== false && !isset($_SESSION[$OJ_NAME . "_administrator"])) $view_reinfo = "배열 범위를 벗어났거나 잘못된 포인터 참조일 가능성이 높아요. 코드를 다시 확인해보세요.";
     else if (strpos($row['error'], "php") !== false) $view_reinfo = "error2";
     else if (strpos($row['error'], "PASS") !== false) $view_reinfo = "error3";
     else if ($OJ_SHOW_DIFF && $row && ($ok || $isRE) && ($OJ_TEST_RUN || is_valid($row['error']) || $ok)) {

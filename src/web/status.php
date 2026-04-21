@@ -77,6 +77,8 @@ if (isset($_GET['cid'])) {
         $contest_type = $row['contest_type'];
         $start_time = strtotime($row['start_time']);
         $end_time = strtotime($row['end_time']);
+        // [2026-04-21 B 강화] 종료된 대회의 도전현황은 학생 차단 (순위표로만 유도)
+        require_contest_not_ended_for_students($cid, $end_time);
         $view_description = $row['description'];
         $view_title = $row['title'];
         $view_start_time = $row['start_time'];
@@ -539,10 +541,8 @@ for ($i = 0; $i < $rows_cnt; $i++) {
 if ($total_count > 0) $avg_delay /= $total_count;
 
 /////////////////////////Template
-if (isset($_GET['cid']))
-    require("template/" . $OJ_TEMPLATE . "/conteststatus.php");
-else
-    require("template/" . $OJ_TEMPLATE . "/status.php");
+// [통일] 대회 모드(cid)와 일반 모드 모두 동일한 status.php 템플릿 사용
+require("template/" . $OJ_TEMPLATE . "/status.php");
 
 /////////////////////////Common foot
 if (file_exists('./include/cache_end.php'))

@@ -198,6 +198,25 @@ function problem_locked($problem_id,$level=1){
 	else return $result[0]['cid'];
 }
 
+/**
+ * [2026-04-21] 학생에게 종료된 대회는 접근 불가.
+ * - 관리자 / contest_creator / 해당 대회 매니저(mCID)는 통과
+ * - 그 외 사용자는 종료된 대회면 error 페이지로 이동 후 종료
+ * 호출 위치: contestrank*.php, conteststatistics.php, status.php(cid 있을 때), contest-check.php
+ */
+function require_contest_not_ended_for_students($cid, $end_time_ts) {
+    global $OJ_NAME, $OJ_TEMPLATE;
+    if ($end_time_ts <= 0) return; // 알 수 없는 대회는 스킵
+    if (time() <= $end_time_ts) return; // 아직 진행 중
+    if (isset($_SESSION[$OJ_NAME . '_administrator'])) return;
+    if (isset($_SESSION[$OJ_NAME . '_contest_creator'])) return;
+    if (isset($_SESSION[$OJ_NAME . '_' . 'm' . $cid])) return;
+    // 학생: 차단
+    $view_errors = "종료된 대회는 접근할 수 없어요.";
+    require("template/" . $OJ_TEMPLATE . "/error.php");
+    exit(0);
+}
+
 function source_available($solution_id,$contest_id=0){
 	global $OJ_NAME,$_SESSION,$ip;
 	if(isset($_SESSION[$OJ_NAME."_administrator"])||isset($_SESSION[$OJ_NAME."_source_browser"])){
@@ -213,6 +232,20 @@ function source_available($solution_id,$contest_id=0){
 		$solution_cid=$result[0]["contest_id"];
 		if($problem_id==0) return false;
 		if($user_id!=$_SESSION[$OJ_NAME."_user_id"]) return false;
+
+		// [수행평가 UX] 자기 제출이고, 해당 제출이 속한 대회가 지금도 진행 중이라면
+		// bit 0(소스 잠금) 설정되어 있어도 본인 열람은 허용 → 디버깅/재시도 가능
+		// (단, 대회 종료 후에는 통상 로직 적용)
+		if ($solution_cid > 0) {
+			$active_chk = pdo_query(
+				"SELECT 1 FROM contest WHERE contest_id=? AND defunct='N' AND start_time<=NOW() AND end_time>NOW()",
+				$solution_cid
+			);
+			if (!empty($active_chk)) {
+				return true; // 자기 현재-진행중 대회 제출 → 열람 허용
+			}
+		}
+
 		if($contest_id>0 && $solution_cid!=$contest_id){
 			$sql="select contest_type,subnet from contest where contest_id=? ";
 			$result=pdo_query($sql,$contest_id);
@@ -224,11 +257,11 @@ function source_available($solution_id,$contest_id=0){
 			}
 		}else{
 			if(problem_locked($problem_id)) return false;
-		
+
 		}
 
 	}
-	
+
 	return true;
 }
 function in_subnet_of_contest($ip,$contest_id){

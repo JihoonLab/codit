@@ -145,7 +145,6 @@ if (isset($_SESSION[$OJ_NAME . '_' . "administrator"]) ||
     $noip = false;
 } else if ($noip || contest_locked($cid, 20)) {   // 20 = 2^2 + 2^4
     $view_errors = "<h2>$MSG_NOIP_WARNING</h2>";
-    $view_errors .= "<br>" . $contest_locks[2] . $contest_locks[4];  // 2^2 + 2^4 = 20
     require("template/" . $OJ_TEMPLATE . "/error.php");
     exit(0);
 }
@@ -176,6 +175,77 @@ $row = $result[0];
 
 //$row=$result[0];
 $pid_cnt = intval($row['pbc']);
+
+// ═══════════════════════════════════════════════════════════
+// [수행평가 채점] 과목/만점 결정
+// 우선순위: 1) 관리자가 수동 설정한 exam_max_score (20 또는 40)
+//           2) 자동 감지 (problem_id 다수결)
+// ═══════════════════════════════════════════════════════════
+$_exam_row = mysql_query_cache("SELECT exam_max_score FROM contest WHERE contest_id=?", $cid);
+$_exam_stored = intval($_exam_row[0]['exam_max_score'] ?? 0);
+$_exam_auto_detect = ($_exam_stored == 0);
+
+if ($_exam_stored == 20) {
+    $exam_max_score   = 20;
+    $exam_subject     = 'C';
+    $exam_subject_lbl = '2학년 정보 (C)';
+} elseif ($_exam_stored == 40) {
+    $exam_max_score   = 40;
+    $exam_subject     = 'PY';
+    $exam_subject_lbl = '3학년 인공지능기초 (Python)';
+} else {
+    // 자동 감지
+    $exam_subject_counts = mysql_query_cache(
+        "SELECT
+            SUM(CASE WHEN problem_id < 1000 THEN 1 ELSE 0 END) AS c_cnt,
+            SUM(CASE WHEN problem_id >= 1000 THEN 1 ELSE 0 END) AS py_cnt
+         FROM contest_problem WHERE contest_id=?", $cid);
+    $c_cnt_tmp  = intval($exam_subject_counts[0]['c_cnt']  ?? 0);
+    $py_cnt_tmp = intval($exam_subject_counts[0]['py_cnt'] ?? 0);
+
+    if ($c_cnt_tmp >= $py_cnt_tmp) {
+        $exam_max_score   = 20;
+        $exam_subject     = 'C';
+        $exam_subject_lbl = '2학년 정보 (C)';
+    } else {
+        $exam_max_score   = 40;
+        $exam_subject     = 'PY';
+        $exam_subject_lbl = '3학년 인공지능기초 (Python)';
+    }
+}
+
+/**
+ * 수행평가 점수 계산
+ * @param int $solved 해결한 문제 수
+ * @param int $total  전체 문제 수
+ * @param int $max    만점 (20 또는 40)
+ * @return int 점수
+ */
+if (!function_exists('calc_exam_score')) {
+function calc_exam_score($solved, $total, $max) {
+    if ($total <= 0) return 0;
+    $rate = $solved / $total;
+    if ($max == 20) {
+        if ($rate >= 0.9) return 20;
+        if ($rate >= 0.7) return 18;
+        if ($rate >= 0.6) return 16;
+        if ($rate >= 0.5) return 14;
+        if ($rate >= 0.4) return 12;
+        if ($rate >= 0.3) return 10;
+        if ($rate >= 0.2) return 8;
+        return 6; // 기본점수
+    } else { // 40
+        if ($rate >= 0.9) return 40;
+        if ($rate >= 0.7) return 36;
+        if ($rate >= 0.6) return 32;
+        if ($rate >= 0.5) return 28;
+        if ($rate >= 0.4) return 24;
+        if ($rate >= 0.3) return 20;
+        if ($rate >= 0.2) return 16;
+        return 12; // 기본점수
+    }
+}
+}
 
 require("./include/contest_solutions.php");
 

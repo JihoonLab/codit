@@ -42,12 +42,12 @@ if (isset($_POST['password']))
 // 检查IP是否在比赛允许的子网范围内
 if (!in_subnet_of_contest($ip, $cid)) {
     $contest_ok = false;
-    $view_description = "Not in $MSG_SUBNET $subnet";
+    $view_description = "허용된 네트워크에서만 접속할 수 있어요.";
 }
 
 // 检查比赛是否存在或是否已关闭（非管理员无法访问已关闭比赛）
 if ($rows_cnt == 0 || ($row['defunct'] == 'Y' && !isset($_SESSION[$OJ_NAME . '_administrator']))) {
-    $view_title = "比赛已经关闭!";
+    $view_title = "대회를 찾을 수 없어요";
     $contest_ok = false;
 } else {
 
@@ -55,6 +55,17 @@ if ($rows_cnt == 0 || ($row['defunct'] == 'Y' && !isset($_SESSION[$OJ_NAME . '_a
     $view_contest_creator = $row['user_id'];
     if ($password != "" && $password == $row['password'])
         $_SESSION[$OJ_NAME . '_' . 'c' . $cid] = true;
+
+    // [PRG 패턴] 비밀번호 제출은 POST → 303 See Other로 GET 리다이렉트.
+    // 뒤로가기 시 "양식 다시 제출 확인" 팝업(ERR_CACHE_MISS) 방지.
+    // 비밀번호가 맞으면 세션 설정 후 GET 재요청 → 정상 대회 페이지 로딩.
+    // 틀려도 GET으로 다시 와서 암호 입력 폼을 보여주므로 재제출 위험 없음.
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['password'])) {
+        if (session_status() === PHP_SESSION_ACTIVE) session_write_close();
+        while (ob_get_level() > 0) @ob_end_clean();
+        header("Location: contest.php?cid=" . $cid, true, 303);
+        exit(0);
+    }
 
     // 检查私人比赛权限
     if ($row['private'] && !isset($_SESSION[$OJ_NAME . '_' . 'c' . $cid])) {
@@ -94,6 +105,7 @@ if ($rows_cnt == 0 || ($row['defunct'] == 'Y' && !isset($_SESSION[$OJ_NAME . '_a
         require("template/" . $OJ_TEMPLATE . "/error.php");
         exit(0);
     }
+
 }
 
 // 处理个人限时赛功能
@@ -144,30 +156,15 @@ if ($contest_ok && str_contains($view_description, $OJ_CONTEST_LIMIT_KEYWORD) &&
 // 如果比赛验证失败，显示错误页面和密码输入表单
 if (!$contest_ok) {
     $view_errors = "<center>";
-    $view_errors .= "<h3>$MSG_CONTEST_ID : $view_cid - $view_title</h3>";
+    $view_errors .= "<h2>" . htmlspecialchars($view_title) . "</h2>";
     $view_errors .= "<p>$view_description</p>";
-    $view_errors .= "<span class=text-danger>$MSG_PRIVATE_WARNING</span>";
+    $view_errors .= "<span class=err-info-note>$MSG_PRIVATE_WARNING</span>";
 
-    $view_errors .= "<br><br>";
-
-    $view_errors .= "<div class='btn-group'>";
-    $view_errors .= "<a href=contestrank.php?cid=$view_cid class='btn btn-primary'>$MSG_STANDING</a>";
-    $view_errors .= "<a href=contestrank-oi.php?cid=$view_cid class='btn btn-primary'>OI$MSG_STANDING</a>";
-    $view_errors .= "<a href=conteststatistics.php?cid=$view_cid class='btn btn-primary'>$MSG_STATISTICS</a>";
-    $view_errors .= "</div>";
-
-    $view_errors .= "<br><br>";
-    $view_errors .= "<table align=center width=80%>";
-    $view_errors .= "<tr align='center'>";
-    $view_errors .= "<td>";
     $view_errors .= "<form class=form-inline method=post action=contest.php?cid=$cid>";
-    $view_errors .= "<input class=input-mini type=password name=password value='' placeholder=$MSG_CONTEST-$MSG_PASSWORD>";
-    $view_errors .= "<button class='form-control'>$MSG_SUBMIT</button>";
+    $view_errors .= "<input class=input-mini type=password name=password value='' placeholder='비밀번호 입력'>";
+    $view_errors .= "<button class='form-control'>입장하기</button>";
     $view_errors .= "</form>";
-    $view_errors .= "</td>";
-    $view_errors .= "</tr>";
-    $view_errors .= "</table>";
-    $view_errors .= "<br>";
+    $err_variant = "contest_auth";
 
     require("template/" . $OJ_TEMPLATE . "/error.php");
     exit(0);

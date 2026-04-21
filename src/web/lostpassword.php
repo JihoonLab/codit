@@ -58,7 +58,7 @@ if ($row && $row['email'] == $lost_email && strpos($lost_email, '@')) {
     require("template/" . $OJ_TEMPLATE . "/lostpassword2.php");
 
 } else {
-    if ($row['email'] != $lost_email) $error_msg = "用户名与Email不匹配";
+    if ($row['email'] != $lost_email) $error_msg = "아이디와 이메일이 일치하지 않아요.";
 /////////////////////////Template
     require("template/" . $OJ_TEMPLATE . "/lostpassword.php");
 

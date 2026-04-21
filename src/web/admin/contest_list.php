@@ -68,12 +68,13 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
       <td><?php echo $MSG_START_TIME?></td>
       <td><?php echo $MSG_END_TIME?></td>
       <td><?php echo $MSG_CONTEST_OPEN?></td>
-      <td><?php echo $MSG_STATUS?></td>
+      <td>공개 / 숨김</td>
       <td><?php echo $MSG_EDIT ?></td>
       <td><?php echo $MSG_COPY?></td>
       <td><?php echo $MSG_EXPORT ?></td>
       <td><?php echo $MSG_LOG?></td>
       <td><?php echo $MSG_SUSPECT?></td>
+      <td style="color:#dc2626;font-weight:700">영구 삭제</td>
     </tr>
     <?php
     foreach($result as $row){
@@ -85,7 +86,8 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
       $cid = $row['contest_id'];
       if(isset($_SESSION[$OJ_NAME.'_'.'administrator']) || isset($_SESSION[$OJ_NAME.'_'."m$cid"])){
         echo "<td><a href=contest_pr_change.php?cid=".$row['contest_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey'].">".($row['private']=="0"?"<span class=green>$MSG_Public</span>":"<span class=red>$MSG_Private<span>")."</a></td>";
-        echo "<td><a href=contest_df_change.php?cid=".$row['contest_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey'].">".($row['defunct']=="N"?"<span class=green>$MSG_AVAILABLE </span>":"<span class=red>$MSG_RESERVED </span>")."</a></td>";
+        // 🔒 defunct 토글: 데이터 보존하며 공개/숨김만 바꿈 (안전)
+        echo "<td><a href=contest_df_change.php?cid=".$row['contest_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey']." title='클릭하면 공개↔숨김 토글 (데이터 유지)'>".($row['defunct']=="N"?"<span class=green>👁 공개</span>":"<span class=red>🙈 숨김</span>")."</a></td>";
         echo "<td><a href=contest_edit.php?cid=".$row['contest_id'].">$MSG_EDIT</a></td>";
         echo "<td><a href=contest_add.php?cid=".$row['contest_id'].">$MSG_COPY</a></td>";
         if(isset($_SESSION[$OJ_NAME.'_'.'administrator']) || isset($_SESSION[$OJ_NAME.'_'.'contest_creator'])){
@@ -98,6 +100,12 @@ if(isset($_GET['keyword']) && $_GET['keyword']!=""){
         echo "<td colspan=5 align=right><a href=contest_add.php?cid=".$row['contest_id'].">$MSG_COPY</a><td>";
       }
       echo "<td><a href='suspect_list.php?cid=".$row['contest_id']."'>$MSG_SUSPECT</a></td>";
+      // 🚨 영구 삭제 버튼: 별도 페이지로 이동 후 이중 확인
+      if(isset($_SESSION[$OJ_NAME.'_'.'administrator']) || isset($_SESSION[$OJ_NAME.'_'.'contest_creator'])){
+        echo "<td><a href='contest_hard_delete.php?cid=".$row['contest_id']."&getkey=".$_SESSION[$OJ_NAME.'_'.'getkey']."' title='데이터 영구 삭제 (주의!)' style='color:#dc2626;font-weight:700'>🗑️ 삭제</a></td>";
+      } else {
+        echo "<td></td>";
+      }
       echo "</tr>";
     }
   ?>
